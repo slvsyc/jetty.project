@@ -27,7 +27,7 @@
     <asm.version>6.1.1</asm.version>
     <jmh.version>1.20</jmh.version>
     <jmhjar.name>benchmarks</jmhjar.name>
-    <surefireVersion>2.19.1</surefireVersion>
+    <surefireVersion>2.21.0</surefireVersion>
 
     <mavenPluginToolsVersion>3.5</mavenPluginToolsVersion>
     <mavenVersion>3.5.0</mavenVersion>
