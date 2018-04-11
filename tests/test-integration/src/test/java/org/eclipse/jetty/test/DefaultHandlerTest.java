@@ -18,8 +18,8 @@
 
 package org.eclipse.jetty.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -36,10 +36,10 @@ import org.eclipse.jetty.test.support.rawhttp.HttpSocketImpl;
 import org.eclipse.jetty.test.support.rawhttp.HttpTesting;
 import org.eclipse.jetty.util.IO;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests against the facilities within the TestSuite to ensure that the various
@@ -86,7 +86,7 @@ public class DefaultHandlerTest
         String response = IO.toString(in);
         String expected = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n";
         
-        Assert.assertEquals("Response",expected,response);
+        assertEquals(expected, response, "Response");
     }
 
     @Test

@@ -18,11 +18,11 @@
 
 package org.eclipse.jetty.start.fileinits;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,9 +34,9 @@ import org.eclipse.jetty.start.config.JettyBaseConfigSource;
 import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.start.fileinits.MavenLocalRepoFileInitializer.Coordinates;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class MavenLocalRepoFileInitializerTest
@@ -49,7 +49,7 @@ public class MavenLocalRepoFileInitializerTest
     
     private BaseHome baseHome;
     
-    @Before
+    @BeforeEach
     public void setupBaseHome() throws IOException
     {
         Path homeDir = testdir.getEmptyPathDir();

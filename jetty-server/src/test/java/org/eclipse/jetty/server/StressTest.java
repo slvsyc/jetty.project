@@ -18,8 +18,8 @@
 
 package org.eclipse.jetty.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.OS.MAC;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 
@@ -371,7 +371,7 @@ public class StressTest
             int bodies = count(response,"HTTP/1.1 200 OK");
             if (__tests.length!=bodies)
                 System.err.println("responses=\n"+response+"\n---");
-            assertEquals(name,__tests.length,bodies);
+            assertEquals(__tests.length,bodies,name);
 
             long bind=connected-start;
             long flush=(written-connected)/__tests.length;
@@ -424,10 +424,10 @@ public class StressTest
                 long end=TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
 
                 String endOfResponse = "\r\n\r\n";
-                assertTrue("response = '" + response + "'", response.contains(endOfResponse));
+                assertTrue(response.contains(endOfResponse),"response = '" + response + "'");
                 response=response.substring(response.indexOf(endOfResponse) + endOfResponse.length());
 
-                assertTrue(uri,response.startsWith("DATA "+__tests[i]));
+                assertTrue(response.startsWith("DATA "+__tests[i]),uri);
                 long latency=end-start;
 
                 _latencies[5].add(new Long(latency));

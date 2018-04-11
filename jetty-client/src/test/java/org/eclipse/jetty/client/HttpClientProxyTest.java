@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -37,8 +39,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.B64Code;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpClientProxyTest extends AbstractHttpClientServerTest
 {
@@ -77,7 +79,7 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response.getStatus());
+        assertEquals(status, response.getStatus());
     }
 
     @Test
@@ -125,7 +127,7 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .send();
 
         // No Authentication available => 407
-        Assert.assertEquals(HttpStatus.PROXY_AUTHENTICATION_REQUIRED_407, response1.getStatus());
+        assertEquals(HttpStatus.PROXY_AUTHENTICATION_REQUIRED_407, response1.getStatus());
 
         // Add authentication...
         URI uri = URI.create(scheme + "://" + proxyHost + ":" + proxyPort);
@@ -145,8 +147,8 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response2.getStatus());
-        Assert.assertEquals(2, requests.get());
+        assertEquals(status, response2.getStatus());
+        assertEquals(2, requests.get());
 
         // Now the authentication result is cached => 204
         requests.set(0);
@@ -155,8 +157,8 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response3.getStatus());
-        Assert.assertEquals(1, requests.get());
+        assertEquals(status, response3.getStatus());
+        assertEquals(1, requests.get());
     }
 
     @Test
@@ -219,7 +221,7 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .send();
 
         // No Authentication available => 407.
-        Assert.assertEquals(HttpStatus.PROXY_AUTHENTICATION_REQUIRED_407, response1.getStatus());
+        assertEquals(HttpStatus.PROXY_AUTHENTICATION_REQUIRED_407, response1.getStatus());
 
         // Add authentication...
         URI uri = URI.create(scheme + "://" + proxyHost + ":" + proxyPort);
@@ -240,8 +242,8 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response2.getStatus());
-        Assert.assertEquals(3, requests.get());
+        assertEquals(status, response2.getStatus());
+        assertEquals(3, requests.get());
 
         // Now the authentication result is cached => 204.
         requests.set(0);
@@ -251,8 +253,8 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response3.getStatus());
-        Assert.assertEquals(1, requests.get());
+        assertEquals(status, response3.getStatus());
+        assertEquals(1, requests.get());
     }
 
     @Test
@@ -313,8 +315,8 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response1.getStatus());
-        Assert.assertEquals(3, requests.get());
+        assertEquals(status, response1.getStatus());
+        assertEquals(3, requests.get());
 
         // Make again the request, authentication is cached, expect 204.
         requests.set(0);
@@ -323,8 +325,8 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response2.getStatus());
-        Assert.assertEquals(1, requests.get());
+        assertEquals(status, response2.getStatus());
+        assertEquals(1, requests.get());
     }
 
     @Test
@@ -384,8 +386,8 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response1.getStatus());
-        Assert.assertEquals(2, requests.get());
+        assertEquals(status, response1.getStatus());
+        assertEquals(2, requests.get());
 
         // Make again the request, authentication is cached, expect 204.
         requests.set(0);
@@ -395,7 +397,7 @@ public class HttpClientProxyTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response2.getStatus());
-        Assert.assertEquals(1, requests.get());
+        assertEquals(status, response2.getStatus());
+        assertEquals(1, requests.get());
     }
 }

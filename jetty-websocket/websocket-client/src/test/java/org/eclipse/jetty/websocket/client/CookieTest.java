@@ -19,8 +19,8 @@
 package org.eclipse.jetty.websocket.client;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.CookieManager;
 import java.net.HttpCookie;
@@ -46,10 +46,10 @@ import org.eclipse.jetty.websocket.common.test.BlockheadServer;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CookieTest
 {
@@ -84,7 +84,7 @@ public class CookieTest
 
         public void awaitOpen(int duration, TimeUnit unit) throws InterruptedException
         {
-            assertTrue("Open Latch", openLatch.await(duration,unit));
+            assertTrue(openLatch.await(duration,unit), "Open Latch");
         }
     }
 
@@ -179,7 +179,7 @@ public class CookieTest
             // client confirms upgrade and receipt of frame
             String serverCookies = confirmClientUpgradeAndCookies(clientSocket, clientConnectFuture, serverConn);
 
-            Assert.assertThat("Cookies seen at server side", serverCookies, containsString("hello=world"));
+            assertThat("Cookies seen at server side", serverCookies, containsString("hello=world"));
         }
     }
 

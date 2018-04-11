@@ -18,7 +18,7 @@
 
 package org.eclipse.jetty.server;
   
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.IO;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HalfCloseTest
 {

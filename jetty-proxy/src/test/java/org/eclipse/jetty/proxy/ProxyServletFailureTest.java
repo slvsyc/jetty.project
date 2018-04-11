@@ -18,6 +18,12 @@
 
 package org.eclipse.jetty.proxy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,8 +59,8 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -171,7 +177,7 @@ public class ProxyServletFailureTest
 
             socket.setSoTimeout(2 * idleTimeout);
             InputStream input = socket.getInputStream();
-            Assert.assertEquals(-1, input.read());
+            assertEquals(-1, input.read());
         }
     }
 
@@ -201,11 +207,11 @@ public class ProxyServletFailureTest
             socket.setSoTimeout(2 * idleTimeout);
     
             HttpTester.Response response = HttpTester.parseResponse(socket.getInputStream());
-            Assert.assertTrue(response.getStatus() >= 500);
+            assertTrue(response.getStatus() >= 500);
             String connectionHeader = response.get("connection");
-            Assert.assertNotNull(connectionHeader);
-            Assert.assertTrue(connectionHeader.contains("close"));
-            Assert.assertEquals(-1, socket.getInputStream().read());
+            assertNotNull(connectionHeader);
+            assertTrue(connectionHeader.contains("close"));
+            assertEquals(-1, socket.getInputStream().read());
         }
     }
 
@@ -236,11 +242,11 @@ public class ProxyServletFailureTest
             socket.setSoTimeout(2 * idleTimeout);
             
             HttpTester.Response response = HttpTester.parseResponse(socket.getInputStream());
-            Assert.assertTrue(response.getStatus() >= 500);
+            assertTrue(response.getStatus() >= 500);
             String connectionHeader = response.get("connection");
-            Assert.assertNotNull(connectionHeader);
-            Assert.assertTrue(connectionHeader.contains("close"));
-            Assert.assertEquals(-1, socket.getInputStream().read());
+            assertNotNull(connectionHeader);
+            assertTrue(connectionHeader.contains("close"));
+            assertEquals(-1, socket.getInputStream().read());
         }
     }
 
@@ -305,11 +311,11 @@ public class ProxyServletFailureTest
                     .content(new BytesContentProvider(content))
                     .send();
 
-            Assert.assertEquals(expected, response.getStatus());
+            assertEquals(expected, response.getStatus());
         }
     }
 
-    @Test(expected = TimeoutException.class)
+    @Test
     public void testClientRequestExpires() throws Exception
     {
         prepareProxy();
@@ -331,10 +337,11 @@ public class ProxyServletFailureTest
             }
         });
 
-        client.newRequest("localhost", serverConnector.getLocalPort())
-                .timeout(timeout, TimeUnit.MILLISECONDS)
-                .send();
-        Assert.fail();
+        assertThrows(TimeoutException.class, ()-> {
+            client.newRequest("localhost", serverConnector.getLocalPort())
+                    .timeout(timeout, TimeUnit.MILLISECONDS)
+                    .send();
+        });
     }
 
     @Test
@@ -364,8 +371,8 @@ public class ProxyServletFailureTest
         Response response = client.newRequest("localhost", serverConnector.getLocalPort())
                 .timeout(3 * timeout, TimeUnit.MILLISECONDS)
                 .send();
-        Assert.assertEquals(504, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(504, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -382,7 +389,7 @@ public class ProxyServletFailureTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(502, response.getStatus());
+        assertEquals(502, response.getStatus());
     }
 
     @Test
@@ -404,7 +411,7 @@ public class ProxyServletFailureTest
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
 
-            Assert.assertEquals(500, response.getStatus());
+            assertEquals(500, response.getStatus());
         }
     }
 }

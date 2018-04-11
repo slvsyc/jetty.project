@@ -19,30 +19,25 @@
 
 package org.eclipse.jetty.http2.hpack;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 import org.eclipse.jetty.http.BadMessageException;
 import org.eclipse.jetty.http.HttpField;
-import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MetaData;
-import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.TypeUtil;
-import org.eclipse.jetty.util.log.Log;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class HpackDecoderTest
 {
@@ -198,16 +193,11 @@ public class HpackDecoderTest
         ByteBuffer buffer = ByteBuffer.wrap(TypeUtil.fromHexString(encoded));
 
         HpackDecoder decoder = new HpackDecoder(128,8192);
-        try
-        {
-            decoder.decode(buffer);
-            Assert.fail();
-        }
-        catch (BadMessageException e)
-        {
-            assertThat(e.getCode(),equalTo(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE_431));
-            assertThat(e.getReason(),Matchers.startsWith("Indexed field value too large"));
-        }
+
+        BadMessageException e = assertThrows(BadMessageException.class,
+                ()-> decoder.decode(buffer));
+        assertThat(e.getCode(),is(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE_431));
+        assertThat(e.getReason(),startsWith("Indexed field value too large"));
     }
 
     @Test
@@ -217,16 +207,10 @@ public class HpackDecoderTest
         ByteBuffer buffer = ByteBuffer.wrap(TypeUtil.fromHexString(encoded));
 
         HpackDecoder decoder = new HpackDecoder(128,8192);
-        try
-        {
-            decoder.decode(buffer);
-            Assert.fail();
-        }
-        catch (BadMessageException e)
-        {
-            assertThat(e.getCode(),equalTo(HttpStatus.BAD_REQUEST_400));
-            assertThat(e.getReason(),Matchers.startsWith("Unknown index"));
-        }
-    
+
+        BadMessageException e = assertThrows(BadMessageException.class,
+                ()-> decoder.decode(buffer));
+        assertThat(e.getCode(),is(HttpStatus.BAD_REQUEST_400));
+        assertThat(e.getReason(),startsWith("Unknown index"));
     }
 }

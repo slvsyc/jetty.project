@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.servlets;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.EnumSet;
 
@@ -35,9 +38,9 @@ import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletTester;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IncludeExcludeBasedFilterTest
 {
@@ -73,7 +76,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Custom-Value","1"));
+        assertTrue(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -90,7 +93,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertFalse(response.contains("X-Custom-Value","1"));
+        assertFalse(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -107,7 +110,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertFalse(response.contains("X-Custom-Value","1"));
+        assertFalse(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -124,7 +127,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Custom-Value","1"));
+        assertTrue(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -142,7 +145,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertFalse(response.contains("X-Custom-Value","1"));
+        assertFalse(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -159,7 +162,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Custom-Value","1"));
+        assertTrue(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -176,7 +179,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertFalse(response.contains("X-Custom-Value","1"));
+        assertFalse(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -193,7 +196,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertFalse(response.contains("X-Custom-Value","1"));
+        assertFalse(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -210,7 +213,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Custom-Value","1"));
+        assertTrue(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -227,7 +230,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/json.json");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Custom-Value","1"));
+        assertTrue(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -244,7 +247,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/json.json?some=value");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Custom-Value","1"));
+        assertTrue(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -261,7 +264,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/json.json");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertFalse(response.contains("X-Custom-Value","1"));
+        assertFalse(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -278,7 +281,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/abcdef");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertFalse(response.contains("X-Custom-Value","1"));
+        assertFalse(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -295,7 +298,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/json.json");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertFalse(response.contains("X-Custom-Value","1"));
+        assertFalse(response.contains("X-Custom-Value","1"));
     }
 
     @Test
@@ -312,7 +315,7 @@ public class IncludeExcludeBasedFilterTest
         request.setURI("/context/test/json.json");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Custom-Value","1"));
+        assertTrue(response.contains("X-Custom-Value","1"));
     }
 
     public static class MockIncludeExcludeFilter extends IncludeExcludeBasedFilter

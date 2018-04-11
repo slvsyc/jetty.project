@@ -339,13 +339,13 @@ public class WebAppClassLoaderTest
         URL resource = resources.nextElement();
         try (InputStream data = resource.openStream())
         {
-            assertEquals("alpha", IO.toString(data), "correct contents of " + resource);
+            assertEquals(IO.toString(data), "correct contents of " + resource, "alpha");
         }
         assertTrue(resources.hasMoreElements());
         resource = resources.nextElement();
         try (InputStream data = resource.openStream())
         {
-            assertEquals("omega", IO.toString(data), "correct contents of " + resource);
+            assertEquals(IO.toString(data), "correct contents of " + resource, "omega");
         }
         assertFalse(resources.hasMoreElements());
     }

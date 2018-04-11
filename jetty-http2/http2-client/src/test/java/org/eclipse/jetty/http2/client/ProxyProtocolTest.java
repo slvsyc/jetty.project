@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.http2.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -50,8 +53,8 @@ import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.TypeUtil;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class ProxyProtocolTest
 {
@@ -90,10 +93,10 @@ public class ProxyProtocolTest
             {
                 try
                 {
-                    Assert.assertEquals("1.2.3.4",request.getRemoteAddr());
-                    Assert.assertEquals(1111,request.getRemotePort());
-                    Assert.assertEquals("5.6.7.8",request.getLocalAddr());
-                    Assert.assertEquals(2222,request.getLocalPort());
+                    assertEquals("1.2.3.4",request.getRemoteAddr());
+                    assertEquals(1111,request.getRemotePort());
+                    assertEquals("5.6.7.8",request.getLocalAddr());
+                    assertEquals(2222,request.getLocalPort());
                 }
                 catch(Throwable th)
                 {
@@ -124,12 +127,12 @@ public class ProxyProtocolTest
             public void onHeaders(Stream stream, HeadersFrame frame)
             {
                 MetaData.Response response = (MetaData.Response)frame.getMetaData();
-                Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+                assertEquals(HttpStatus.OK_200, response.getStatus());
                 if (frame.isEndStream())
                     latch.countDown();
             }
         });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
     
     @Test
@@ -142,10 +145,10 @@ public class ProxyProtocolTest
             {
                 try
                 {
-                    Assert.assertEquals("10.0.0.4",request.getRemoteAddr());
-                    Assert.assertEquals(33824,request.getRemotePort());
-                    Assert.assertEquals("10.0.0.4",request.getLocalAddr());
-                    Assert.assertEquals(8888,request.getLocalPort());
+                    assertEquals("10.0.0.4",request.getRemoteAddr());
+                    assertEquals(33824,request.getRemotePort());
+                    assertEquals("10.0.0.4",request.getLocalAddr());
+                    assertEquals(8888,request.getLocalPort());
                 }
                 catch(Throwable th)
                 {
@@ -176,11 +179,11 @@ public class ProxyProtocolTest
             public void onHeaders(Stream stream, HeadersFrame frame)
             {
                 MetaData.Response response = (MetaData.Response)frame.getMetaData();
-                Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+                assertEquals(HttpStatus.OK_200, response.getStatus());
                 if (frame.isEndStream())
                     latch.countDown();
             }
         });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 }

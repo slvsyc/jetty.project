@@ -18,6 +18,11 @@
 
 package org.eclipse.jetty.fcgi.server.proxy;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -43,8 +48,8 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -145,7 +150,7 @@ public class FastCGIProxyServletTest
             @Override
             protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
             {
-                Assert.assertTrue(request.getRequestURI().endsWith(path));
+                assertTrue(request.getRequestURI().endsWith(path));
                 response.setContentLength(data.length);
                 response.getOutputStream().write(data);
             }
@@ -171,8 +176,8 @@ public class FastCGIProxyServletTest
 
         ContentResponse response = listener.get(30, TimeUnit.SECONDS);
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(data, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(data, response.getContent());
     }
 
     @Test
@@ -186,9 +191,9 @@ public class FastCGIProxyServletTest
             @Override
             protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
             {
-                Assert.assertThat((String)request.getAttribute(FCGI.Headers.REQUEST_URI), Matchers.startsWith(originalPath));
-                Assert.assertEquals(originalQuery, request.getAttribute(FCGI.Headers.QUERY_STRING));
-                Assert.assertThat(request.getRequestURI(), Matchers.endsWith(remotePath));
+                assertThat((String)request.getAttribute(FCGI.Headers.REQUEST_URI), Matchers.startsWith(originalPath));
+                assertEquals(originalQuery, request.getAttribute(FCGI.Headers.QUERY_STRING));
+                assertThat(request.getRequestURI(), Matchers.endsWith(remotePath));
             }
         });
         context.stop();
@@ -216,6 +221,6 @@ public class FastCGIProxyServletTest
                 .path(remotePath)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 }

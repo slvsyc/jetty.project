@@ -18,11 +18,13 @@
 
 package org.eclipse.jetty.util.log.jmx;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.acme.Managed;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class LogMBeanTest
 {
@@ -33,7 +35,7 @@ public class LogMBeanTest
 
     private static final String MANAGED_CLASS = "Managed";
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         managed = new Managed();
@@ -44,13 +46,13 @@ public class LogMBeanTest
     public void testKeySet()
     {
         // given
-        assertFalse("Managed is not registered with loggers",logMBean.getLoggers().contains(MANAGED_CLASS));
+        assertFalse(logMBean.getLoggers().contains(MANAGED_CLASS), "Managed is not registered with loggers");
 
         // when
         logMBean.setDebugEnabled(MANAGED_CLASS,true);
 
         // then
-        assertTrue("Managed must be registered with loggers",logMBean.getLoggers().contains(MANAGED_CLASS));
-        assertTrue("This must return true as debug is enabled for this class",logMBean.isDebugEnabled(MANAGED_CLASS));
+        assertTrue(logMBean.getLoggers().contains(MANAGED_CLASS), "Managed must be registered with loggers");
+        assertTrue(logMBean.isDebugEnabled(MANAGED_CLASS), "This must return true as debug is enabled for this class");
     }
 }

@@ -18,6 +18,10 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +35,8 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class ContentResponseTest extends AbstractHttpClientServerTest
 {
@@ -61,10 +65,10 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(content, response.getContent());
-        Assert.assertNull(response.getMediaType());
-        Assert.assertNull(response.getEncoding());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(content, response.getContent());
+        assertNull(response.getMediaType());
+        assertNull(response.getEncoding());
     }
 
     @Test
@@ -88,10 +92,10 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(content, response.getContentAsString());
-        Assert.assertEquals(mediaType, response.getMediaType());
-        Assert.assertNull(response.getEncoding());
+        assertEquals(200, response.getStatus());
+        assertEquals(content, response.getContentAsString());
+        assertEquals(mediaType, response.getMediaType());
+        assertNull(response.getEncoding());
     }
 
     @Test
@@ -117,10 +121,10 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(content, response.getContentAsString());
-        Assert.assertEquals(mediaType, response.getMediaType());
-        Assert.assertEquals(encoding, response.getEncoding());
+        assertEquals(200, response.getStatus());
+        assertEquals(content, response.getContentAsString());
+        assertEquals(mediaType, response.getMediaType());
+        assertEquals(encoding, response.getEncoding());
     }
 
     @Test
@@ -146,9 +150,9 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(content, response.getContentAsString());
-        Assert.assertEquals(mediaType, response.getMediaType());
-        Assert.assertEquals(encoding, response.getEncoding());
+        assertEquals(200, response.getStatus());
+        assertEquals(content, response.getContentAsString());
+        assertEquals(mediaType, response.getMediaType());
+        assertEquals(encoding, response.getEncoding());
     }
 }

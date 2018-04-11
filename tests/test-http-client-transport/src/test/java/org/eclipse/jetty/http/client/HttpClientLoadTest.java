@@ -18,6 +18,10 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.eclipse.jetty.http.client.AbstractTest.Transport.UNIX_SOCKET;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -61,11 +65,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-
-import static org.eclipse.jetty.http.client.AbstractTest.Transport.UNIX_SOCKET;
-import static org.junit.Assert.assertThat;
+import org.junit.jupiter.api.Test;
 
 public class HttpClientLoadTest extends AbstractTest
 {
@@ -231,7 +231,7 @@ public class HttpClientLoadTest extends AbstractTest
             test(latch, failures);
 //            test("http", "localhost", "GET", false, false, 64 * 1024, false, latch, failures);
         }
-        Assert.assertTrue(await(latch, iterations, TimeUnit.SECONDS));
+        assertTrue(await(latch, iterations, TimeUnit.SECONDS));
         long end = System.nanoTime();
         task.cancel();
         long elapsed = TimeUnit.NANOSECONDS.toMillis(end - begin);
@@ -240,7 +240,7 @@ public class HttpClientLoadTest extends AbstractTest
         for (String failure : failures)
             logger.info("FAILED: {}", failure);
 
-        Assert.assertTrue(failures.toString(), failures.isEmpty());
+        assertTrue(failures.isEmpty(),failures.toString());
     }
 
     private void test(final CountDownLatch latch, final List<String> failures)

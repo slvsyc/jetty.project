@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.common.message;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Arrays;
@@ -35,10 +36,10 @@ import org.eclipse.jetty.websocket.common.io.LocalWebSocketSession;
 import org.eclipse.jetty.websocket.common.scopes.SimpleContainerScope;
 import org.eclipse.jetty.websocket.common.scopes.WebSocketContainerScope;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TestName;
 
 public class MessageWriterTest
@@ -102,9 +103,9 @@ public class MessageWriterTest
             stream.write("World");
         }
 
-        Assert.assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
+        assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
         String msg = socket.messageQueue.poll();
-        Assert.assertThat("Message",msg,is("Hello World"));
+        assertThat("Message",msg,is("Hello World"));
     }
 
     @Test
@@ -115,9 +116,9 @@ public class MessageWriterTest
             stream.append("Hello World");
         }
 
-        Assert.assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
+        assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
         String msg = socket.messageQueue.poll();
-        Assert.assertThat("Message",msg,is("Hello World"));
+        assertThat("Message",msg,is("Hello World"));
     }
 
     @Test
@@ -135,9 +136,9 @@ public class MessageWriterTest
             stream.write(buf);
         }
 
-        Assert.assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
+        assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
         String msg = socket.messageQueue.poll();
         String expected = new String(buf);
-        Assert.assertThat("Message",msg,is(expected));
+        assertThat("Message",msg,is(expected));
     }
 }

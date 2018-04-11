@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 import java.io.File;
@@ -39,9 +40,9 @@ import org.eclipse.jetty.websocket.jsr356.server.samples.beans.TimeEncoder;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.ConfiguredEchoSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.EchoSocketConfigurator;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Example of an annotated echo server discovered via annotation scanning.
@@ -95,7 +96,7 @@ public class AnnotatedServerEndpointTest
             String response = msgs.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
             for (String expected : expectedTexts)
             {
-                Assert.assertThat("Expected message",response,containsString(expected));
+                assertThat("Expected message",response,containsString(expected));
             }
         }
         finally

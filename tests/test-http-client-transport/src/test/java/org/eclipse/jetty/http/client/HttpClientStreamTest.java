@@ -18,6 +18,14 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -66,8 +74,8 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class HttpClientStreamTest extends AbstractTest
@@ -121,8 +129,8 @@ public class HttpClientStreamTest extends AbstractTest
                 .send();
         long responseTime = System.nanoTime();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(requestTime.get() <= responseTime);
+        assertEquals(200, response.getStatus());
+        assertTrue(requestTime.get() <= responseTime);
 
         // Give some time to the server to consume the request content
         // This is just to avoid exception traces in the test output
@@ -150,11 +158,11 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
 
         InputStream input = listener.getInputStream();
-        Assert.assertNotNull(input);
+        assertNotNull(input);
 
         int length = 0;
         while (input.read() == value)
@@ -164,12 +172,12 @@ public class HttpClientStreamTest extends AbstractTest
             ++length;
         }
 
-        Assert.assertEquals(data.length, length);
+        assertEquals(data.length, length);
 
         Result result = listener.await(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(result);
-        Assert.assertFalse(result.isFailed());
-        Assert.assertSame(response, result.getResponse());
+        assertNotNull(result);
+        assertFalse(result.isFailed());
+        assertSame(response, result.getResponse());
     }
 
     @Test
@@ -191,25 +199,25 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
 
         InputStream input = listener.getInputStream();
-        Assert.assertNotNull(input);
+        assertNotNull(input);
 
         for (byte b : data)
         {
             int read = input.read();
-            Assert.assertTrue(read >= 0);
-            Assert.assertEquals(b & 0xFF, read);
+            assertTrue(read >= 0);
+            assertEquals(b & 0xFF, read);
         }
 
-        Assert.assertEquals(-1, input.read());
+        assertEquals(-1, input.read());
 
         Result result = listener.await(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(result);
-        Assert.assertFalse(result.isFailed());
-        Assert.assertSame(response, result.getResponse());
+        assertNotNull(result);
+        assertFalse(result.isFailed());
+        assertSame(response, result.getResponse());
     }
 
     @Test
@@ -238,11 +246,11 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
 
         InputStream input = listener.getInputStream();
-        Assert.assertNotNull(input);
+        assertNotNull(input);
 
         int length = 0;
         try
@@ -254,18 +262,18 @@ public class HttpClientStreamTest extends AbstractTest
                     Thread.sleep(1);
                 ++length;
             }
-            Assert.fail();
+            fail();
         }
         catch (IOException x)
         {
             // Expected.
         }
 
-        Assert.assertThat(length, Matchers.lessThanOrEqualTo(data.length));
+        assertThat(length, Matchers.lessThanOrEqualTo(data.length));
 
         Result result = listener.await(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.isFailed());
+        assertNotNull(result);
+        assertTrue(result.isFailed());
     }
 
     @Test(expected = AsynchronousCloseException.class)
@@ -291,7 +299,7 @@ public class HttpClientStreamTest extends AbstractTest
                 .content(new BytesContentProvider(new byte[]{0, 1, 2, 3}))
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         stream.read(); // Throws
     }
@@ -333,7 +341,7 @@ public class HttpClientStreamTest extends AbstractTest
                 .send(listener);
 
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         InputStream input = listener.getInputStream();
         input.close();
@@ -342,7 +350,7 @@ public class HttpClientStreamTest extends AbstractTest
         asyncContext.getResponse().getOutputStream().write(new byte[1024]);
         asyncContext.complete();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
 
         input.read(); // Throws
     }
@@ -389,17 +397,17 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         // Wait until we get some content.
-        Assert.assertTrue(contentLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(contentLatch.await(5, TimeUnit.SECONDS));
 
         // Close the stream.
         InputStream stream = listener.getInputStream();
         stream.close();
 
         // Make sure that the callback has been invoked.
-        Assert.assertTrue(failedLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(failedLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -441,16 +449,16 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         // Wait until we get some content.
-        Assert.assertTrue(contentLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(contentLatch.await(5, TimeUnit.SECONDS));
 
         // Abort the response.
         response.abort(new Exception());
 
         // Make sure that the callback has been invoked.
-        Assert.assertTrue(failedLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(failedLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -467,7 +475,7 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Result result = listener.await(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
     @Test(expected = ExecutionException.class)
@@ -518,7 +526,7 @@ public class HttpClientStreamTest extends AbstractTest
 
                 try
                 {
-                    Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+                    assertTrue(latch.await(5, TimeUnit.SECONDS));
                 }
                 catch (InterruptedException e)
                 {
@@ -534,11 +542,11 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
 
         InputStream input = listener.getInputStream();
-        Assert.assertNotNull(input);
+        assertNotNull(input);
         input.close();
 
         latch.countDown();
@@ -563,7 +571,7 @@ public class HttpClientStreamTest extends AbstractTest
 
                 try
                 {
-                    Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+                    assertTrue(latch.await(5, TimeUnit.SECONDS));
                 }
                 catch (InterruptedException e)
                 {
@@ -579,14 +587,14 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
 
         InputStream input = listener.getInputStream();
-        Assert.assertNotNull(input);
+        assertNotNull(input);
 
         for (byte datum1 : data1)
-            Assert.assertEquals(datum1, input.read());
+            assertEquals(datum1, input.read());
 
         input.close();
 
@@ -615,22 +623,22 @@ public class HttpClientStreamTest extends AbstractTest
                 .scheme(getScheme())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
 
         InputStream input = listener.getInputStream();
-        Assert.assertNotNull(input);
+        assertNotNull(input);
 
         for (byte datum : data)
-            Assert.assertEquals(datum, input.read());
+            assertEquals(datum, input.read());
 
         // Read EOF
-        Assert.assertEquals(-1, input.read());
+        assertEquals(-1, input.read());
 
         input.close();
 
         // Must not throw
-        Assert.assertEquals(-1, input.read());
+        assertEquals(-1, input.read());
     }
 
     @Test
@@ -670,7 +678,7 @@ public class HttpClientStreamTest extends AbstractTest
                     content.offer(ByteBuffer.wrap(buffer, 0, read));
             }
         }
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -709,8 +717,8 @@ public class HttpClientStreamTest extends AbstractTest
                             latch.countDown();
                     });
         }
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
-        Assert.assertEquals(1, succeeds.get());
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertEquals(1, succeeds.get());
     }
 
     @Test
@@ -755,7 +763,7 @@ public class HttpClientStreamTest extends AbstractTest
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -837,7 +845,7 @@ public class HttpClientStreamTest extends AbstractTest
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -879,7 +887,7 @@ public class HttpClientStreamTest extends AbstractTest
             output.write(data);
         }
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -907,9 +915,9 @@ public class HttpClientStreamTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertTrue(result.isSucceeded());
-                        Assert.assertEquals(200, result.getResponse().getStatus());
-                        Assert.assertArrayEquals(data, getContent());
+                        assertTrue(result.isSucceeded());
+                        assertEquals(200, result.getResponse().getStatus());
+                        assertArrayEquals(data, getContent());
                         latch.countDown();
                     }
                 });
@@ -929,7 +937,7 @@ public class HttpClientStreamTest extends AbstractTest
             }
         }
 
-        Assert.assertTrue(latch.await(30, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS));
     }
 
     @Test
@@ -953,14 +961,14 @@ public class HttpClientStreamTest extends AbstractTest
         try (OutputStream output = content.getOutputStream())
         {
             output.write(data);
-            Assert.fail();
+            fail();
         }
         catch (IOException x)
         {
             // Expected
         }
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -994,8 +1002,8 @@ public class HttpClientStreamTest extends AbstractTest
                     if (result.isFailed())
                         completeLatch.countDown();
                 });
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(failLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(failLatch.await(5, TimeUnit.SECONDS));
 
         // Make sure that adding more content results in the callback to be failed.
         final CountDownLatch latch = new CountDownLatch(1);
@@ -1007,7 +1015,7 @@ public class HttpClientStreamTest extends AbstractTest
                 latch.countDown();
             }
         });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1034,12 +1042,12 @@ public class HttpClientStreamTest extends AbstractTest
                 .content(content)
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     completeLatch.countDown();
                 });
 
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1076,7 +1084,7 @@ public class HttpClientStreamTest extends AbstractTest
                 {
                     try
                     {
-                        Assert.assertTrue(serverLatch.await(5, TimeUnit.SECONDS));
+                        assertTrue(serverLatch.await(5, TimeUnit.SECONDS));
                         connector.stop();
                         return 0;
                     }
@@ -1107,12 +1115,12 @@ public class HttpClientStreamTest extends AbstractTest
                 .onRequestCommit(request -> commit.set(true))
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     completeLatch.countDown();
                 });
 
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1137,10 +1145,10 @@ public class HttpClientStreamTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send(listener);
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
 
         AsyncContext asyncContext = asyncContextRef.get();
-        Assert.assertNotNull(asyncContext);
+        assertNotNull(asyncContext);
 
         Random random = new Random();
 
@@ -1158,14 +1166,14 @@ public class HttpClientStreamTest extends AbstractTest
         while (totalRead < chunk.length)
         {
             int read = stream.read(buffer);
-            Assert.assertTrue(read > 0);
+            assertTrue(read > 0);
             totalRead += read;
         }
 
         asyncContext.complete();
 
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -1190,9 +1198,9 @@ public class HttpClientStreamTest extends AbstractTest
                 .send(listener);
 
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Result result = listener.await(5, TimeUnit.SECONDS);
-        Assert.assertTrue(result.isSucceeded());
+        assertTrue(result.isSucceeded());
     }
 }

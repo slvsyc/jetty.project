@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -33,15 +35,14 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.LargeEchoDefaultSocket;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test Echo of Large messages, targeting the {@link javax.websocket.WebSocketContainer#setDefaultMaxTextMessageBufferSize(int)} functionality
  */
-@Ignore
+@Disabled
 public class LargeContainerTest
 {
     @Rule
@@ -80,7 +81,7 @@ public class LargeContainerTest
                 String msg = new String(txt,StandardCharsets.UTF_8);
                 clientEcho.sendMessage(msg);
                 LinkedBlockingQueue<String> msgs = clientEcho.incomingMessages;
-                Assert.assertEquals("Expected message",msg,msgs.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT));
+                assertEquals(msg,msgs.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT), "Expected message");
             }
             finally
             {

@@ -18,7 +18,9 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Reader;
 import java.lang.reflect.Field;
@@ -71,8 +73,8 @@ import org.eclipse.jetty.websocket.jsr356.server.samples.primitives.ShortObjectT
 import org.eclipse.jetty.websocket.jsr356.server.samples.primitives.ShortTextSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.ReaderParamSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.StringReturnReaderParamSocket;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -189,17 +191,17 @@ public class ServerAnnotatedEndpointScanner_GoodSignaturesTest
         AnnotatedEndpointScanner<ServerEndpoint, ServerEndpointConfig> scanner = new AnnotatedEndpointScanner<>(metadata);
         scanner.scan();
 
-        Assert.assertThat("Metadata",metadata,notNullValue());
+        assertThat("Metadata",metadata,notNullValue());
 
         JsrCallable method = (JsrCallable)testcase.metadataField.get(metadata);
-        Assert.assertThat(testcase.metadataField.toString(),method,notNullValue());
+        assertThat(testcase.metadataField.toString(),method,notNullValue());
         int len = testcase.expectedParameters.length;
         for (int i = 0; i < len; i++)
         {
             Class<?> expectedParam = testcase.expectedParameters[i];
             Class<?> actualParam = method.getParamTypes()[i];
 
-            Assert.assertTrue("Parameter[" + i + "] - expected:[" + expectedParam + "], actual:[" + actualParam + "]",actualParam.equals(expectedParam));
+            assertTrue(actualParam.equals(expectedParam),"Parameter[" + i + "] - expected:[" + expectedParam + "], actual:[" + actualParam + "]");
         }
     }
 }

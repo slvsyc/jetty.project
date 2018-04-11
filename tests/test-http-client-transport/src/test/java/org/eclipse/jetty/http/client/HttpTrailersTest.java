@@ -38,8 +38,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpTrailersTest extends AbstractTest
 {
@@ -82,8 +82,8 @@ public class HttpTrailersTest extends AbstractTest
 
                 // Now the trailers can be accessed.
                 HttpFields trailers = jettyRequest.getTrailers();
-                Assert.assertNotNull(trailers);
-                Assert.assertEquals(trailerValue, trailers.get(trailerName));
+                assertNotNull(trailers);
+                assertEquals(trailerValue, trailers.get(trailerName));
             }
         });
 
@@ -95,7 +95,7 @@ public class HttpTrailersTest extends AbstractTest
         if (content != null)
             request.method(HttpMethod.POST).content(new BytesContentProvider(content));
         ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class HttpTrailersTest extends AbstractTest
 
                 // Now the trailers can be accessed.
                 HttpFields trailers = jettyRequest.getTrailers();
-                Assert.assertNull(trailers);
+                assertNull(trailers);
             }
         });
 
@@ -127,7 +127,7 @@ public class HttpTrailersTest extends AbstractTest
         HttpRequest request = (HttpRequest)client.newRequest(newURI());
         request = request.trailers(() -> trailers);
         ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -171,8 +171,8 @@ public class HttpTrailersTest extends AbstractTest
                     {
                         HttpResponse httpResponse = (HttpResponse)r;
                         HttpFields trailers = httpResponse.getTrailers();
-                        Assert.assertNotNull(trailers);
-                        Assert.assertEquals(trailerValue, trailers.get(trailerName));
+                        assertNotNull(trailers);
+                        assertEquals(trailerValue, trailers.get(trailerName));
                         failure.set(null);
                     }
                     catch (Throwable x)
@@ -182,8 +182,8 @@ public class HttpTrailersTest extends AbstractTest
                 })
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-        Assert.assertNull(failure.get());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertNull(failure.get());
     }
 
     @Test
@@ -211,7 +211,7 @@ public class HttpTrailersTest extends AbstractTest
                     {
                         HttpResponse httpResponse = (HttpResponse)r;
                         HttpFields trailers = httpResponse.getTrailers();
-                        Assert.assertNull(trailers);
+                        assertNull(trailers);
                         failure.set(null);
                     }
                     catch (Throwable x)
@@ -221,7 +221,7 @@ public class HttpTrailersTest extends AbstractTest
                 })
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-        Assert.assertNull(failure.get());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertNull(failure.get());
     }
 }

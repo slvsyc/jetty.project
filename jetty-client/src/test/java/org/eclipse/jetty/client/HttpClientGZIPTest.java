@@ -18,6 +18,10 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -35,8 +39,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpClientGZIPTest extends AbstractHttpClientServerTest
 {
@@ -67,8 +71,8 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(data, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(data, response.getContent());
     }
 
     @Test
@@ -103,8 +107,8 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
                 .scheme(scheme)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(data, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(data, response.getContent());
     }
 
     @Test
@@ -137,11 +141,11 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
                 .scheme(scheme)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         byte[] expected = Arrays.copyOf(data, 2 * data.length);
         System.arraycopy(data, 0, expected, data.length, data.length);
-        Assert.assertArrayEquals(expected, response.getContent());
+        assertArrayEquals(expected, response.getContent());
     }
 
     @Test
@@ -193,8 +197,8 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
                 .scheme(scheme)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(data, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(data, response.getContent());
     }
 
     @Test
@@ -221,7 +225,7 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
                         latch.countDown();
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     private static void sleep(long ms) throws IOException

@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -36,9 +38,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ConnectionStatisticsTest extends AbstractTest
 {
@@ -97,20 +99,20 @@ public class ConnectionStatisticsTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertThat(response.getStatus(), Matchers.equalTo(HttpStatus.OK_200));
+        assertThat(response.getStatus(), Matchers.equalTo(HttpStatus.OK_200));
 
         closed.await();
         
-        Assert.assertThat(serverStats.getConnectionsMax(), Matchers.greaterThan(0L));
-        Assert.assertThat(serverStats.getReceivedBytes(), Matchers.greaterThan(contentLength));
-        Assert.assertThat(serverStats.getSentBytes(), Matchers.greaterThan(contentLength));
-        Assert.assertThat(serverStats.getReceivedMessages(), Matchers.greaterThan(0L));
-        Assert.assertThat(serverStats.getSentMessages(), Matchers.greaterThan(0L));
+        assertThat(serverStats.getConnectionsMax(), Matchers.greaterThan(0L));
+        assertThat(serverStats.getReceivedBytes(), Matchers.greaterThan(contentLength));
+        assertThat(serverStats.getSentBytes(), Matchers.greaterThan(contentLength));
+        assertThat(serverStats.getReceivedMessages(), Matchers.greaterThan(0L));
+        assertThat(serverStats.getSentMessages(), Matchers.greaterThan(0L));
 
-        Assert.assertThat(clientStats.getConnectionsMax(), Matchers.greaterThan(0L));
-        Assert.assertThat(clientStats.getReceivedBytes(), Matchers.greaterThan(contentLength));
-        Assert.assertThat(clientStats.getSentBytes(), Matchers.greaterThan(contentLength));
-        Assert.assertThat(clientStats.getReceivedMessages(), Matchers.greaterThan(0L));
-        Assert.assertThat(clientStats.getSentMessages(), Matchers.greaterThan(0L));
+        assertThat(clientStats.getConnectionsMax(), Matchers.greaterThan(0L));
+        assertThat(clientStats.getReceivedBytes(), Matchers.greaterThan(contentLength));
+        assertThat(clientStats.getSentBytes(), Matchers.greaterThan(contentLength));
+        assertThat(clientStats.getReceivedMessages(), Matchers.greaterThan(0L));
+        assertThat(clientStats.getSentMessages(), Matchers.greaterThan(0L));
     }
 }

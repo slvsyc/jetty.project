@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.io;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -33,9 +36,9 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.TimerScheduler;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class SelectorManagerTest
@@ -131,8 +134,8 @@ public class SelectorManagerTest
                     latch1.countDown();
                 }
             });
-            Assert.assertTrue(latch1.await(connectTimeout * 3, TimeUnit.MILLISECONDS));
-            Assert.assertFalse(client1.isOpen());
+            assertTrue(latch1.await(connectTimeout * 3, TimeUnit.MILLISECONDS));
+            assertFalse(client1.isOpen());
 
             // Wait for the first connect to finish, as the selector thread is waiting in finishConnect().
             Thread.sleep(timeout);
@@ -152,8 +155,8 @@ public class SelectorManagerTest
                         latch2.countDown();
                     }
                 });
-                Assert.assertTrue(latch2.await(connectTimeout * 5, TimeUnit.MILLISECONDS));
-                Assert.assertTrue(client2.isOpen());
+                assertTrue(latch2.await(connectTimeout * 5, TimeUnit.MILLISECONDS));
+                assertTrue(client2.isOpen());
             }
         }
         finally

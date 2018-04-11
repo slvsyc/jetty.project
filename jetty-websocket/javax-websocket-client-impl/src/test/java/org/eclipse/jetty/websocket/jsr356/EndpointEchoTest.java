@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.jsr356;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 
 import java.net.URI;
@@ -33,10 +34,9 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.websocket.jsr356.samples.EchoStringEndpoint;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class EndpointEchoTest
 {
@@ -45,7 +45,7 @@ public class EndpointEchoTest
     private static EchoHandler handler;
     private static URI serverUri;
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         server = new Server();
@@ -71,7 +71,7 @@ public class EndpointEchoTest
         serverUri = new URI(String.format("ws://%s:%d/",host,port));
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer()
     {
         try
@@ -90,7 +90,7 @@ public class EndpointEchoTest
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         server.addBean(container); // allow to shutdown with server
         EndpointEchoClient echoer = new EndpointEchoClient();
-        Assert.assertThat(echoer,instanceOf(javax.websocket.Endpoint.class));
+        assertThat(echoer,instanceOf(javax.websocket.Endpoint.class));
         // Issue connect using instance of class that extends Endpoint
         Session session = container.connectToServer(echoer,serverUri);
         if (LOG.isDebugEnabled())
@@ -123,7 +123,7 @@ public class EndpointEchoTest
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         server.addBean(container); // allow to shutdown with server
         EchoStringEndpoint echoer = new EchoStringEndpoint();
-        Assert.assertThat(echoer,instanceOf(javax.websocket.Endpoint.class));
+        assertThat(echoer,instanceOf(javax.websocket.Endpoint.class));
         // Issue connect using instance of class that extends abstract that extends Endpoint
         Session session = container.connectToServer(echoer,serverUri);
         if (LOG.isDebugEnabled())

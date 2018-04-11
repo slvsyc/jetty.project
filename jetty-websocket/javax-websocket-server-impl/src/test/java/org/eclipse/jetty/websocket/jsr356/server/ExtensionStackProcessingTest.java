@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.net.URI;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -49,10 +52,10 @@ import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainer
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.BasicEchoEndpoint;
 import org.eclipse.jetty.websocket.server.NativeWebSocketConfiguration;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExtensionStackProcessingTest
 {
@@ -110,22 +113,22 @@ public class ExtensionStackProcessingTest
             @Override
             public void onMessage(String message)
             {
-                Assert.assertEquals(content, message);
+                assertEquals(content, message);
                 messageLatch.countDown();
             }
         }, config, uri);
 
         // Make sure everything is wired properly.
         OutgoingFrames firstOut = ((JsrSession)session).getOutgoingHandler();
-        Assert.assertTrue(firstOut instanceof ExtensionStack);
+        assertTrue(firstOut instanceof ExtensionStack);
         ExtensionStack extensionStack = (ExtensionStack)firstOut;
-        Assert.assertTrue(extensionStack.isRunning());
+        assertTrue(extensionStack.isRunning());
         OutgoingFrames secondOut = extensionStack.getNextOutgoing();
-        Assert.assertTrue(secondOut instanceof DeflateFrameExtension);
+        assertTrue(secondOut instanceof DeflateFrameExtension);
         DeflateFrameExtension deflateExtension = (DeflateFrameExtension)secondOut;
-        Assert.assertTrue(deflateExtension.isRunning());
+        assertTrue(deflateExtension.isRunning());
         OutgoingFrames thirdOut = deflateExtension.getNextOutgoing();
-        Assert.assertTrue(thirdOut instanceof WebSocketClientConnection);
+        assertTrue(thirdOut instanceof WebSocketClientConnection);
 
         final CountDownLatch latch = new CountDownLatch(1);
         session.getAsyncRemote().sendText(content, new SendHandler()
@@ -137,8 +140,8 @@ public class ExtensionStackProcessingTest
             }
         });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(messageLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(messageLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -158,7 +161,7 @@ public class ExtensionStackProcessingTest
             @Override
             public void onMessage(String message)
             {
-                Assert.assertEquals(content, message);
+                assertEquals(content, message);
                 messageLatch.countDown();
             }
         }, config, uri);
@@ -173,8 +176,8 @@ public class ExtensionStackProcessingTest
             }
         });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(messageLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(messageLatch.await(5, TimeUnit.SECONDS));
     }
 
     private static abstract class EndpointAdapter extends Endpoint implements MessageHandler.Whole<String>

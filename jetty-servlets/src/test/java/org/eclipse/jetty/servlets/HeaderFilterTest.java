@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.servlets;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.EnumSet;
 
@@ -33,9 +35,9 @@ import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletTester;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HeaderFilterTest
 {
@@ -71,7 +73,7 @@ public class HeaderFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Frame-Options","DENY"));
+        assertTrue(response.contains("X-Frame-Options","DENY"));
     }
 
     @Test
@@ -88,7 +90,7 @@ public class HeaderFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains("X-Frame-Options","DENY"));
+        assertTrue(response.contains("X-Frame-Options","DENY"));
     }
 
     @Test
@@ -105,7 +107,7 @@ public class HeaderFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains(HttpHeader.EXPIRES));
+        assertTrue(response.contains(HttpHeader.EXPIRES));
     }
 
     @Test
@@ -122,7 +124,7 @@ public class HeaderFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        Assert.assertTrue(response.contains(HttpHeader.EXPIRES));
+        assertTrue(response.contains(HttpHeader.EXPIRES));
     }
 
     public static class NullServlet extends HttpServlet

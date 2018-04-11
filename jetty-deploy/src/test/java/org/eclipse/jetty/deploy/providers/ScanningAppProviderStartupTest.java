@@ -23,7 +23,7 @@ import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests {@link ScanningAppProvider} as it starts up for the first time.

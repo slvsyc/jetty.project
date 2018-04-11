@@ -19,6 +19,9 @@
 package org.eclipse.jetty.client;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,9 +51,9 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
+
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class HttpClientURITest extends AbstractHttpClientServerTest
@@ -73,12 +76,12 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .scheme(scheme)
                 .timeout(5, TimeUnit.SECONDS);
 
-        Assert.assertEquals(host, request.getHost());
+        assertEquals(host, request.getHost());
         StringBuilder uri = new StringBuilder();
         URIUtil.appendSchemeHostPort(uri, scheme, host, connector.getLocalPort());
-        Assert.assertEquals(uri.toString(), request.getURI().toString());
+        assertEquals(uri.toString(), request.getURI().toString());
 
-        Assert.assertEquals(HttpStatus.OK_200, request.send().getStatus());
+        assertEquals(HttpStatus.OK_200, request.send().getStatus());
     }
 
     @Test
@@ -111,7 +114,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                     .send();
 
             HttpField location = response.getHeaders().getField(HttpHeader.LOCATION);
-            Assert.assertEquals(incorrectlyDecoded, location.getValue());
+            assertEquals(incorrectlyDecoded, location.getValue());
 
             expectedException.expect(ExecutionException.class);
             expectedException.expectCause(instanceOf(IllegalArgumentException.class));
@@ -136,7 +139,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(path, request.getRequestURI());
+                assertEquals(path, request.getRequestURI());
             }
         });
 
@@ -145,15 +148,15 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .path(path);
 
-        Assert.assertEquals(path, request.getPath());
-        Assert.assertNull(request.getQuery());
+        assertEquals(path, request.getPath());
+        assertNull(request.getQuery());
         Fields params = request.getParams();
-        Assert.assertEquals(0, params.getSize());
-        Assert.assertTrue(request.getURI().toString().endsWith(path));
+        assertEquals(0, params.getSize());
+        assertTrue(request.getURI().toString().endsWith(path));
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -169,8 +172,8 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(path, request.getRequestURI());
-                Assert.assertEquals(query, request.getQueryString());
+                assertEquals(path, request.getRequestURI());
+                assertEquals(query, request.getQueryString());
             }
         });
 
@@ -180,16 +183,16 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .path(pathQuery);
 
-        Assert.assertEquals(path, request.getPath());
-        Assert.assertEquals(query, request.getQuery());
-        Assert.assertTrue(request.getURI().toString().endsWith(pathQuery));
+        assertEquals(path, request.getPath());
+        assertEquals(query, request.getQuery());
+        assertTrue(request.getURI().toString().endsWith(pathQuery));
         Fields params = request.getParams();
-        Assert.assertEquals(1, params.getSize());
-        Assert.assertEquals(value, params.get(name).getValue());
+        assertEquals(1, params.getSize());
+        assertEquals(value, params.get(name).getValue());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -206,8 +209,8 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(path, request.getRequestURI());
-                Assert.assertEquals(query, request.getQueryString());
+                assertEquals(path, request.getRequestURI());
+                assertEquals(query, request.getQueryString());
             }
         });
 
@@ -217,16 +220,16 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .path(path)
                 .param(name, value);
 
-        Assert.assertEquals(path, request.getPath());
-        Assert.assertEquals(query, request.getQuery());
-        Assert.assertTrue(request.getURI().toString().endsWith(pathQuery));
+        assertEquals(path, request.getPath());
+        assertEquals(query, request.getQuery());
+        assertTrue(request.getURI().toString().endsWith(pathQuery));
         Fields params = request.getParams();
-        Assert.assertEquals(1, params.getSize());
-        Assert.assertEquals(value, params.get(name).getValue());
+        assertEquals(1, params.getSize());
+        assertEquals(value, params.get(name).getValue());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -245,8 +248,8 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(path, request.getRequestURI());
-                Assert.assertEquals(query, request.getQueryString());
+                assertEquals(path, request.getRequestURI());
+                assertEquals(query, request.getQueryString());
             }
         });
 
@@ -256,17 +259,17 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .path(path + "?" + name1 + "=" + value1)
                 .param(name2, value2);
 
-        Assert.assertEquals(path, request.getPath());
-        Assert.assertEquals(query, request.getQuery());
-        Assert.assertTrue(request.getURI().toString().endsWith(pathQuery));
+        assertEquals(path, request.getPath());
+        assertEquals(query, request.getQuery());
+        assertTrue(request.getURI().toString().endsWith(pathQuery));
         Fields params = request.getParams();
-        Assert.assertEquals(2, params.getSize());
-        Assert.assertEquals(value1, params.get(name1).getValue());
-        Assert.assertEquals(value2, params.get(name2).getValue());
+        assertEquals(2, params.getSize());
+        assertEquals(value1, params.get(name1).getValue());
+        assertEquals(value2, params.get(name2).getValue());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -287,10 +290,10 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(path, request.getRequestURI());
-                Assert.assertEquals(query, request.getQueryString());
-                Assert.assertEquals(value1, request.getParameter(name1));
-                Assert.assertEquals(value2, request.getParameter(name2));
+                assertEquals(path, request.getRequestURI());
+                assertEquals(query, request.getQueryString());
+                assertEquals(value1, request.getParameter(name1));
+                assertEquals(value2, request.getParameter(name2));
             }
         });
 
@@ -300,17 +303,17 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .path(path + "?" + name1 + "=" + encodedValue1)
                 .param(name2, value2);
 
-        Assert.assertEquals(path, request.getPath());
-        Assert.assertEquals(query, request.getQuery());
-        Assert.assertTrue(request.getURI().toString().endsWith(pathQuery));
+        assertEquals(path, request.getPath());
+        assertEquals(query, request.getQuery());
+        assertTrue(request.getURI().toString().endsWith(pathQuery));
         Fields params = request.getParams();
-        Assert.assertEquals(2, params.getSize());
-        Assert.assertEquals(value1, params.get(name1).getValue());
-        Assert.assertEquals(value2, params.get(name2).getValue());
+        assertEquals(2, params.getSize());
+        assertEquals(value1, params.get(name1).getValue());
+        assertEquals(value2, params.get(name2).getValue());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -325,8 +328,8 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(path, request.getRequestURI());
-                Assert.assertEquals(query, request.getQueryString());
+                assertEquals(path, request.getRequestURI());
+                assertEquals(query, request.getQueryString());
             }
         });
 
@@ -335,15 +338,15 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .path(pathQuery);
 
-        Assert.assertEquals(path, request.getPath());
-        Assert.assertEquals(query, request.getQuery());
-        Assert.assertTrue(request.getURI().toString().endsWith(pathQuery));
+        assertEquals(path, request.getPath());
+        assertEquals(query, request.getQuery());
+        assertTrue(request.getURI().toString().endsWith(pathQuery));
         Fields params = request.getParams();
-        Assert.assertEquals(0, params.getSize());
+        assertEquals(0, params.getSize());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -358,8 +361,8 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(path, request.getRequestURI());
-                Assert.assertEquals(query, request.getQueryString());
+                assertEquals(path, request.getRequestURI());
+                assertEquals(query, request.getQueryString());
             }
         });
 
@@ -368,15 +371,15 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .path(pathQuery);
 
-        Assert.assertEquals(path, request.getPath());
-        Assert.assertEquals(query, request.getQuery());
-        Assert.assertTrue(request.getURI().toString().endsWith(pathQuery));
+        assertEquals(path, request.getPath());
+        assertEquals(query, request.getQuery());
+        assertTrue(request.getURI().toString().endsWith(pathQuery));
         Fields params = request.getParams();
-        Assert.assertEquals(0, params.getSize());
+        assertEquals(0, params.getSize());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -390,8 +393,8 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(name1, request.getParameter(name1));
-                Assert.assertEquals(name2, request.getParameter(name2));
+                assertEquals(name1, request.getParameter(name1));
+                assertEquals(name2, request.getParameter(name2));
             }
         });
 
@@ -402,7 +405,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -418,19 +421,19 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(rawQuery, request.getQueryString());
-                Assert.assertEquals(value, request.getParameter(name));
+                assertEquals(rawQuery, request.getQueryString());
+                assertEquals(value, request.getParameter(name));
             }
         });
 
         String uri = scheme + "://localhost:" + connector.getLocalPort() + "/path?" + rawQuery;
         Request request = client.newRequest(uri)
                 .timeout(5, TimeUnit.SECONDS);
-        Assert.assertEquals(rawQuery, request.getQuery());
+        assertEquals(rawQuery, request.getQuery());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -446,8 +449,8 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(rawQuery, request.getQueryString());
-                Assert.assertEquals(value, request.getParameter(name));
+                assertEquals(rawQuery, request.getQueryString());
+                assertEquals(value, request.getParameter(name));
             }
         });
 
@@ -455,11 +458,11 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .scheme(scheme)
                 .path("/path?" + rawQuery)
                 .timeout(5, TimeUnit.SECONDS);
-        Assert.assertEquals(rawQuery, request.getQuery());
+        assertEquals(rawQuery, request.getQuery());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -479,9 +482,9 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(query, request.getQueryString());
-                Assert.assertEquals(value1, request.getParameter(name1));
-                Assert.assertEquals(value2, request.getParameter(name2));
+                assertEquals(query, request.getQueryString());
+                assertEquals(value1, request.getParameter(name1));
+                assertEquals(value2, request.getParameter(name2));
             }
         });
 
@@ -490,11 +493,11 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .path("/path?" + rawQuery1)
                 .param(name2, value2)
                 .timeout(5, TimeUnit.SECONDS);
-        Assert.assertEquals(query, request.getQuery());
+        assertEquals(query, request.getQuery());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -514,7 +517,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -534,7 +537,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -546,8 +549,8 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals("*", target);
-                Assert.assertEquals("*", request.getPathInfo());
+                assertEquals("*", target);
+                assertEquals("*", request.getPathInfo());
             }
         });
 
@@ -557,15 +560,15 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
                 .path("*")
                 .timeout(5, TimeUnit.SECONDS);
 
-        Assert.assertEquals("*", request.getPath());
-        Assert.assertNull(request.getQuery());
+        assertEquals("*", request.getPath());
+        assertNull(request.getQuery());
         Fields params = request.getParams();
-        Assert.assertEquals(0, params.getSize());
-        Assert.assertNull(request.getURI());
+        assertEquals(0, params.getSize());
+        assertNull(request.getURI());
 
         ContentResponse response = request.send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     private static class IDNRedirectServer implements Runnable

@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
 import java.io.File;
@@ -62,9 +63,9 @@ import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.ReaderParamSo
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.ReaderSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.StringReturnReaderParamSocket;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -251,7 +252,7 @@ public class EchoTest
         this.testcase = testcase;
     }
 
-    @Test(timeout=2000)
+    @Test
     public void testEcho() throws Exception
     {
         int messageCount = testcase.getMessageCount();
@@ -290,7 +291,7 @@ public class EchoTest
             for (String expected : testcase.expectedStrings)
             {
                 String actual = received.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-                Assert.assertThat("Received Echo Responses",actual,containsString(expected));
+                assertThat("Received Echo Responses",actual,containsString(expected));
             }
         }
         finally

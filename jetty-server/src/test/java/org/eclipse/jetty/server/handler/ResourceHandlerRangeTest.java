@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.server.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -31,12 +34,9 @@ import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.resource.Resource;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.is;
+import org.junit.jupiter.api.Test;
 
 @Ignore("Unfixed range bug - Issue #107")
 public class ResourceHandlerRangeTest
@@ -106,7 +106,7 @@ public class ResourceHandlerRangeTest
             response = IO.toString(is);
         }
 
-        Assert.assertThat("Content Length",contentLength,is(5));
-        Assert.assertThat("Response Content",response,is("56789"));
+        assertThat("Content Length",contentLength,is(5));
+        assertThat("Response Content",response,is("56789"));
     }
 }

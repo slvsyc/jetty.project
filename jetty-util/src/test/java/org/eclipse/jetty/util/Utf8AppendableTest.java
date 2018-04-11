@@ -18,21 +18,21 @@
 
 package org.eclipse.jetty.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.jetty.util.Utf8Appendable.NotUtf8Exception;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -84,30 +84,33 @@ public class Utf8AppendableTest
         assertTrue(buffer.toString().endsWith("jetty"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testUtf8WithMissingByte() throws Exception
     {
-        String source = "abc\u10fb";
-        byte[] bytes = source.getBytes(StandardCharsets.UTF_8);
-        Utf8Appendable buffer = newBuffer();
-        for (int i = 0; i < bytes.length - 1; i++)
-            buffer.append(bytes[i]);
-        buffer.toString();
+        assertThrows(IllegalArgumentException.class, ()-> {
+            String source = "abc\u10fb";
+            byte[] bytes = source.getBytes(StandardCharsets.UTF_8);
+            Utf8Appendable buffer = newBuffer();
+            for (int i = 0; i < bytes.length - 1; i++)
+                buffer.append(bytes[i]);
+            buffer.toString();
+        });
     }
 
-    @Test(expected = Utf8Appendable.NotUtf8Exception.class)
+    @Test
     public void testUtf8WithAdditionalByte() throws Exception
     {
-        String source = "abcXX";
-        byte[] bytes = source.getBytes(StandardCharsets.UTF_8);
-        bytes[3] = (byte)0xc0;
-        bytes[4] = (byte)0x00;
+        assertThrows(Utf8Appendable.NotUtf8Exception.class, () -> {
+            String source = "abcXX";
+            byte[] bytes = source.getBytes(StandardCharsets.UTF_8);
+            bytes[3] = (byte) 0xc0;
+            bytes[4] = (byte) 0x00;
 
-        Utf8Appendable buffer = newBuffer();
-        for (byte aByte : bytes)
-            buffer.append(aByte);
+            Utf8Appendable buffer = newBuffer();
+            for (byte aByte : bytes)
+                buffer.append(aByte);
+        });
     }
-
 
     @Test
     public void testUTF32codes() throws Exception
@@ -141,12 +144,14 @@ public class Utf8AppendableTest
         assertEquals("\u00FC\u00F6\u00E4",buffer.toString());
     }
 
-    @Test(expected = Utf8Appendable.NotUtf8Exception.class)
+    @Test
     public void testInvalidUTF8() throws UnsupportedEncodingException
     {
-        Utf8Appendable buffer = newBuffer();
-        buffer.append((byte)0xC2);
-        buffer.append((byte)0xC2);
+        assertThrows(Utf8Appendable.NotUtf8Exception.class, ()-> {
+            Utf8Appendable buffer = newBuffer();
+            buffer.append((byte) 0xC2);
+            buffer.append((byte) 0xC2);
+        });
     }
     
 
@@ -161,16 +166,11 @@ public class Utf8AppendableTest
         Utf8Appendable buffer = newBuffer();
         // Part 1 is valid
         buffer.append(part1,0,part1.length);
-        try
-        {
+
+        assertThrows(Utf8Appendable.NotUtf8Exception.class, () -> {
             // Part 2 is invalid
             buffer.append(part2,0,part2.length);
-            Assert.fail("Should have thrown a NotUtf8Exception");
-        }
-        catch (Utf8Appendable.NotUtf8Exception e)
-        {
-            // expected path
-        }
+        });
     }
 
     @Test
@@ -184,16 +184,11 @@ public class Utf8AppendableTest
         Utf8Appendable buffer = newBuffer();
         // Part 1 is valid
         buffer.append(part1,0,part1.length);
-        try
-        {
+
+        assertThrows(Utf8Appendable.NotUtf8Exception.class, () -> {
             // Part 2 is invalid
             buffer.append(part2,0,part2.length);
-            Assert.fail("Should have thrown a NotUtf8Exception");
-        }
-        catch (Utf8Appendable.NotUtf8Exception e)
-        {
-            // expected path
-        }
+        });
     }
 
     @Test
@@ -253,38 +248,28 @@ public class Utf8AppendableTest
         assertThat("Seq3",ret3,is("\uC3A4\uC3BC\uC3A0\uC3A1-UTF-8!!"));
     }
     
-    @Test
-    public void testBadUtf8()
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "c0af",
+            "EDA080",
+            "f08080af",
+            "f8808080af",
+            "e080af",
+            "F4908080",
+            "fbbfbfbfbf",
+            "10FFFF",
+            "CeBaE1BdB9Cf83CeBcCeB5EdA080656469746564",
+            // use of UTF-16 High Surrogates (in codepoint form)
+            "da07",
+            "d807",
+            // decoded UTF-16 High Surrogate "\ud807" (in UTF-8 form)
+            "EDA087"
+    })
+    public void testBadUtf8(String hex)
     {
-        List<String> data = new ArrayList<>();
-        data.add("c0af");
-        data.add("EDA080");
-        data.add("f08080af");
-        data.add("f8808080af");
-        data.add("e080af");
-        data.add("F4908080");
-        data.add("fbbfbfbfbf");
-        data.add("10FFFF");
-        data.add("CeBaE1BdB9Cf83CeBcCeB5EdA080656469746564");
-        // use of UTF-16 High Surrogates (in codepoint form)
-        data.add("da07");
-        data.add("d807");
-        // decoded UTF-16 High Surrogate "\ud807" (in UTF-8 form)
-        data.add("EDA087");
-        
-        data.forEach(s->
-        {
-            try
-            {
-                Utf8Appendable utf8 = newBuffer();
-                utf8.append(TypeUtil.fromHexString(s));
-                Assert.fail();
-            }
-            catch(NotUtf8Exception e)
-            {
-                // expected
-            }
+        assertThrows(NotUtf8Exception.class, () -> {
+            Utf8Appendable utf8 = newBuffer();
+            utf8.append(TypeUtil.fromHexString(hex));
         });
-        
     }
 }

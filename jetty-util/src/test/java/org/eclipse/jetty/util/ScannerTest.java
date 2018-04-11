@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.File;
@@ -33,9 +36,9 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.Scanner.Notification;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 
@@ -91,8 +94,8 @@ public class ScannerTest
 
         _scanner.scan();
         
-        Assert.assertTrue(_queue.isEmpty());
-        Assert.assertTrue(_bulk.isEmpty());
+        assertTrue(_queue.isEmpty());
+        assertTrue(_bulk.isEmpty());
     }
 
     @AfterClass
@@ -125,9 +128,9 @@ public class ScannerTest
         _scanner.scan();
         _scanner.scan();
         Event event = _queue.poll();
-        Assert.assertNotNull("Event should not be null", event);
-        Assert.assertEquals(_directory+"/a0",event._filename);
-        Assert.assertEquals(Notification.ADDED,event._notification);
+        assertNotNull(event, "Event should not be null");
+        assertEquals(_directory+"/a0",event._filename);
+        assertEquals(Notification.ADDED,event._notification);
 
         // add 3 more files
         Thread.sleep(1100); // make sure time in seconds changes
@@ -138,7 +141,7 @@ public class ScannerTest
         // not stable after 1 scan so should not be seen yet.
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event==null);
+        assertTrue(event==null);
 
         // Keep a2 unstable and remove a3 before it stabalized
         Thread.sleep(1100); // make sure time in seconds changes
@@ -148,18 +151,18 @@ public class ScannerTest
         // only a1 is stable so it should be seen.
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event!=null);
-        Assert.assertEquals(_directory+"/a1",event._filename);
-        Assert.assertEquals(Notification.ADDED,event._notification);
-        Assert.assertTrue(_queue.isEmpty());
+        assertTrue(event!=null);
+        assertEquals(_directory+"/a1",event._filename);
+        assertEquals(Notification.ADDED,event._notification);
+        assertTrue(_queue.isEmpty());
 
         // Now a2 is stable
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event!=null);
-        Assert.assertEquals(_directory+"/a2",event._filename);
-        Assert.assertEquals(Notification.ADDED,event._notification);
-        Assert.assertTrue(_queue.isEmpty());
+        assertTrue(event!=null);
+        assertEquals(_directory+"/a2",event._filename);
+        assertEquals(Notification.ADDED,event._notification);
+        assertTrue(_queue.isEmpty());
 
         // We never see a3 as it was deleted before it stabalised
 
@@ -170,7 +173,7 @@ public class ScannerTest
         // not stable after 1scan so nothing should not be seen yet.
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event==null);
+        assertTrue(event==null);
 
         // Keep a2 unstable
         Thread.sleep(1100); // make sure time in seconds changes
@@ -179,18 +182,18 @@ public class ScannerTest
         // only a1 is stable so it should be seen.
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event!=null);
-        Assert.assertEquals(_directory+"/a1",event._filename);
-        Assert.assertEquals(Notification.CHANGED,event._notification);
-        Assert.assertTrue(_queue.isEmpty());
+        assertTrue(event!=null);
+        assertEquals(_directory+"/a1",event._filename);
+        assertEquals(Notification.CHANGED,event._notification);
+        assertTrue(_queue.isEmpty());
 
         // Now a2 is stable
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event!=null);
-        Assert.assertEquals(_directory+"/a2",event._filename);
-        Assert.assertEquals(Notification.CHANGED,event._notification);
-        Assert.assertTrue(_queue.isEmpty());
+        assertTrue(event!=null);
+        assertEquals(_directory+"/a2",event._filename);
+        assertEquals(Notification.CHANGED,event._notification);
+        assertTrue(_queue.isEmpty());
 
 
         // delete a1 and a2
@@ -199,7 +202,7 @@ public class ScannerTest
         // not stable after 1scan so nothing should not be seen yet.
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event==null);
+        assertTrue(event==null);
 
         // readd a2
         touch("a2");
@@ -207,18 +210,18 @@ public class ScannerTest
         // only a1 is stable so it should be seen.
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event!=null);
-        Assert.assertEquals(_directory+"/a1",event._filename);
-        Assert.assertEquals(Notification.REMOVED,event._notification);
-        Assert.assertTrue(_queue.isEmpty());
+        assertTrue(event!=null);
+        assertEquals(_directory+"/a1",event._filename);
+        assertEquals(Notification.REMOVED,event._notification);
+        assertTrue(_queue.isEmpty());
 
         // Now a2 is stable and is a changed file rather than a remove
         _scanner.scan();
         event = _queue.poll();
-        Assert.assertTrue(event!=null);
-        Assert.assertEquals(_directory+"/a2",event._filename);
-        Assert.assertEquals(Notification.CHANGED,event._notification);
-        Assert.assertTrue(_queue.isEmpty());
+        assertTrue(event!=null);
+        assertEquals(_directory+"/a2",event._filename);
+        assertEquals(Notification.CHANGED,event._notification);
+        assertTrue(_queue.isEmpty());
 
     }
 
@@ -232,9 +235,9 @@ public class ScannerTest
 
         // takes 2s to notice tsc0 and check that it is stable.  This syncs us with the scan
         Event event = _queue.poll();
-        Assert.assertTrue(event!=null);
-        Assert.assertEquals(_directory+"/tsc0",event._filename);
-        Assert.assertEquals(Notification.ADDED,event._notification);
+        assertTrue(event!=null);
+        assertEquals(_directory+"/tsc0",event._filename);
+        assertEquals(Notification.ADDED,event._notification);
 
 
         // Create a new file by writing to it.
@@ -249,7 +252,7 @@ public class ScannerTest
             // Not stable yet so no notification.
             _scanner.scan();
             event = _queue.poll();
-            Assert.assertTrue(event==null);
+            assertTrue(event==null);
 
             // Modify size only
             out.write('x');
@@ -259,14 +262,14 @@ public class ScannerTest
             // Still not stable yet so no notification.
             _scanner.scan();
             event = _queue.poll();
-            Assert.assertTrue(event==null);
+            assertTrue(event==null);
 
             // now stable so finally see the ADDED
             _scanner.scan();
             event = _queue.poll();
-            Assert.assertTrue(event!=null);
-            Assert.assertEquals(_directory+"/st",event._filename);
-            Assert.assertEquals(Notification.ADDED,event._notification);
+            assertTrue(event!=null);
+            assertEquals(_directory+"/st",event._filename);
+            assertEquals(Notification.ADDED,event._notification);
 
             // Modify size only
             out.write('x');
@@ -277,14 +280,14 @@ public class ScannerTest
             // Still not stable yet so no notification.
             _scanner.scan();
             event = _queue.poll();
-            Assert.assertTrue(event==null);
+            assertTrue(event==null);
 
             // now stable so finally see the ADDED
             _scanner.scan();
             event = _queue.poll();
-            Assert.assertTrue(event!=null);
-            Assert.assertEquals(_directory+"/st",event._filename);
-            Assert.assertEquals(Notification.CHANGED,event._notification);
+            assertTrue(event!=null);
+            assertEquals(_directory+"/st",event._filename);
+            assertEquals(Notification.CHANGED,event._notification);
         }
     }
 

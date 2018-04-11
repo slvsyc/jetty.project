@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.http2.frames;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +32,8 @@ import org.eclipse.jetty.http2.parser.Parser;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.io.MappedByteBufferPool;
 import org.eclipse.jetty.util.BufferUtil;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class DataGenerateParseTest
 {
@@ -60,11 +63,11 @@ public class DataGenerateParseTest
     private void testGenerateParseContent(ByteBuffer content)
     {
         List<DataFrame> frames = testGenerateParse(content);
-        Assert.assertEquals(1, frames.size());
+        assertEquals(1, frames.size());
         DataFrame frame = frames.get(0);
-        Assert.assertTrue(frame.getStreamId() != 0);
-        Assert.assertTrue(frame.isEndStream());
-        Assert.assertEquals(content, frame.getData());
+        assertTrue(frame.getStreamId() != 0);
+        assertTrue(frame.isEndStream());
+        assertEquals(content, frame.getData());
     }
 
     @Test
@@ -72,17 +75,17 @@ public class DataGenerateParseTest
     {
         ByteBuffer content = ByteBuffer.wrap(largeContent);
         List<DataFrame> frames = testGenerateParse(content);
-        Assert.assertEquals(8, frames.size());
+        assertEquals(8, frames.size());
         ByteBuffer aggregate = ByteBuffer.allocate(content.remaining());
         for (int i = 1; i <= frames.size(); ++i)
         {
             DataFrame frame = frames.get(i - 1);
-            Assert.assertTrue(frame.getStreamId() != 0);
-            Assert.assertEquals(i == frames.size(), frame.isEndStream());
+            assertTrue(frame.getStreamId() != 0);
+            assertEquals(i == frames.size(), frame.isEndStream());
             aggregate.put(frame.getData());
         }
         aggregate.flip();
-        Assert.assertEquals(content, aggregate);
+        assertEquals(content, aggregate);
     }
 
     private List<DataFrame> testGenerateParse(ByteBuffer data)
@@ -162,7 +165,7 @@ public class DataGenerateParseTest
                 }
             }
 
-            Assert.assertEquals(largeContent.length, frames.size());
+            assertEquals(largeContent.length, frames.size());
         }
     }
 }

@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -35,8 +37,8 @@ import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTest
 {
@@ -67,10 +69,10 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
                     }
                 })
                 .send(new TestResponseListener());
-        Assert.assertTrue(callbackLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(failureWasAsync.get());
-        Assert.assertTrue(completeWasSync.get());
+        assertTrue(callbackLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(failureWasAsync.get());
+        assertTrue(completeWasSync.get());
     }
 
     @Test
@@ -90,10 +92,10 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
                     }
                 })
                 .send(new TestResponseListener());
-        Assert.assertTrue(callbackLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(failureWasAsync.get());
-        Assert.assertTrue(completeWasSync.get());
+        assertTrue(callbackLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(failureWasAsync.get());
+        assertTrue(completeWasSync.get());
     }
 
     @Test
@@ -112,10 +114,10 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
                     }
                 })
                 .send(new TestResponseListener());
-        Assert.assertTrue(callbackLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(failureWasAsync.get());
-        Assert.assertTrue(completeWasSync.get());
+        assertTrue(callbackLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(failureWasAsync.get());
+        assertTrue(completeWasSync.get());
     }
 
     @Test
@@ -144,10 +146,10 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
                     }
                 })
                 .send(new TestResponseListener());
-        Assert.assertTrue(callbackLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(failureWasAsync.get());
-        Assert.assertTrue(completeWasSync.get());
+        assertTrue(callbackLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(failureWasAsync.get());
+        assertTrue(completeWasSync.get());
     }
 
     private void abort(final Response response)
@@ -192,7 +194,7 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
         @Override
         public void onComplete(Result result)
         {
-            Assert.assertTrue(result.isFailed());
+            assertTrue(result.isFailed());
             completeLatch.countDown();
         }
     }

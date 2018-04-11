@@ -18,6 +18,13 @@
 
 package org.eclipse.jetty.client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -38,9 +45,7 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpCookieTest extends AbstractHttpClientServerTest
 {
@@ -70,14 +75,14 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         String path = "/path";
         String uri = scheme + "://" + host + ":" + port + path;
         Response response = client.GET(uri);
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         List<HttpCookie> cookies = client.getCookieStore().get(URI.create(uri));
-        Assert.assertNotNull(cookies);
-        Assert.assertEquals(1, cookies.size());
+        assertNotNull(cookies);
+        assertEquals(1, cookies.size());
         HttpCookie cookie = cookies.get(0);
-        Assert.assertEquals(name, cookie.getName());
-        Assert.assertEquals(value, cookie.getValue());
+        assertEquals(name, cookie.getName());
+        assertEquals(value, cookie.getValue());
     }
 
     @Test
@@ -91,11 +96,11 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 Cookie[] cookies = request.getCookies();
-                Assert.assertNotNull(cookies);
-                Assert.assertEquals(1, cookies.length);
+                assertNotNull(cookies);
+                assertEquals(1, cookies.length);
                 Cookie cookie = cookies[0];
-                Assert.assertEquals(name, cookie.getName());
-                Assert.assertEquals(value, cookie.getValue());
+                assertEquals(name, cookie.getName());
+                assertEquals(value, cookie.getValue());
             }
         });
 
@@ -107,7 +112,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         client.getCookieStore().add(URI.create(uri), cookie);
 
         Response response = client.GET(scheme + "://" + host + ":" + port + path);
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -125,8 +130,8 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
                 .scheme(scheme)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(client.getCookieStore().getCookies().isEmpty());
+        assertEquals(200, response.getStatus());
+        assertTrue(client.getCookieStore().getCookies().isEmpty());
     }
 
     @Test
@@ -140,11 +145,11 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 Cookie[] cookies = request.getCookies();
-                Assert.assertNotNull(cookies);
-                Assert.assertEquals(1, cookies.length);
+                assertNotNull(cookies);
+                assertEquals(1, cookies.length);
                 Cookie cookie = cookies[0];
-                Assert.assertEquals(name, cookie.getName());
-                Assert.assertEquals(value, cookie.getValue());
+                assertEquals(name, cookie.getName());
+                assertEquals(value, cookie.getValue());
             }
         });
 
@@ -153,7 +158,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .cookie(new HttpCookie(name, value))
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -181,13 +186,13 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                         case "/":
                         case "/foo":
                         case "/foo/bar":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie.getName());
-                            Assert.assertEquals(target, cookieValue, cookie.getValue());
+                            assertEquals(cookieName, cookie.getName(), target);
+                            assertEquals(cookieValue, cookie.getValue(), target);
                             break;
                         default:
-                            Assert.fail();
+                            fail("Unrecognized target: " + target);
                     }
                 }
             }
@@ -198,7 +203,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Arrays.asList("/", "/foo", "/foo/bar").forEach(path ->
         {
@@ -207,7 +212,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
-            Assert.assertEquals(HttpStatus.OK_200, r.getStatus());
+            assertEquals(HttpStatus.OK_200, r.getStatus());
         });
     }
 
@@ -236,18 +241,18 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                         case "/":
                         case "/foo":
                         case "/foobar":
-                            Assert.assertEquals(target, 0, cookies.length);
+                            assertEquals(0, cookies.length, target);
                             break;
                         case "/foo/":
                         case "/foo/bar":
                         case "/foo/bar/baz":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie.getName());
-                            Assert.assertEquals(target, cookieValue, cookie.getValue());
+                            assertEquals(cookieName, cookie.getName(), target);
+                            assertEquals(cookieValue, cookie.getValue(), target);
                             break;
                         default:
-                            Assert.fail();
+                            fail("Unrecognized Target: " + target);
                     }
                 }
             }
@@ -258,7 +263,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .path("/foo/bar")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Arrays.asList("/", "/foo", "/foo/", "/foobar", "/foo/bar", "/foo/bar/baz").forEach(path ->
         {
@@ -267,7 +272,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
-            Assert.assertEquals(HttpStatus.OK_200, r.getStatus());
+            assertEquals(HttpStatus.OK_200, r.getStatus());
         });
     }
 
@@ -297,17 +302,17 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                         case "/":
                         case "/foo":
                         case "/foo/barbaz":
-                            Assert.assertEquals(target, 0, cookies.length);
+                            assertEquals(0, cookies.length, target);
                             break;
                         case "/foo/bar":
                         case "/foo/bar/":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie.getName());
-                            Assert.assertEquals(target, cookieValue, cookie.getValue());
+                            assertEquals(cookieName, cookie.getName(), target);
+                            assertEquals(cookieValue, cookie.getValue(), target);
                             break;
                         default:
-                            Assert.fail();
+                            fail("Unrecognized Target: " + target);
                     }
                 }
             }
@@ -318,7 +323,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Arrays.asList("/", "/foo", "/foo/bar", "/foo/bar/", "/foo/barbaz").forEach(path ->
         {
@@ -327,7 +332,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
-            Assert.assertEquals(HttpStatus.OK_200, r.getStatus());
+            assertEquals(HttpStatus.OK_200, r.getStatus());
         });
     }
 
@@ -356,18 +361,18 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     {
                         case "/":
                         case "/foobar":
-                            Assert.assertEquals(target, 0, cookies.length);
+                            assertEquals(0, cookies.length, target);
                             break;
                         case "/foo":
                         case "/foo/":
                         case "/foo/bar":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie.getName());
-                            Assert.assertEquals(target, cookieValue, cookie.getValue());
+                            assertEquals(cookieName, cookie.getName(), target);
+                            assertEquals(cookieValue, cookie.getValue(), target);
                             break;
                         default:
-                            Assert.fail();
+                            fail("Unrecognized Target: " + target);
                     }
                 }
             }
@@ -378,7 +383,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .path("/foo/bar")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Arrays.asList("/", "/foo", "/foo/", "/foobar", "/foo/bar").forEach(path ->
         {
@@ -387,7 +392,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
-            Assert.assertEquals(HttpStatus.OK_200, r.getStatus());
+            assertEquals(HttpStatus.OK_200, r.getStatus());
         });
     }
 
@@ -419,17 +424,17 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     switch (target)
                     {
                         case "/":
-                            Assert.assertEquals(target, 0, cookies.length);
+                            assertEquals(0, cookies.length, target);
                             break;
                         case "/foo":
                         case "/foo/bar":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie.getName());
-                            Assert.assertEquals(target, cookieValue2, cookie.getValue());
+                            assertEquals(cookieName, cookie.getName(), target);
+                            assertEquals(cookieValue2, cookie.getValue(), target);
                             break;
                         default:
-                            Assert.fail();
+                            fail("Unrecognized Target: " + target);
                     }
                 }
             }
@@ -440,7 +445,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Arrays.asList("/", "/foo", "/foo/bar").forEach(path ->
         {
@@ -449,7 +454,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
-            Assert.assertEquals(HttpStatus.OK_200, r.getStatus());
+            assertEquals(HttpStatus.OK_200, r.getStatus());
         });
     }
 
@@ -481,24 +486,24 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     switch (target)
                     {
                         case "/":
-                            Assert.assertEquals(target, 0, cookies.length);
+                            assertEquals(0, cookies.length, target);
                             break;
                         case "/foo":
                         case "/foo/bar":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie1 = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie1.getName());
-                            Assert.assertEquals(target, cookieValue1, cookie1.getValue());
+                            assertEquals(cookieName, cookie1.getName(), target);
+                            assertEquals(cookieValue1, cookie1.getValue(), target);
                             break;
                         case "/bar":
                         case "/bar/foo":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie2 = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie2.getName());
-                            Assert.assertEquals(target, cookieValue2, cookie2.getValue());
+                            assertEquals(cookieName, cookie2.getName(), target);
+                            assertEquals(cookieValue2, cookie2.getValue(), target);
                             break;
                         default:
-                            Assert.fail();
+                            fail("Unrecognized Target: " + target);
                     }
                 }
             }
@@ -509,7 +514,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Arrays.asList("/", "/foo", "/foo/bar", "/bar", "/bar/foo").forEach(path ->
         {
@@ -518,7 +523,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
-            Assert.assertEquals(HttpStatus.OK_200, r.getStatus());
+            assertEquals(HttpStatus.OK_200, r.getStatus());
         });
     }
 
@@ -550,27 +555,27 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     switch (target)
                     {
                         case "/":
-                            Assert.assertEquals(target, 0, cookies.length);
+                            assertEquals(0, cookies.length, target);
                             break;
                         case "/foo":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie.getName());
-                            Assert.assertEquals(target, cookieValue1, cookie.getValue());
+                            assertEquals(cookieName, cookie.getName(), target);
+                            assertEquals(cookieValue1, cookie.getValue(), target);
                             break;
                         case "/foo/bar":
-                            Assert.assertEquals(target, 2, cookies.length);
+                            assertEquals(2, cookies.length, target);
                             Cookie cookie1 = cookies[0];
                             Cookie cookie2 = cookies[1];
-                            Assert.assertEquals(target, cookieName, cookie1.getName());
-                            Assert.assertEquals(target, cookieName, cookie2.getName());
+                            assertEquals(cookieName, cookie1.getName(), target);
+                            assertEquals(cookieName, cookie2.getName(), target);
                             Set<String> values = new HashSet<>();
                             values.add(cookie1.getValue());
                             values.add(cookie2.getValue());
-                            Assert.assertThat(target, values, Matchers.containsInAnyOrder(cookieValue1, cookieValue2));
+                            assertThat(target, values, containsInAnyOrder(cookieValue1, cookieValue2));
                             break;
                         default:
-                            Assert.fail();
+                            fail("Unrecognized Target: " + target);
                     }
                 }
             }
@@ -581,7 +586,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Arrays.asList("/", "/foo", "/foo/bar").forEach(path ->
         {
@@ -590,7 +595,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
-            Assert.assertEquals(HttpStatus.OK_200, r.getStatus());
+            assertEquals(HttpStatus.OK_200, r.getStatus());
         });
     }
 
@@ -620,17 +625,17 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                         case "/":
                         case "/foo":
                         case "/foobar":
-                            Assert.assertEquals(target, 0, cookies.length);
+                            assertEquals(0, cookies.length, target);
                             break;
                         case "/foo/":
                         case "/foo/bar":
-                            Assert.assertEquals(target, 1, cookies.length);
+                            assertEquals(1, cookies.length, target);
                             Cookie cookie = cookies[0];
-                            Assert.assertEquals(target, cookieName, cookie.getName());
-                            Assert.assertEquals(target, cookieValue, cookie.getValue());
+                            assertEquals(cookieName, cookie.getName(), target);
+                            assertEquals(cookieValue, cookie.getValue(), target);
                             break;
                         default:
-                            Assert.fail();
+                            fail("Unrecognized Target: " + target);
                     }
                 }
             }
@@ -641,7 +646,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                 .path("/foo/bar")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         Arrays.asList("/", "/foo", "/foo/", "/foobar", "/foo/bar").forEach(path ->
         {
@@ -650,7 +655,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
-            Assert.assertEquals(HttpStatus.OK_200, r.getStatus());
+            assertEquals(HttpStatus.OK_200, r.getStatus());
         });
     }
 

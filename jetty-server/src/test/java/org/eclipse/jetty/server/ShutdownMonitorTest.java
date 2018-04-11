@@ -18,8 +18,9 @@
 
 package org.eclipse.jetty.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -31,8 +32,8 @@ import java.net.Socket;
 
 import org.eclipse.jetty.util.thread.ShutdownThread;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class ShutdownMonitorTest
 {
@@ -67,7 +68,7 @@ public class ShutdownMonitorTest
                 String reply = input.readLine();
                 assertEquals("OK", reply);
                 // Socket must be closed afterwards.
-                Assert.assertNull(input.readLine());
+                assertNull(input.readLine());
             }
         }
     }

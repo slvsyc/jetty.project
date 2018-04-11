@@ -18,6 +18,13 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,9 +59,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class HttpClientContinueTest extends AbstractTest
@@ -96,8 +103,8 @@ public class HttpClientContinueTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
 
         int index = 0;
         byte[] responseContent = response.getContent();
@@ -105,7 +112,7 @@ public class HttpClientContinueTest extends AbstractTest
         {
             for (byte b : content)
             {
-                Assert.assertEquals(b, responseContent[index++]);
+                assertEquals(b, responseContent[index++]);
             }
         }
     }
@@ -142,15 +149,15 @@ public class HttpClientContinueTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
 
         int index = 0;
         byte[] responseContent = response.getContent();
         for (byte b : content1)
-            Assert.assertEquals(b, responseContent[index++]);
+            assertEquals(b, responseContent[index++]);
         for (byte b : content2)
-            Assert.assertEquals(b, responseContent[index++]);
+            assertEquals(b, responseContent[index++]);
     }
 
     @Test
@@ -188,18 +195,18 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertTrue(result.isFailed());
-                        Assert.assertNotNull(result.getRequestFailure());
-                        Assert.assertNull(result.getResponseFailure());
+                        assertTrue(result.isFailed());
+                        assertNotNull(result.getRequestFailure());
+                        assertNull(result.getResponseFailure());
                         byte[] content = getContent();
-                        Assert.assertNotNull(content);
-                        Assert.assertTrue(content.length > 0);
-                        Assert.assertEquals(error, result.getResponse().getStatus());
+                        assertNotNull(content);
+                        assertTrue(content.length > 0);
+                        assertEquals(error, result.getResponse().getStatus());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -238,14 +245,14 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertFalse(result.isFailed());
-                        Assert.assertEquals(200, result.getResponse().getStatus());
-                        Assert.assertEquals(data, getContentAsString());
+                        assertFalse(result.isFailed());
+                        assertEquals(200, result.getResponse().getStatus());
+                        assertEquals(data, getContentAsString());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -286,15 +293,15 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertTrue(result.isFailed());
-                        Assert.assertNotNull(result.getRequestFailure());
-                        Assert.assertNull(result.getResponseFailure());
-                        Assert.assertEquals(302, result.getResponse().getStatus());
+                        assertTrue(result.isFailed());
+                        assertNotNull(result.getRequestFailure());
+                        assertNull(result.getResponseFailure());
+                        assertEquals(302, result.getResponse().getStatus());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -331,14 +338,14 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertTrue(result.isFailed());
-                        Assert.assertNotNull(result.getRequestFailure());
-                        Assert.assertNotNull(result.getResponseFailure());
+                        assertTrue(result.isFailed());
+                        assertNotNull(result.getRequestFailure());
+                        assertNotNull(result.getResponseFailure());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(3 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(3 * idleTimeout, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -377,14 +384,14 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertTrue(result.isFailed());
-                        Assert.assertNull(result.getRequestFailure());
-                        Assert.assertNotNull(result.getResponseFailure());
+                        assertTrue(result.isFailed());
+                        assertNull(result.getRequestFailure());
+                        assertNotNull(result.getResponseFailure());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(3 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(3 * idleTimeout, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -435,14 +442,14 @@ public class HttpClientContinueTest extends AbstractTest
             @Override
             public void onComplete(Result result)
             {
-                Assert.assertTrue(result.isFailed());
-                Assert.assertNotNull(result.getRequestFailure());
-                Assert.assertNotNull(result.getResponseFailure());
+                assertTrue(result.isFailed());
+                assertNotNull(result.getRequestFailure());
+                assertNotNull(result.getResponseFailure());
                 latch.countDown();
             }
         });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -476,7 +483,7 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertArrayEquals(data, getContent());
+                        assertArrayEquals(data, getContent());
                         latch.countDown();
                     }
                 });
@@ -490,7 +497,7 @@ public class HttpClientContinueTest extends AbstractTest
         content.offer(ByteBuffer.wrap(chunk2));
         content.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -524,7 +531,7 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertArrayEquals(data, getContent());
+                        assertArrayEquals(data, getContent());
                         latch.countDown();
                     }
                 });
@@ -534,7 +541,7 @@ public class HttpClientContinueTest extends AbstractTest
         content.offer(ByteBuffer.wrap(chunk2));
         content.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -568,12 +575,12 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertArrayEquals(data, getContent());
+                        assertArrayEquals(data, getContent());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -625,12 +632,12 @@ public class HttpClientContinueTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertArrayEquals(data, getContent());
+                        assertArrayEquals(data, getContent());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -654,8 +661,8 @@ public class HttpClientContinueTest extends AbstractTest
                     .content(new BytesContentProvider(new byte[]{0}))
                     .send(result ->
                     {
-                        Assert.assertTrue(result.toString(), result.isSucceeded());
-                        Assert.assertEquals(200, result.getResponse().getStatus());
+                        assertTrue(result.isSucceeded(), result.toString());
+                        assertEquals(200, result.getResponse().getStatus());
                         latch.countDown();
                     });
 
@@ -697,7 +704,7 @@ public class HttpClientContinueTest extends AbstractTest
                 output.write(content.getBytes(StandardCharsets.UTF_8));
                 output.flush();
 
-                Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+                assertTrue(latch.await(5, TimeUnit.SECONDS));
             }
         }
     }
@@ -725,7 +732,7 @@ public class HttpClientContinueTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-        Assert.assertArrayEquals(bytes, response.getContent());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertArrayEquals(bytes, response.getContent());
     }
 }

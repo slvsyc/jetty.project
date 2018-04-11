@@ -34,6 +34,8 @@ package org.eclipse.jetty.test.support;
 //========================================================================
 //
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
@@ -54,7 +56,7 @@ import org.eclipse.jetty.toolchain.test.JAR;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.PathAssert;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Assert;
+
 
 /**
  * Basic process based executor for using the Jetty Distribution along with custom configurations to perform basic
@@ -212,7 +214,7 @@ import org.junit.Assert;
  *         SimpleRequest request = new SimpleRequest(jetty.getBaseUri());
  *         String path = &quot;/test-war-policy/security/PRACTICAL/testFilsystem&quot;);
  *         String response = request.getString(path);
- *         Assert.assertEquals(&quot;Success&quot;, response);
+ *         assertEquals(&quot;Success&quot;, response);
  *     }
  * }
  * </pre>
@@ -548,7 +550,7 @@ public class JettyDistro
 
         if (cmdLine == null || !cmdLine.contains("XmlConfiguration"))
         {
-            Assert.fail("Unable to get Jetty command line");
+            fail("Unable to get Jetty command line");
         }
 
         // Need to breakdown commandline into parts, as spaces in command line will cause failures.
@@ -593,7 +595,7 @@ public class JettyDistro
         catch (InterruptedException e)
         {
             pid.destroy();
-            Assert.fail("Unable to get required information within time limit");
+            fail("Unable to get required information within time limit");
         }
     }
 
@@ -802,7 +804,7 @@ public class JettyDistro
             }
         }
 
-        Assert.fail("Unable to find java bin");
+        fail("Unable to find java bin");
         return "java";
     }
 

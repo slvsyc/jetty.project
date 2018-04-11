@@ -18,6 +18,10 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -63,8 +67,8 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
 {
@@ -168,9 +172,9 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
         // Request without Authentication causes a 401
         Request request = client.newRequest("localhost", connector.getLocalPort()).scheme(scheme).path("/secure");
         ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(401, response.getStatus());
-        Assert.assertTrue(requests.get().await(5, TimeUnit.SECONDS));
+        assertNotNull(response);
+        assertEquals(401, response.getStatus());
+        assertTrue(requests.get().await(5, TimeUnit.SECONDS));
         client.getRequestListeners().remove(requestListener);
 
         authenticationStore.addAuthentication(authentication);
@@ -189,9 +193,9 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
         // Request with authentication causes a 401 (no previous successful authentication) + 200
         request = client.newRequest("localhost", connector.getLocalPort()).scheme(scheme).path("/secure");
         response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(requests.get().await(5, TimeUnit.SECONDS));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertTrue(requests.get().await(5, TimeUnit.SECONDS));
         client.getRequestListeners().remove(requestListener);
 
         requests.set(new CountDownLatch(1));
@@ -209,9 +213,9 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
         // Remove existing header to be sure it's added by the implementation
         request = client.newRequest("localhost", connector.getLocalPort()).scheme(scheme).path("/secure");
         response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(requests.get().await(5, TimeUnit.SECONDS));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertTrue(requests.get().await(5, TimeUnit.SECONDS));
         client.getRequestListeners().remove(requestListener);
     }
 
@@ -250,9 +254,9 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
                 .path("/secure")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(requests.await(5, TimeUnit.SECONDS));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertTrue(requests.await(5, TimeUnit.SECONDS));
         client.getRequestListeners().remove(requestListener);
     }
 
@@ -289,9 +293,9 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
                 .path("/redirect")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(requests.await(5, TimeUnit.SECONDS));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertTrue(requests.await(5, TimeUnit.SECONDS));
         client.getRequestListeners().remove(requestListener);
     }
 
@@ -318,29 +322,29 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
 
         Request request = client.newRequest("localhost", connector.getLocalPort()).scheme(scheme).path("/secure");
         ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(requests.get().await(5, TimeUnit.SECONDS));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertTrue(requests.get().await(5, TimeUnit.SECONDS));
 
         authenticationStore.removeAuthentication(authentication);
 
         requests.set(new CountDownLatch(1));
         request = client.newRequest("localhost", connector.getLocalPort()).scheme(scheme).path("/secure");
         response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(requests.get().await(5, TimeUnit.SECONDS));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertTrue(requests.get().await(5, TimeUnit.SECONDS));
 
         Authentication.Result result = authenticationStore.findAuthenticationResult(request.getURI());
-        Assert.assertNotNull(result);
+        assertNotNull(result);
         authenticationStore.removeAuthenticationResult(result);
 
         requests.set(new CountDownLatch(1));
         request = client.newRequest("localhost", connector.getLocalPort()).scheme(scheme).path("/secure");
         response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(401, response.getStatus());
-        Assert.assertTrue(requests.get().await(5, TimeUnit.SECONDS));
+        assertNotNull(response);
+        assertEquals(401, response.getStatus());
+        assertTrue(requests.get().await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -355,8 +359,8 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
 
         Request request = client.newRequest("localhost", connector.getLocalPort()).scheme(scheme).path("/secure");
         ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(401, response.getStatus());
+        assertNotNull(response);
+        assertEquals(401, response.getStatus());
     }
 
     @Test
@@ -393,13 +397,13 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertTrue(result.isFailed());
-                        Assert.assertEquals(cause, result.getFailure().getMessage());
+                        assertTrue(result.isFailed());
+                        assertEquals(cause, result.getFailure().getMessage());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -427,8 +431,8 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(1, requests.get());
+        assertEquals(200, response.getStatus());
+        assertEquals(1, requests.get());
     }
 
     @Test
@@ -462,7 +466,7 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
 
         content.close();
 
-        Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
     
@@ -554,7 +558,7 @@ public class HttpClientAuthenticationTest extends AbstractHttpClientServerTest
                         resultLatch.countDown();
                 });
 
-        Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
     private static class GeneratingContentProvider implements ContentProvider

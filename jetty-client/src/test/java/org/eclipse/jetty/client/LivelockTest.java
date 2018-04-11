@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.channels.Selector;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +38,9 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -147,7 +149,7 @@ public class LivelockTest
                     });
             sleep(pause);
         }
-        Assert.assertTrue(latch.await(2 * pause * count, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(2 * pause * count, TimeUnit.MILLISECONDS));
 
         // Exit the livelocks.
         busy.set(false);

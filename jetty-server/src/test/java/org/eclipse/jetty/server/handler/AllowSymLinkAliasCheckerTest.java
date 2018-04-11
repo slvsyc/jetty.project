@@ -18,10 +18,12 @@
 
 package org.eclipse.jetty.server.handler;
 
+import static java.time.Duration.ofSeconds;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeNoException;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +44,7 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.resource.PathResource;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -193,7 +195,7 @@ public class AllowSymLinkAliasCheckerTest
     {
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testAccess() throws Exception
     {
         HttpTester.Request request = HttpTester.newRequest();
@@ -202,9 +204,11 @@ public class AllowSymLinkAliasCheckerTest
         request.setHeader("Host", "tester");
         request.setURI(requestURI);
 
-        String responseString = localConnector.getResponse(BufferUtil.toString(request.generate()));
-        assertThat("Response status code", responseString, startsWith("HTTP/1.1 " + expectedResponseStatus + " "));
-        assertThat("Response Content-Type", responseString, containsString("\nContent-Type: " + expectedResponseContentType));
-        assertThat("Response", responseString, containsString(expectedResponseContentContains));
+        assertTimeoutPreemptively(ofSeconds(5), ()-> {
+            String responseString = localConnector.getResponse(BufferUtil.toString(request.generate()));
+            assertThat("Response status code", responseString, startsWith("HTTP/1.1 " + expectedResponseStatus + " "));
+            assertThat("Response Content-Type", responseString, containsString("\nContent-Type: " + expectedResponseContentType));
+            assertThat("Response", responseString, containsString(expectedResponseContentContains));
+        });
     }
 }

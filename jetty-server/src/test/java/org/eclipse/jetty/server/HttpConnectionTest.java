@@ -24,9 +24,10 @@
  */
 package org.eclipse.jetty.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,9 +56,8 @@ import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpConnectionTest
 {
@@ -721,8 +721,7 @@ public class HttpConnectionTest
 
         long start=TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
         String response = connector.getResponse(requests, 2000, TimeUnit.MILLISECONDS);
-        if ((TimeUnit.NANOSECONDS.toMillis(System.nanoTime())-start)>=2000)
-            Assert.fail();
+        assertThat(TimeUnit.NANOSECONDS.toMillis(System.nanoTime())-start, lessThanOrEqualTo(2000L));
 
         offset = checkContains(response,offset,"HTTP/1.1 200");
         offset = checkContains(response,offset,"pathInfo=/R1");
@@ -1035,12 +1034,12 @@ public class HttpConnectionTest
 
     private int checkContains(String s,int offset,String c)
     {
-        Assert.assertThat(s.substring(offset),Matchers.containsString(c));
+        assertThat(s.substring(offset),Matchers.containsString(c));
         return s.indexOf(c,offset);
     }
 
     private void checkNotContained(String s,int offset,String c)
     {
-        Assert.assertThat(s.substring(offset),Matchers.not(Matchers.containsString(c)));
+        assertThat(s.substring(offset),Matchers.not(Matchers.containsString(c)));
     }
 }

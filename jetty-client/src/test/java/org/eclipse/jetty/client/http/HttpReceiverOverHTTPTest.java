@@ -18,6 +18,15 @@
 
 package org.eclipse.jetty.client.http;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.EOFException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -41,9 +50,9 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.ByteArrayEndPoint;
 import org.eclipse.jetty.util.Promise;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -93,7 +102,7 @@ public class HttpReceiverOverHTTPTest
         FutureResponseListener listener = new FutureResponseListener(request);
         HttpExchange exchange = new HttpExchange(destination, request, Collections.<Response.ResponseListener>singletonList(listener));
         boolean associated = connection.getHttpChannel().associate(exchange);
-        Assert.assertTrue(associated);
+        assertTrue(associated);
         exchange.requestComplete(null);
         exchange.terminateRequest();
         return exchange;
@@ -111,14 +120,14 @@ public class HttpReceiverOverHTTPTest
         connection.getHttpChannel().receive();
 
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("OK", response.getReason());
-        Assert.assertSame(HttpVersion.HTTP_1_1, response.getVersion());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertEquals("OK", response.getReason());
+        assertSame(HttpVersion.HTTP_1_1, response.getVersion());
         HttpFields headers = response.getHeaders();
-        Assert.assertNotNull(headers);
-        Assert.assertEquals(1, headers.size());
-        Assert.assertEquals("0", headers.get(HttpHeader.CONTENT_LENGTH));
+        assertNotNull(headers);
+        assertEquals(1, headers.size());
+        assertEquals("0", headers.get(HttpHeader.CONTENT_LENGTH));
     }
 
     @Test
@@ -135,16 +144,16 @@ public class HttpReceiverOverHTTPTest
         connection.getHttpChannel().receive();
 
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals("OK", response.getReason());
-        Assert.assertSame(HttpVersion.HTTP_1_1, response.getVersion());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertEquals("OK", response.getReason());
+        assertSame(HttpVersion.HTTP_1_1, response.getVersion());
         HttpFields headers = response.getHeaders();
-        Assert.assertNotNull(headers);
-        Assert.assertEquals(1, headers.size());
-        Assert.assertEquals(String.valueOf(content.length()), headers.get(HttpHeader.CONTENT_LENGTH));
+        assertNotNull(headers);
+        assertEquals(1, headers.size());
+        assertEquals(String.valueOf(content.length()), headers.get(HttpHeader.CONTENT_LENGTH));
         String received = listener.getContentAsString(StandardCharsets.UTF_8);
-        Assert.assertEquals(content, received);
+        assertEquals(content, received);
     }
 
     @Test
@@ -163,15 +172,8 @@ public class HttpReceiverOverHTTPTest
         endPoint.addInputEOF();
         connection.getHttpChannel().receive();
 
-        try
-        {
-            listener.get(5, TimeUnit.SECONDS);
-            Assert.fail();
-        }
-        catch (ExecutionException e)
-        {
-            Assert.assertTrue(e.getCause() instanceof EOFException);
-        }
+        ExecutionException e = assertThrows(ExecutionException.class, ()->listener.get(5, TimeUnit.SECONDS));
+        assertThat(e.getCause(), instanceOf(EOFException.class));
     }
 
     @Test
@@ -189,15 +191,8 @@ public class HttpReceiverOverHTTPTest
         Thread.sleep(100);
         connection.onIdleExpired();
 
-        try
-        {
-            listener.get(5, TimeUnit.SECONDS);
-            Assert.fail();
-        }
-        catch (ExecutionException e)
-        {
-            Assert.assertTrue(e.getCause() instanceof TimeoutException);
-        }
+        ExecutionException e = assertThrows(ExecutionException.class, ()->listener.get(5, TimeUnit.SECONDS));
+        assertThat(e.getCause(), instanceOf(TimeoutException.class));
     }
 
     @Test
@@ -211,15 +206,8 @@ public class HttpReceiverOverHTTPTest
         FutureResponseListener listener = (FutureResponseListener)exchange.getResponseListeners().get(0);
         connection.getHttpChannel().receive();
 
-        try
-        {
-            listener.get(5, TimeUnit.SECONDS);
-            Assert.fail();
-        }
-        catch (ExecutionException e)
-        {
-            Assert.assertTrue(e.getCause() instanceof HttpResponseException);
-        }
+        ExecutionException e = assertThrows(ExecutionException.class, ()->listener.get(5, TimeUnit.SECONDS));
+        assertThat(e.getCause(), instanceOf(HttpResponseException.class));
     }
 
     @Test
@@ -242,7 +230,7 @@ public class HttpReceiverOverHTTPTest
                             {
                                 // Verify that the buffer has been released
                                 // before fillInterested() is called.
-                                Assert.assertNull(getResponseBuffer());
+                                assertNull(getResponseBuffer());
                                 // Fill the endpoint so receive is called again.
                                 endPoint.addInput("X");
                                 super.fillInterested();
@@ -265,7 +253,7 @@ public class HttpReceiverOverHTTPTest
         connection.getHttpChannel().receive();
 
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
     }
 }

@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.net.URI;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,9 +34,9 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.BasicEchoEndpoint;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.BasicEchoEndpointConfigContextListener;
-import org.junit.Assert;
+
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Example of an {@link javax.websocket.Endpoint} extended echo server added programmatically via the
@@ -75,7 +77,7 @@ public class BasicEndpointTest
                 future.get(1,TimeUnit.SECONDS);
                 clientEcho.sendMessage("Hello World");
                 LinkedBlockingQueue<String> msgs = clientEcho.incomingMessages;
-                Assert.assertEquals("Expected message","Hello World",msgs.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT));
+                assertEquals("Hello World",msgs.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT), "Expected message");
             }
             finally
             {

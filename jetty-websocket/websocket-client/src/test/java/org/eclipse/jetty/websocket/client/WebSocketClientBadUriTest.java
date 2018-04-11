@@ -18,15 +18,17 @@
 
 package org.eclipse.jetty.websocket.client;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -82,16 +84,7 @@ public class WebSocketClientBadUriTest
     {
         JettyTrackingSocket wsocket = new JettyTrackingSocket();
 
-        try
-        {
-            client.connect(wsocket,uri); // should toss exception
-
-            Assert.fail("Expected IllegalArgumentException");
-        }
-        catch (IllegalArgumentException e)
-        {
-            // expected path
-            wsocket.assertNotOpened();
-        }
+        assertThrows(IllegalArgumentException.class, ()-> client.connect(wsocket, uri));
+        wsocket.assertNotOpened();
     }
 }

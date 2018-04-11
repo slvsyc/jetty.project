@@ -18,8 +18,8 @@
 
 package org.eclipse.jetty.servlet;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -44,7 +44,7 @@ import org.eclipse.jetty.util.URIUtil;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EncodedURITest
 {

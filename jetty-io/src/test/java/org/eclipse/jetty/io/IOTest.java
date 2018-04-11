@@ -20,11 +20,12 @@ package org.eclipse.jetty.io;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,8 +52,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class IOTest
 {
@@ -65,7 +66,7 @@ public class IOTest
 
         IO.copy(in, out);
 
-        assertEquals("copyThread", out.toString(), "The quick brown fox jumped over the lazy dog");
+        assertEquals(out.toString(), "The quick brown fox jumped over the lazy dog", "copyThread");
     }
 
     @Test
@@ -292,17 +293,11 @@ public class IOTest
             client.getOutputStream().write(1);
 
             // Client eventually sees Broken Pipe
-            int i = 0;
-            try
-            {
+            assertThrows(IOException.class, ()->{
+                int i = 0;
                 for (i = 0; i < 100000; i++)
                     client.getOutputStream().write(1);
-
-                Assert.fail();
-            }
-            catch (IOException e)
-            {
-            }
+            });
             client.close();
 
         }
@@ -456,7 +451,7 @@ public class IOTest
         reading.get(5, TimeUnit.SECONDS);
         read.flip();
 
-        Assert.assertEquals(ByteBuffer.wrap(data), read);
+        assertEquals(ByteBuffer.wrap(data), read);
     }
 
     @Test

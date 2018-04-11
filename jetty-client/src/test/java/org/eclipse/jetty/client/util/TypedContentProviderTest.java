@@ -18,6 +18,10 @@
 
 package org.eclipse.jetty.client.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -36,8 +40,8 @@ import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class TypedContentProviderTest extends AbstractHttpClientServerTest
 {
@@ -61,13 +65,13 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals("POST", request.getMethod());
-                Assert.assertEquals(MimeTypes.Type.FORM_ENCODED.asString(), request.getContentType());
-                Assert.assertEquals(value1, request.getParameter(name1));
+                assertEquals("POST", request.getMethod());
+                assertEquals(MimeTypes.Type.FORM_ENCODED.asString(), request.getContentType());
+                assertEquals(value1, request.getParameter(name1));
                 String[] values = request.getParameterValues(name2);
-                Assert.assertNotNull(values);
-                Assert.assertEquals(2, values.length);
-                Assert.assertThat(values, Matchers.arrayContainingInAnyOrder(value2, value3));
+                assertNotNull(values);
+                assertEquals(2, values.length);
+                assertThat(values, Matchers.arrayContainingInAnyOrder(value2, value3));
             }
         });
 
@@ -77,7 +81,7 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
         fields.add(name2, value3);
         ContentResponse response = client.FORM(scheme + "://localhost:" + connector.getLocalPort(), fields);
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -99,9 +103,9 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals("POST", request.getMethod());
-                Assert.assertEquals(contentType, request.getContentType());
-                Assert.assertEquals(content, IO.toString(request.getInputStream()));
+                assertEquals("POST", request.getMethod());
+                assertEquals(contentType, request.getContentType());
+                assertEquals(content, IO.toString(request.getInputStream()));
             }
         });
 
@@ -112,7 +116,7 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
                 .header(HttpHeader.CONTENT_TYPE, contentType)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -126,9 +130,9 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals("GET", request.getMethod());
-                Assert.assertNotNull(request.getContentType());
-                Assert.assertEquals(content, IO.toString(request.getInputStream()));
+                assertEquals("GET", request.getMethod());
+                assertNotNull(request.getContentType());
+                assertEquals(content, IO.toString(request.getInputStream()));
             }
         });
 
@@ -137,6 +141,6 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
                 .content(new StringContentProvider(null, content, StandardCharsets.UTF_8))
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 }

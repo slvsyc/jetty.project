@@ -23,8 +23,8 @@ import java.io.FileReader;
 import java.io.LineNumberReader;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -37,7 +37,7 @@ public class TestGetContent
         throws Exception
     {
         int port = getPort();
-        Assert.assertTrue(port > 0);
+        assertTrue(port > 0);
         HttpClient httpClient = new HttpClient();
         try
         {
@@ -45,11 +45,11 @@ public class TestGetContent
 
             String response = httpClient.GET( "http://localhost:" + port + "/hello?name=beer" ).getContentAsString();
 
-            Assert.assertEquals( "hello beer", response.trim() );
+            assertEquals( "hello beer", response.trim() );
 
             response = httpClient.GET( "http://localhost:" + port + "/ping?name=beer" ).getContentAsString();
 
-            Assert.assertEquals( "pong beer", response.trim() );
+            assertEquals( "pong beer", response.trim() );
         }
         finally
         {
@@ -63,7 +63,7 @@ public class TestGetContent
         int attempts = 20;
         int port = -1;
         String s = System.getProperty("jetty.port.file");
-        Assert.assertNotNull(s);
+        assertNotNull(s);
         File f = new File(s);
         while (true)
         {
@@ -74,7 +74,7 @@ public class TestGetContent
                     )
                 {
                     s = lnr.readLine();
-                    Assert.assertNotNull(s);
+                    assertNotNull(s);
                     port = Integer.parseInt(s.trim());
                 }
                 break;

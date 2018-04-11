@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
@@ -56,9 +58,9 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ServerTimeoutsTest extends AbstractTest
 {
@@ -186,8 +188,8 @@ public class ServerTimeoutsTest extends AbstractTest
 
         // The client did not send the content, the request was
         // dispatched, the server should have idle timed it out.
-        Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -212,10 +214,10 @@ public class ServerTimeoutsTest extends AbstractTest
                     });
 
             // Blocking read should timeout.
-            Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+            assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
             // Complete the request.
             contentProvider.close();
-            Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -242,10 +244,10 @@ public class ServerTimeoutsTest extends AbstractTest
                     });
 
             // Blocking read should timeout.
-            Assert.assertTrue(handlerLatch.await(2 * blockingTimeout, TimeUnit.MILLISECONDS));
+            assertTrue(handlerLatch.await(2 * blockingTimeout, TimeUnit.MILLISECONDS));
             // Complete the request.
             contentProvider.close();
-            Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -272,10 +274,10 @@ public class ServerTimeoutsTest extends AbstractTest
                     });
 
             // Blocking read should timeout.
-            Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+            assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
             // Complete the request.
             contentProvider.close();
-            Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -305,7 +307,7 @@ public class ServerTimeoutsTest extends AbstractTest
                     });
 
             // Blocking write should timeout.
-            Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+            assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
             // After the server stopped sending, consume on the client to read the early EOF.
             while (true)
             {
@@ -314,7 +316,7 @@ public class ServerTimeoutsTest extends AbstractTest
                     break;
                 callback.succeeded();
             }
-            Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -345,7 +347,7 @@ public class ServerTimeoutsTest extends AbstractTest
                     });
 
             // Blocking write should timeout.
-            Assert.assertTrue(handlerLatch.await(2 * blockingTimeout, TimeUnit.MILLISECONDS));
+            assertTrue(handlerLatch.await(2 * blockingTimeout, TimeUnit.MILLISECONDS));
             // After the server stopped sending, consume on the client to read the early EOF.
             while (true)
             {
@@ -354,7 +356,7 @@ public class ServerTimeoutsTest extends AbstractTest
                     break;
                 callback.succeeded();
             }
-            Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -385,7 +387,7 @@ public class ServerTimeoutsTest extends AbstractTest
                     });
 
             // Blocking read should timeout.
-            Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+            assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
             // After the server stopped sending, consume on the client to read the early EOF.
             while (true)
             {
@@ -394,7 +396,7 @@ public class ServerTimeoutsTest extends AbstractTest
                     break;
                 callback.succeeded();
             }
-            Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -455,8 +457,8 @@ public class ServerTimeoutsTest extends AbstractTest
             contentProvider.close();
 
             // Blocking read should timeout.
-            Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
-            Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+            assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -478,8 +480,8 @@ public class ServerTimeoutsTest extends AbstractTest
                     @Override
                     public void onDataAvailable() throws IOException
                     {
-                        Assert.assertEquals(0, input.read());
-                        Assert.assertFalse(input.isReady());
+                        assertEquals(0, input.read());
+                        assertFalse(input.isReady());
                     }
 
                     @Override
@@ -514,10 +516,10 @@ public class ServerTimeoutsTest extends AbstractTest
                 });
 
         // Async read should timeout.
-        Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
         // Complete the request.
         contentProvider.close();
-        Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -574,7 +576,7 @@ public class ServerTimeoutsTest extends AbstractTest
                 });
 
         // Async write should timeout.
-        Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
         // After the server stopped sending, consume on the client to read the early EOF.
         while (true)
         {
@@ -583,7 +585,7 @@ public class ServerTimeoutsTest extends AbstractTest
                 break;
             callback.succeeded();
         }
-        Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -634,8 +636,8 @@ public class ServerTimeoutsTest extends AbstractTest
         contentProvider.close();
 
         // Request should timeout.
-        Assert.assertTrue(handlerLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(handlerLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -678,8 +680,8 @@ public class ServerTimeoutsTest extends AbstractTest
         }
         contentProvider.close();
 
-        Assert.assertTrue(handlerLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(handlerLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -705,10 +707,10 @@ public class ServerTimeoutsTest extends AbstractTest
                     });
 
             // Blocking read should timeout.
-            Assert.assertTrue(handlerLatch.await(2 * httpIdleTimeout, TimeUnit.MILLISECONDS));
+            assertTrue(handlerLatch.await(2 * httpIdleTimeout, TimeUnit.MILLISECONDS));
             // Complete the request.
             contentProvider.close();
-            Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -733,8 +735,8 @@ public class ServerTimeoutsTest extends AbstractTest
                     @Override
                     public void onDataAvailable() throws IOException
                     {
-                        Assert.assertEquals(0, input.read());
-                        Assert.assertFalse(input.isReady());
+                        assertEquals(0, input.read());
+                        assertFalse(input.isReady());
                     }
 
                     @Override
@@ -768,10 +770,10 @@ public class ServerTimeoutsTest extends AbstractTest
                 });
 
         // Async read should timeout.
-        Assert.assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(handlerLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
         // Complete the request.
         contentProvider.close();
-        Assert.assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -812,9 +814,9 @@ public class ServerTimeoutsTest extends AbstractTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertTrue(result.isSucceeded());
-                        Assert.assertEquals(HttpStatus.OK_200, result.getResponse().getStatus());
-                        Assert.assertArrayEquals(data, getContent());
+                        assertTrue(result.isSucceeded());
+                        assertEquals(HttpStatus.OK_200, result.getResponse().getStatus());
+                        assertArrayEquals(data, getContent());
                         latch.countDown();
                     }
                 });
@@ -824,7 +826,7 @@ public class ServerTimeoutsTest extends AbstractTest
         content.offer(ByteBuffer.wrap(data2));
         content.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -893,8 +895,8 @@ public class ServerTimeoutsTest extends AbstractTest
             callback.succeeded();
         }
 
-        Assert.assertTrue(serverLatch.await(15, TimeUnit.SECONDS));
-        Assert.assertTrue(clientLatch.await(15, TimeUnit.SECONDS));
+        assertTrue(serverLatch.await(15, TimeUnit.SECONDS));
+        assertTrue(clientLatch.await(15, TimeUnit.SECONDS));
     }
 
     private static class BlockingReadHandler extends AbstractHandler.ErrorDispatchHandler
@@ -911,7 +913,7 @@ public class ServerTimeoutsTest extends AbstractTest
         {
             baseRequest.setHandled(true);
             ServletInputStream input = request.getInputStream();
-            Assert.assertEquals(0, input.read());
+            assertEquals(0, input.read());
             try
             {
                 input.read();

@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.proxy;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
@@ -47,8 +49,8 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -172,8 +174,8 @@ public class ProxyServletLoadTest
             thread.start();
         }
 
-        Assert.assertTrue(activeClientLatch.await(Math.max(clientCount * iterations * 10, 5000), TimeUnit.MILLISECONDS));
-        Assert.assertTrue(success.get());
+        assertTrue(activeClientLatch.await(Math.max(clientCount * iterations * 10, 5000), TimeUnit.MILLISECONDS));
+        assertTrue(success.get());
     }
 
     private static class ClientLoop implements Runnable

@@ -18,7 +18,7 @@
 
 package org.eclipse.jetty.jsp;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,16 +31,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspFactory;
 
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.servlet.ServletTester;
-import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.tomcat.InstanceManager;
 import org.apache.tomcat.SimpleInstanceManager;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlet.ServletTester;
+import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJettyJspServlet
 {
@@ -67,7 +66,7 @@ public class TestJettyJspServlet
         
     }
     
-    @Before
+    @BeforeEach
     public void setUp () throws Exception
     {
         JspFactory.setDefaultFactory(new JspFactoryImpl());
@@ -86,7 +85,7 @@ public class TestJettyJspServlet
         _tester.start();
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         if (_tester != null)

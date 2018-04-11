@@ -19,8 +19,8 @@
 package org.eclipse.jetty.io;
 
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -32,9 +32,9 @@ import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 
@@ -78,7 +78,7 @@ public class SslEngineBehaviorTest
         // start the client
         client.setUseClientMode(true);
         client.beginHandshake();
-        Assert.assertEquals(SSLEngineResult.HandshakeStatus.NEED_WRAP,client.getHandshakeStatus());
+        assertEquals(SSLEngineResult.HandshakeStatus.NEED_WRAP,client.getHandshakeStatus());
 
         // what if we try an unwrap?
         netS2C.flip();
@@ -103,7 +103,7 @@ public class SslEngineBehaviorTest
         // start the server
         server.setUseClientMode(false);
         server.beginHandshake();
-        Assert.assertEquals(SSLEngineResult.HandshakeStatus.NEED_UNWRAP,server.getHandshakeStatus());
+        assertEquals(SSLEngineResult.HandshakeStatus.NEED_UNWRAP,server.getHandshakeStatus());
 
         // what if we try a needless wrap?
         serverOut.put(BufferUtil.toBuffer("Hello World"));

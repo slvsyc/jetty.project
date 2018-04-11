@@ -22,7 +22,7 @@ import javax.servlet.Servlet;
 
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Perform specific tests on the IncludableGzipHandler's ability to manage

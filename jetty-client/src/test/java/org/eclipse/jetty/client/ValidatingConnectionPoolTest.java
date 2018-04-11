@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -36,8 +38,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class ValidatingConnectionPoolTest extends AbstractHttpClientServerTest
 {
@@ -66,13 +68,13 @@ public class ValidatingConnectionPoolTest extends AbstractHttpClientServerTest
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
                 .scheme(scheme)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         // The second request should be sent after the validating timeout.
         response = client.newRequest("localhost", connector.getLocalPort())
                 .scheme(scheme)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -105,7 +107,7 @@ public class ValidatingConnectionPoolTest extends AbstractHttpClientServerTest
                 .scheme(scheme)
                 .path("/redirect")
                 .send();
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -175,9 +177,9 @@ public class ValidatingConnectionPoolTest extends AbstractHttpClientServerTest
         latch.countDown();
 
         ContentResponse response1 = listener1.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(200, response1.getStatus());
+        assertEquals(200, response1.getStatus());
 
         ContentResponse response2 = listener2.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(200, response2.getStatus());
+        assertEquals(200, response2.getStatus());
     }
 }

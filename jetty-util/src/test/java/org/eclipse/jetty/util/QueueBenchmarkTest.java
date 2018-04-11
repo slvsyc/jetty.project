@@ -31,9 +31,10 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
+@DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: HIGH_CPU, HIGH_MEMORY, review
 public class QueueBenchmarkTest
 {
     private static final Logger logger = Log.getLogger(QueueBenchmarkTest.class);
@@ -41,7 +42,6 @@ public class QueueBenchmarkTest
     private static final Runnable END = () -> {};
 
     @Test
-    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: HIGH_CPU, review
     public void testQueues() throws Exception
     {
         int cores = ProcessorUtils.availableProcessors();
@@ -60,7 +60,6 @@ public class QueueBenchmarkTest
     }
 
     @Test
-    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: HIGH_CPU, review
     public void testBlockingQueues() throws Exception
     {
         int cores = ProcessorUtils.availableProcessors();

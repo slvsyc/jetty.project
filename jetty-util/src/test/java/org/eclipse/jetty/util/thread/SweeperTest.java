@@ -18,14 +18,17 @@
 
 package org.eclipse.jetty.util.thread;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SweeperTest
 {
@@ -82,9 +85,9 @@ public class SweeperTest
             }
         });
 
-        Assert.assertTrue(sweepLatch.await(2 * period, TimeUnit.MILLISECONDS));
-        Assert.assertTrue(taskLatch.await(2 * period, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(sweep ? 0 : 1, sweeper.getSize());
+        assertTrue(sweepLatch.await(2 * period, TimeUnit.MILLISECONDS));
+        assertTrue(taskLatch.await(2 * period, TimeUnit.MILLISECONDS));
+        assertEquals(sweep ? 0 : 1, sweeper.getSize());
 
         sweeper.stop();
     }
@@ -118,9 +121,9 @@ public class SweeperTest
                 }
             });
 
-            Assert.assertTrue(sweepLatch.await(4 * period, TimeUnit.MILLISECONDS));
-            Assert.assertTrue(taskLatch.await(4 * period, TimeUnit.MILLISECONDS));
-            Assert.assertEquals(1, sweeper.getSize());
+            assertTrue(sweepLatch.await(4 * period, TimeUnit.MILLISECONDS));
+            assertTrue(taskLatch.await(4 * period, TimeUnit.MILLISECONDS));
+            assertEquals(1, sweeper.getSize());
 
             sweeper.stop();
         }

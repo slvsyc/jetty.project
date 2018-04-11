@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.http2.frames;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +29,8 @@ import org.eclipse.jetty.http2.generator.PriorityGenerator;
 import org.eclipse.jetty.http2.parser.Parser;
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.io.MappedByteBufferPool;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class PriorityGenerateParseTest
 {
@@ -70,12 +72,12 @@ public class PriorityGenerateParseTest
             }
         }
 
-        Assert.assertEquals(1, frames.size());
+        assertEquals(1, frames.size());
         PriorityFrame frame = frames.get(0);
-        Assert.assertEquals(streamId, frame.getStreamId());
-        Assert.assertEquals(parentStreamId, frame.getParentStreamId());
-        Assert.assertEquals(weight, frame.getWeight());
-        Assert.assertEquals(exclusive, frame.isExclusive());
+        assertEquals(streamId, frame.getStreamId());
+        assertEquals(parentStreamId, frame.getParentStreamId());
+        assertEquals(weight, frame.getWeight());
+        assertEquals(exclusive, frame.isExclusive());
     }
 
     @Test
@@ -113,12 +115,12 @@ public class PriorityGenerateParseTest
                 }
             }
 
-            Assert.assertEquals(1, frames.size());
+            assertEquals(1, frames.size());
             PriorityFrame frame = frames.get(0);
-            Assert.assertEquals(streamId, frame.getStreamId());
-            Assert.assertEquals(parentStreamId, frame.getParentStreamId());
-            Assert.assertEquals(weight, frame.getWeight());
-            Assert.assertEquals(exclusive, frame.isExclusive());
+            assertEquals(streamId, frame.getStreamId());
+            assertEquals(parentStreamId, frame.getParentStreamId());
+            assertEquals(weight, frame.getWeight());
+            assertEquals(exclusive, frame.isExclusive());
         }
     }
 }

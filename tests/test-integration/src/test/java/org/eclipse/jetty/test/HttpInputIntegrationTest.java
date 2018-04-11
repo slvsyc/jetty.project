@@ -19,7 +19,8 @@
 package org.eclipse.jetty.test;
 
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -65,9 +66,9 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -276,11 +277,11 @@ public class HttpInputIntegrationTest
                 try
                 {
                     if (!latch.await(5,TimeUnit.SECONDS))
-                        Assert.fail();
+                        fail("latch expired");
                 }
                 catch(Exception e)
                 {
-                    Assert.fail();
+                    fail(e);
                 }
                 break;
             }   
@@ -296,7 +297,7 @@ public class HttpInputIntegrationTest
                         try
                         {
                             if (!latch.await(5,TimeUnit.SECONDS))
-                                Assert.fail();
+                                fail("latch expired");
                             
                             // Spin until state change
                             HttpChannelState.State s=request.getHttpChannelState().getState();

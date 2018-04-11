@@ -18,9 +18,11 @@
 
 package org.eclipse.jetty.start;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -33,9 +35,9 @@ import org.eclipse.jetty.start.config.ConfigSources;
 import org.eclipse.jetty.start.config.DirConfigSource;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Assert;
+
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IncludeJettyDirTest
 {
@@ -62,8 +64,8 @@ public class IncludeJettyDirTest
         {
             Prop prop = args.getProperties().getProp(key);
             String prefix = "Prop[" + key + "]";
-            Assert.assertThat(prefix + " should have a value",prop,notNullValue());
-            Assert.assertThat(prefix + " value",prop.value,is(expectedValue));
+            assertThat(prefix + " should have a value",prop,notNullValue());
+            assertThat(prefix + " value",prop.value,is(expectedValue));
         }
     }
 
@@ -549,14 +551,7 @@ public class IncludeJettyDirTest
                 "jetty.http.host=127.0.0.1",//
                 "--include-jetty-dir=" + common.toString());
 
-        try
-        {
-            runMain(base,home);
-            Assert.fail("Should have thrown a UsageException");
-        }
-        catch (UsageException e)
-        {
-            Assert.assertThat("UsageException",e.getMessage(),containsString("Duplicate"));
-        }
+        UsageException e = assertThrows(UsageException.class, ()-> runMain(base,home));
+        assertThat("UsageException",e.getMessage(),containsString("Duplicate"));
     }
 }

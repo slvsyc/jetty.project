@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.net.URI;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -40,9 +42,9 @@ import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainer
 import org.eclipse.jetty.websocket.server.WebSocketServerFactory;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SessionTrackingTest
 {
@@ -145,10 +147,10 @@ public class SessionTrackingTest
         int openCount = 0;
         for (Session session : sessions)
         {
-            Assert.assertThat("Session.isopen: " + session, session.isOpen(), Matchers.is(true));
+            assertThat("Session.isopen: " + session, session.isOpen(), Matchers.is(true));
             openCount++;
         }
-        Assert.assertThat("Open Session Count", openCount, Matchers.is(expectedCount));
+        assertThat("Open Session Count", openCount, Matchers.is(expectedCount));
     }
 
     private static class ClientSocket extends Endpoint
@@ -172,12 +174,12 @@ public class SessionTrackingTest
 
         public void waitForOpen(long timeout, TimeUnit unit) throws InterruptedException
         {
-            Assert.assertThat("ClientSocket opened", openLatch.await(timeout, unit), Matchers.is(true));
+            assertThat("ClientSocket opened", openLatch.await(timeout, unit), Matchers.is(true));
         }
 
         public void waitForClose(long timeout, TimeUnit unit) throws InterruptedException
         {
-            Assert.assertThat("ClientSocket opened", closeLatch.await(timeout, unit), Matchers.is(true));
+            assertThat("ClientSocket opened", closeLatch.await(timeout, unit), Matchers.is(true));
         }
     }
 

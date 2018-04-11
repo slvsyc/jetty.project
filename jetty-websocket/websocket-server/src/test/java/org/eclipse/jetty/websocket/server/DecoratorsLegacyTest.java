@@ -19,7 +19,7 @@
 package org.eclipse.jetty.websocket.server;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -48,7 +48,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @Ignore("Unstable - see Issue #1815")
 public class DecoratorsLegacyTest

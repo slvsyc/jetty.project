@@ -21,7 +21,7 @@ package org.eclipse.jetty.util.resource;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeThat;
 
 import java.io.File;
@@ -35,8 +35,8 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -272,7 +272,7 @@ public class ResourceTest
         if (data.dir)
         {
             Resource r = data.resource.addPath("foo%/b r");
-            Assert.assertThat(r.getURI().toString(),Matchers.endsWith("/foo%25/b%20r"));
+            assertThat(r.getURI().toString(),Matchers.endsWith("/foo%25/b%20r"));
         }
     }
     

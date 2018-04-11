@@ -18,8 +18,9 @@
 
 package org.eclipse.jetty.server;
   
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -37,11 +38,10 @@ import org.eclipse.jetty.server.LocalConnector.LocalEndPoint;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.BufferUtil;
 import org.hamcrest.Matcher;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class NotAcceptingTest
 {
@@ -51,7 +51,7 @@ public class NotAcceptingTest
     ServerConnector blockingConnector;
     ServerConnector asyncConnector;
 
-    @Before
+    @BeforeEach
     public void before()
     {
         server = new Server();
@@ -73,14 +73,13 @@ public class NotAcceptingTest
         server.addConnector(asyncConnector);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         server.stop();
         server=null;
     }
     
-
     @Test
     public void testServerConnectorBlockingAccept() throws Exception
     {
@@ -132,7 +131,7 @@ public class NotAcceptingTest
                     try
                     {
                         uri = handler.exchange.exchange("delayed connection",IDLE_TIMEOUT,TimeUnit.MILLISECONDS);
-                        Assert.fail(uri);
+                        fail("Failed near URI: " + uri); // this displays last URI, not current (obviously)
                     }
                     catch(TimeoutException e)
                     {
@@ -151,7 +150,7 @@ public class NotAcceptingTest
     
 
     @Test
-    @Ignore
+    @Disabled
     public void testLocalConnector() throws Exception
     {
         server.setHandler(new HelloHandler());
@@ -186,7 +185,7 @@ public class NotAcceptingTest
                         // A few local connections may succeed
                         if (i==local.length-1)
                             // but not 10 of them!
-                            Assert.fail("Expected TimeoutException");
+                            fail("Expected TimeoutException");
                     }
                     catch(TimeoutException e)
                     {
@@ -252,7 +251,7 @@ public class NotAcceptingTest
                 try
                 {
                     uri = handler.exchange.exchange("delayed connection",IDLE_TIMEOUT,TimeUnit.MILLISECONDS);
-                    Assert.fail(uri);
+                    fail(uri);
                 }
                 catch(TimeoutException e)
                 {

@@ -19,7 +19,7 @@
 
 package org.eclipse.jetty.quickstart;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Set;

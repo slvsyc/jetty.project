@@ -18,6 +18,11 @@
 
 package org.eclipse.jetty.http2.hpack;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
@@ -32,12 +37,7 @@ import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.http.MetaData.Response;
 import org.eclipse.jetty.http.PreEncodedHttpField;
 import org.eclipse.jetty.util.BufferUtil;
-import org.junit.Assert;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.junit.jupiter.api.Test;
 
 public class HpackTest
 {
@@ -95,7 +95,7 @@ public class HpackTest
         Response decoded1 = (Response)decoder.decode(buffer);
 
         assertMetadataSame(original1,decoded1);
-        Assert.assertEquals("custom-key",decoded1.getFields().getField("Custom-Key").getName());
+        assertEquals("custom-key",decoded1.getFields().getField("Custom-Key").getName());
     }
     
     @Test
@@ -126,15 +126,10 @@ public class HpackTest
         BufferUtil.clearToFill(buffer);
         encoder.encode(buffer,original1);
         BufferUtil.flipToFlush(buffer,0);
-        try
-        {
-            decoder.decode(buffer);
-            Assert.fail();
-        }
-        catch(BadMessageException e)
-        {
-            assertEquals(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE_431,e.getCode());
-        }
+
+        BadMessageException e = assertThrows(BadMessageException.class,
+                () -> decoder.decode(buffer));
+        assertEquals(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE_431,e.getCode());
     }
 
     @Test

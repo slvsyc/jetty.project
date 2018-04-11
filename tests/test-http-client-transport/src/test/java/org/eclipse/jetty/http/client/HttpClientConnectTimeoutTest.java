@@ -18,6 +18,11 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -27,13 +32,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jetty.client.api.Request;
-import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 // TODO: these tests seems to fail spuriously, figure out why.
-@Ignore
+@Disabled
+@Tag("Unstable")
 public class HttpClientConnectTimeoutTest extends AbstractTest
 {
     public HttpClientConnectTimeoutTest(Transport transport)
@@ -62,8 +68,8 @@ public class HttpClientConnectTimeoutTest extends AbstractTest
                 latch.countDown();
         });
 
-        Assert.assertTrue(latch.await(2 * connectTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertNotNull(request.getAbortCause());
+        assertTrue(latch.await(2 * connectTimeout, TimeUnit.MILLISECONDS));
+        assertNotNull(request.getAbortCause());
     }
 
     @Test
@@ -89,9 +95,9 @@ public class HttpClientConnectTimeoutTest extends AbstractTest
                     latch.countDown();
                 });
 
-        Assert.assertFalse(latch.await(2 * connectTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(1, completes.get());
-        Assert.assertNotNull(request.getAbortCause());
+        assertFalse(latch.await(2 * connectTimeout, TimeUnit.MILLISECONDS));
+        assertEquals(1, completes.get());
+        assertNotNull(request.getAbortCause());
     }
 
     @Test
@@ -122,8 +128,8 @@ public class HttpClientConnectTimeoutTest extends AbstractTest
             }
         });
 
-        Assert.assertTrue(latch.await(3 * connectTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertNotNull(request.getAbortCause());
+        assertTrue(latch.await(3 * connectTimeout, TimeUnit.MILLISECONDS));
+        assertNotNull(request.getAbortCause());
     }
 
     private void assumeConnectTimeout(String host, int port, int connectTimeout) throws IOException

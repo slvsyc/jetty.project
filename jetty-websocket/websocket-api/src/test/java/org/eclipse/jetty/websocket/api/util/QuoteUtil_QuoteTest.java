@@ -18,14 +18,15 @@
 
 package org.eclipse.jetty.websocket.api.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -69,7 +70,7 @@ public class QuoteUtil_QuoteTest
     {
         String actual = QuoteUtil.dequote(quoted);
         actual = QuoteUtil.unescape(actual);
-        Assert.assertThat(actual,is(unquoted));
+        assertThat(actual,is(unquoted));
     }
 
     @Test
@@ -79,6 +80,6 @@ public class QuoteUtil_QuoteTest
         QuoteUtil.quote(buf,unquoted);
 
         String actual = buf.toString();
-        Assert.assertThat(actual,is(quoted));
+        assertThat(actual,is(quoted));
     }
 }

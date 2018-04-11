@@ -35,8 +35,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class RoundRobinConnectionPoolTest extends AbstractTest
 {
@@ -70,7 +70,7 @@ public class RoundRobinConnectionPoolTest extends AbstractTest
             ContentResponse response = client.newRequest(newURI())
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
-            Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+            assertEquals(HttpStatus.OK_200, response.getStatus());
         }
 
         record.set(true);
@@ -80,18 +80,18 @@ public class RoundRobinConnectionPoolTest extends AbstractTest
             ContentResponse response = client.newRequest(newURI())
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
-            Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+            assertEquals(HttpStatus.OK_200, response.getStatus());
         }
 
-        Assert.assertThat(remotePorts.size(), Matchers.equalTo(requests));
+        assertThat(remotePorts.size(), Matchers.equalTo(requests));
         for (int i = 0; i < requests; ++i)
         {
             int base = i % maxConnections;
             int expected = remotePorts.get(base);
             int candidate = remotePorts.get(i);
-            Assert.assertThat(client.dump() + System.lineSeparator() + remotePorts.toString(), expected, Matchers.equalTo(candidate));
+            assertThat(client.dump() + System.lineSeparator() + remotePorts.toString(), expected, Matchers.equalTo(candidate));
             if (i > 0)
-                Assert.assertThat(remotePorts.get(i - 1), Matchers.not(Matchers.equalTo(candidate)));
+                assertThat(remotePorts.get(i - 1), Matchers.not(Matchers.equalTo(candidate)));
         }
     }
 
@@ -142,7 +142,7 @@ public class RoundRobinConnectionPoolTest extends AbstractTest
             ContentResponse response = client.newRequest(newURI())
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
-            Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+            assertEquals(HttpStatus.OK_200, response.getStatus());
         }
 
         record.set(true);
@@ -162,24 +162,24 @@ public class RoundRobinConnectionPoolTest extends AbstractTest
                         if (result.getResponse().getStatus() == HttpStatus.OK_200)
                             clientLatch.countDown();
                     });
-            Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+            assertTrue(latch.await(5, TimeUnit.SECONDS));
         }
 
-        Assert.assertTrue(serverLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertEquals(0, requests.get());
+        assertTrue(serverLatch.await(5, TimeUnit.SECONDS));
+        assertEquals(0, requests.get());
 
         barrier.await();
 
-        Assert.assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertThat(remotePorts.size(), Matchers.equalTo(count));
+        assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
+        assertThat(remotePorts.size(), Matchers.equalTo(count));
         for (int i = 0; i < count; ++i)
         {
             int base = i % maxConnections;
             int expected = remotePorts.get(base);
             int candidate = remotePorts.get(i);
-            Assert.assertThat(client.dump() + System.lineSeparator() + remotePorts.toString(), expected, Matchers.equalTo(candidate));
+            assertThat(client.dump() + System.lineSeparator() + remotePorts.toString(), expected, Matchers.equalTo(candidate));
             if (i > 0)
-                Assert.assertThat(remotePorts.get(i - 1), Matchers.not(Matchers.equalTo(candidate)));
+                assertThat(remotePorts.get(i - 1), Matchers.not(Matchers.equalTo(candidate)));
         }
     }
 }

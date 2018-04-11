@@ -20,7 +20,7 @@ package org.eclipse.jetty.websocket.server;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -39,9 +39,9 @@ import org.eclipse.jetty.websocket.common.util.Sha1Sum;
 import org.eclipse.jetty.websocket.server.helper.CaptureSocket;
 import org.eclipse.jetty.websocket.server.helper.EchoServlet;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -114,7 +114,7 @@ public class PerMessageDeflateExtensionTest
         Assume.assumeTrue("Server has permessage-deflate registered",
                 server.getWebSocketServletFactory().getExtensionFactory().isAvailable("permessage-deflate"));
 
-        Assert.assertThat("server scheme",server.getServerUri().getScheme(),is(scheme));
+        assertThat("server scheme",server.getServerUri().getScheme(),is(scheme));
 
         int binBufferSize = (int) (msgSize * 1.5);
 
@@ -168,7 +168,7 @@ public class PerMessageDeflateExtensionTest
             session.getRemote().sendBytes(ByteBuffer.wrap(msg));
 
             String echoMsg = clientSocket.messages.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-            Assert.assertThat("Echo'd Message",echoMsg,is("binary[sha1="+sha1+"]"));
+            assertThat("Echo'd Message",echoMsg,is("binary[sha1="+sha1+"]"));
         }
         finally
         {

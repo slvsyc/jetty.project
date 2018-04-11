@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.websocket.client;
 
+import static java.time.Duration.ofSeconds;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
@@ -25,7 +27,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -80,7 +82,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ClientCloseTest
 {
@@ -536,7 +538,7 @@ public class ClientCloseTest
         }
     }
 
-    @Test(timeout = 5000L)
+    @Test
     public void testStopLifecycle() throws Exception
     {
         // Set client timeout
@@ -550,40 +552,42 @@ public class ClientCloseTest
 
         try
         {
-            // Open Multiple Clients
-            for (int i = 0; i < clientCount; i++)
-            {
-                // Client Request Upgrade
-                CloseTrackingSocket clientSocket = new CloseTrackingSocket();
-                clientSockets.add(clientSocket);
-                Future<Session> clientConnectFuture = client.connect(clientSocket, server.getWsUri());
+            assertTimeoutPreemptively(ofSeconds(5), ()-> {
+                // Open Multiple Clients
+                for (int i = 0; i < clientCount; i++)
+                {
+                    // Client Request Upgrade
+                    CloseTrackingSocket clientSocket = new CloseTrackingSocket();
+                    clientSockets.add(clientSocket);
+                    Future<Session> clientConnectFuture = client.connect(clientSocket, server.getWsUri());
 
-                // Server accepts connection
-                CompletableFuture<BlockheadConnection> serverConnFut = new CompletableFuture<>();
-                serverConnFuts.add(serverConnFut);
-                server.addConnectFuture(serverConnFut);
-                BlockheadConnection serverConn = serverConnFut.get();
-                serverConns.add(serverConn);
+                    // Server accepts connection
+                    CompletableFuture<BlockheadConnection> serverConnFut = new CompletableFuture<>();
+                    serverConnFuts.add(serverConnFut);
+                    server.addConnectFuture(serverConnFut);
+                    BlockheadConnection serverConn = serverConnFut.get();
+                    serverConns.add(serverConn);
 
-                // client confirms connection via echo
-                confirmConnection(clientSocket, clientConnectFuture, serverConn);
-            }
+                    // client confirms connection via echo
+                    confirmConnection(clientSocket, clientConnectFuture, serverConn);
+                }
 
-            // client lifecycle stop (the meat of this test)
-            client.stop();
+                // client lifecycle stop (the meat of this test)
+                client.stop();
 
-            // clients send close frames (code 1001, shutdown)
-            for (int i = 0; i < clientCount; i++)
-            {
-                // server receives close frame
-                confirmServerReceivedCloseFrame(serverConns.get(i), StatusCode.SHUTDOWN, containsString("Shutdown"));
-            }
+                // clients send close frames (code 1001, shutdown)
+                for (int i = 0; i < clientCount; i++)
+                {
+                    // server receives close frame
+                    confirmServerReceivedCloseFrame(serverConns.get(i), StatusCode.SHUTDOWN, containsString("Shutdown"));
+                }
 
-            // clients disconnect
-            for (int i = 0; i < clientCount; i++)
-            {
-                clientSockets.get(i).assertReceivedCloseEvent(timeout, is(StatusCode.SHUTDOWN), containsString("Shutdown"));
-            }
+                // clients disconnect
+                for (int i = 0; i < clientCount; i++)
+                {
+                    clientSockets.get(i).assertReceivedCloseEvent(timeout, is(StatusCode.SHUTDOWN), containsString("Shutdown"));
+                }
+            });
         }
         finally
         {

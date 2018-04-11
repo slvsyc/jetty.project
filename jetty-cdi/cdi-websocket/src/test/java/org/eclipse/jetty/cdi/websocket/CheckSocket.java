@@ -18,7 +18,7 @@
 
 package org.eclipse.jetty.cdi.websocket;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -41,12 +41,12 @@ public class CheckSocket extends WebSocketAdapter
 
     public void awaitClose(int timeout, TimeUnit timeunit) throws InterruptedException
     {
-        assertTrue("Timeout waiting for close",closeLatch.await(timeout,timeunit));
+        assertTrue(closeLatch.await(timeout,timeunit), "Timeout waiting for close");
     }
 
     public void awaitOpen(int timeout, TimeUnit timeunit) throws InterruptedException
     {
-        assertTrue("Timeout waiting for open",openLatch.await(timeout,timeunit));
+        assertTrue(openLatch.await(timeout,timeunit), "Timeout waiting for open");
     }
 
     public LinkedBlockingQueue<String> getTextMessages()

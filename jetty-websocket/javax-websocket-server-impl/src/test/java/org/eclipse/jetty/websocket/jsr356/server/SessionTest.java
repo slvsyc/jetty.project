@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.net.URI;
@@ -38,9 +39,9 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -141,7 +142,7 @@ public class SessionTest
             Session session = future.get(1,TimeUnit.SECONDS);
             session.getRemote().sendString(requestMessage);
             String msg = clientEcho.messages.poll(5, TimeUnit.SECONDS);
-            Assert.assertThat("Expected message",msg,is(expectedResponse));
+            assertThat("Expected message",msg,is(expectedResponse));
         }
         finally
         {

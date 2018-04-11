@@ -18,13 +18,16 @@
 
 package org.eclipse.jetty.servlet;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import javax.servlet.UnavailableException;
 
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.MultiException;
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ServletHolderTest {
 
@@ -50,40 +53,40 @@ public class ServletHolderTest {
         three.setClassName("org.my.package.web.DownloadServlet");
 
         // verify compareTo transitivity
-        Assert.assertTrue(one.compareTo(two) < 0);
-        Assert.assertTrue(two.compareTo(three) < 0);
-        Assert.assertTrue(one.compareTo(three) < 0);
+        assertTrue(one.compareTo(two) < 0);
+        assertTrue(two.compareTo(three) < 0);
+        assertTrue(one.compareTo(three) < 0);
     }
     
 
-    @Test
+    @Test // TODO: Parameterize
     public void testJspFileNameToClassName() throws Exception
     {
         ServletHolder h = new ServletHolder();
         h.setName("test");
 
 
-        Assert.assertEquals(null,  h.getClassNameForJsp(null));
+        assertEquals(null,  h.getClassNameForJsp(null));
 
-        Assert.assertEquals(null,  h.getClassNameForJsp(""));
+        assertEquals(null,  h.getClassNameForJsp(""));
 
-        Assert.assertEquals(null,  h.getClassNameForJsp("/blah/"));
+        assertEquals(null,  h.getClassNameForJsp("/blah/"));
 
-        Assert.assertEquals(null,  h.getClassNameForJsp("//blah///"));
+        assertEquals(null,  h.getClassNameForJsp("//blah///"));
 
-        Assert.assertEquals(null,  h.getClassNameForJsp("/a/b/c/blah/"));
+        assertEquals(null,  h.getClassNameForJsp("/a/b/c/blah/"));
 
-        Assert.assertEquals("org.apache.jsp.a.b.c.blah",  h.getClassNameForJsp("/a/b/c/blah"));
+        assertEquals("org.apache.jsp.a.b.c.blah",  h.getClassNameForJsp("/a/b/c/blah"));
 
-        Assert.assertEquals("org.apache.jsp.blah_jsp", h.getClassNameForJsp("/blah.jsp"));
+        assertEquals("org.apache.jsp.blah_jsp", h.getClassNameForJsp("/blah.jsp"));
 
-        Assert.assertEquals("org.apache.jsp.blah_jsp", h.getClassNameForJsp("//blah.jsp"));
+        assertEquals("org.apache.jsp.blah_jsp", h.getClassNameForJsp("//blah.jsp"));
 
-        Assert.assertEquals("org.apache.jsp.blah_jsp", h.getClassNameForJsp("blah.jsp"));
+        assertEquals("org.apache.jsp.blah_jsp", h.getClassNameForJsp("blah.jsp"));
 
-        Assert.assertEquals("org.apache.jsp.a.b.c.blah_jsp", h.getClassNameForJsp("/a/b/c/blah.jsp"));
+        assertEquals("org.apache.jsp.a.b.c.blah_jsp", h.getClassNameForJsp("/a/b/c/blah.jsp"));
 
-        Assert.assertEquals("org.apache.jsp.a.b.c.blah_jsp", h.getClassNameForJsp("a/b/c/blah.jsp"));
+        assertEquals("org.apache.jsp.a.b.c.blah_jsp", h.getClassNameForJsp("a/b/c/blah.jsp"));
     }
 
 
@@ -99,16 +102,16 @@ public class ServletHolderTest {
             holder.setForcedPath("/blah/");
             handler.addServlet(holder);
             handler.start();
-            Assert.fail("No class in ServletHolder");
+            fail("No class in ServletHolder");
         }
         catch (UnavailableException e)
         {
-            Assert.assertTrue(e.getMessage().contains("foo"));
+            assertTrue(e.getMessage().contains("foo"));
         }
         catch (MultiException e)
         {
             MultiException m = (MultiException)e;
-            Assert.assertTrue(m.getCause().getMessage().contains("foo"));
+            assertTrue(m.getCause().getMessage().contains("foo"));
         }
     }
     
@@ -124,16 +127,16 @@ public class ServletHolderTest {
             holder.setClassName("a.b.c.class");
             handler.addServlet(holder);
             handler.start();
-            Assert.fail("Unloadable class");
+            fail("Unloadable class");
         }
         catch (UnavailableException e)
         {
-            Assert.assertTrue(e.getMessage().contains("foo"));
+            assertTrue(e.getMessage().contains("foo"));
         }
         catch (MultiException e)
         {
             MultiException m = (MultiException)e;
-            Assert.assertTrue(m.getCause().getMessage().contains("foo"));
+            assertTrue(m.getCause().getMessage().contains("foo"));
         }
     }
    

@@ -19,6 +19,7 @@
 package org.eclipse.jetty.start;
 
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -35,8 +36,8 @@ import java.util.List;
 
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -126,7 +127,7 @@ public class TestUseCases
             for (String ex : exceptions)
             {
                 ex = ex.substring(3);
-                Assert.assertThat(e.toString(), Matchers.containsString(ex));
+                assertThat(e.toString(), Matchers.containsString(ex));
             }
         }
         finally

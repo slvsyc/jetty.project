@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.start;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
@@ -29,9 +30,9 @@ import org.eclipse.jetty.start.config.JettyBaseConfigSource;
 import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Assert;
+
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ModuleGraphWriterTest
 {
@@ -67,6 +68,6 @@ public class ModuleGraphWriterTest
         ModuleGraphWriter writer = new ModuleGraphWriter();
         writer.write(modules,outputFile);
 
-        Assert.assertThat("Output File Exists",FS.exists(outputFile),is(true));
+        assertThat("Output File Exists",FS.exists(outputFile),is(true));
     }
 }

@@ -18,7 +18,9 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -46,8 +48,8 @@ import org.eclipse.jetty.websocket.jsr356.server.samples.InvalidErrorIntSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.InvalidOpenCloseReasonSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.InvalidOpenIntSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.InvalidOpenSessionIntSocket;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -101,16 +103,10 @@ public class ServerAnnotatedEndpointScanner_InvalidSignaturesTest
         AnnotatedServerEndpointMetadata metadata = new AnnotatedServerEndpointMetadata(container,pojo,null);
         AnnotatedEndpointScanner<ServerEndpoint,ServerEndpointConfig> scanner = new AnnotatedEndpointScanner<>(metadata);
 
-        try
-        {
+        InvalidSignatureException e = assertThrows(InvalidSignatureException.class, ()->{
             scanner.scan();
-            Assert.fail("Expected " + InvalidSignatureException.class + " with message that references " + expectedAnnoClass + " annotation");
-        }
-        catch (InvalidSignatureException e)
-        {
-            if (LOG.isDebugEnabled())
-                LOG.debug("{}:{}",e.getClass(),e.getMessage());
-            Assert.assertThat("Message",e.getMessage(),containsString(expectedAnnoClass.getSimpleName()));
-        }
+            // Expected InvalidSignatureException with message that references annotation
+        });
+        assertThat("Message",e.getMessage(),containsString(expectedAnnoClass.getSimpleName()));
     }
 }

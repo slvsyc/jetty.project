@@ -20,7 +20,9 @@ package org.eclipse.jetty.servlets;
 
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -36,9 +38,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlets.DoSFilter.RateTracker;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DoSFilterTest extends AbstractDoSFilterTest
 {
@@ -130,11 +132,11 @@ public class DoSFilterTest extends AbstractDoSFilterTest
         DoSFilter doSFilter = new DoSFilter();
         doSFilter.setName("foo");
         boolean exceeded = hitRateTracker(doSFilter,0);
-        Assert.assertTrue("Last hit should have exceeded",exceeded);
+        assertTrue(exceeded, "Last hit should have exceeded");
 
         int sleep = 250;
         exceeded = hitRateTracker(doSFilter,sleep);
-        Assert.assertFalse("Should not exceed as we sleep 300s for each hit and thus do less than 4 hits/s",exceeded);
+        assertFalse(exceeded, "Should not exceed as we sleep 300s for each hit and thus do less than 4 hits/s");
     }
 
     @Test
@@ -143,15 +145,15 @@ public class DoSFilterTest extends AbstractDoSFilterTest
         DoSFilter filter = new DoSFilter();
         filter.setName("foo");
         filter.setWhitelist("192.168.0.1/32,10.0.0.0/8,4d8:0:a:1234:ABc:1F:b18:17,4d8:0:a:1234:ABc:1F:0:0/96");
-        Assert.assertTrue(filter.checkWhitelist("192.168.0.1"));
-        Assert.assertFalse(filter.checkWhitelist("192.168.0.2"));
-        Assert.assertFalse(filter.checkWhitelist("11.12.13.14"));
-        Assert.assertTrue(filter.checkWhitelist("10.11.12.13"));
-        Assert.assertTrue(filter.checkWhitelist("10.0.0.0"));
-        Assert.assertFalse(filter.checkWhitelist("0.0.0.0"));
-        Assert.assertTrue(filter.checkWhitelist("4d8:0:a:1234:ABc:1F:b18:17"));
-        Assert.assertTrue(filter.checkWhitelist("4d8:0:a:1234:ABc:1F:b18:0"));
-        Assert.assertFalse(filter.checkWhitelist("4d8:0:a:1234:ABc:1D:0:0"));
+        assertTrue(filter.checkWhitelist("192.168.0.1"));
+        assertFalse(filter.checkWhitelist("192.168.0.2"));
+        assertFalse(filter.checkWhitelist("11.12.13.14"));
+        assertTrue(filter.checkWhitelist("10.11.12.13"));
+        assertTrue(filter.checkWhitelist("10.0.0.0"));
+        assertFalse(filter.checkWhitelist("0.0.0.0"));
+        assertTrue(filter.checkWhitelist("4d8:0:a:1234:ABc:1F:b18:17"));
+        assertTrue(filter.checkWhitelist("4d8:0:a:1234:ABc:1F:b18:0"));
+        assertFalse(filter.checkWhitelist("4d8:0:a:1234:ABc:1D:0:0"));
     }
 
     @Test

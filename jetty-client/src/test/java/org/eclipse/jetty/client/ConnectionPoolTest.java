@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -43,8 +46,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.IO;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -141,8 +143,8 @@ public class ConnectionPoolTest
         IntStream.range(0, parallelism).parallel().forEach(i ->
                 IntStream.range(0, runs).forEach(j ->
                         run(latch, iterations, failures)));
-        Assert.assertTrue(latch.await(iterations, TimeUnit.SECONDS));
-        Assert.assertTrue(failures.toString(), failures.isEmpty());
+        assertTrue(latch.await(iterations, TimeUnit.SECONDS));
+        assertTrue(failures.isEmpty(), failures.toString());
     }
 
     private void run(CountDownLatch latch, int iterations, List<Throwable> failures)
@@ -206,7 +208,7 @@ public class ConnectionPoolTest
         try
         {
             ContentResponse response = listener.get(5, TimeUnit.SECONDS);
-            Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+            assertEquals(HttpStatus.OK_200, response.getStatus());
         }
         catch (Throwable x)
         {

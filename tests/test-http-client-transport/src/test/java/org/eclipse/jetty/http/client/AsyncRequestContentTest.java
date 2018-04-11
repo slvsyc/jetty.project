@@ -36,8 +36,8 @@ import org.eclipse.jetty.client.util.OutputStreamContentProvider;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class AsyncRequestContentTest extends AbstractTest
 {
@@ -63,7 +63,7 @@ public class AsyncRequestContentTest extends AbstractTest
                 });
         contentProvider.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class AsyncRequestContentTest extends AbstractTest
         contentProvider.offer(ByteBuffer.wrap(new byte[1]));
         contentProvider.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class AsyncRequestContentTest extends AbstractTest
                 });
         contentProvider.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class AsyncRequestContentTest extends AbstractTest
                 });
         contentProvider.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class AsyncRequestContentTest extends AbstractTest
                 });
         contentProvider.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class AsyncRequestContentTest extends AbstractTest
         output.flush();
         contentProvider.close();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     private static class ConsumeInputHandler extends AbstractHandler

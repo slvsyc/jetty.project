@@ -18,7 +18,9 @@
 
 package org.eclipse.jetty.websocket.common;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -27,9 +29,9 @@ import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.io.MappedByteBufferPool;
 import org.eclipse.jetty.websocket.common.io.LocalWebSocketConnection;
 import org.eclipse.jetty.websocket.common.test.OutgoingFramesCapture;
-import org.junit.Assert;
+
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TestName;
 
 public class WebSocketRemoteEndpointTest
@@ -51,19 +53,13 @@ public class WebSocketRemoteEndpointTest
         // Start text message
         remote.sendPartialString("Hello ",false);
 
-        try
-        {
+        IllegalStateException e = assertThrows(IllegalStateException.class, ()->{
             // Attempt to start Binary Message
             ByteBuffer bytes = ByteBuffer.wrap(new byte[]
                     { 0, 1, 2 });
             remote.sendPartialBytes(bytes,false);
-            Assert.fail("Expected " + IllegalStateException.class.getName());
-        }
-        catch (IllegalStateException e)
-        {
-            // Expected path
-            Assert.assertThat("Exception",e.getMessage(),containsString("Cannot send"));
-        }
+        });
+        assertThat("Exception",e.getMessage(),containsString("Cannot send"));
 
         // End text message
         remote.sendPartialString("World!",true);

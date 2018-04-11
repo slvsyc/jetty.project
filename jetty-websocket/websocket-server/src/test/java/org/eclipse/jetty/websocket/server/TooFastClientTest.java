@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.nio.ByteBuffer;
@@ -39,9 +40,9 @@ import org.eclipse.jetty.websocket.common.test.BlockheadConnection;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.eclipse.jetty.websocket.server.examples.MyEchoServlet;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test simulating a client that talks too quickly.
@@ -120,9 +121,9 @@ public class TooFastClientTest
             // Read frames (hopefully text frames)
             LinkedBlockingQueue<WebSocketFrame> frames = clientConn.getFrameQueue();
             WebSocketFrame tf = frames.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-            Assert.assertThat("Text Frame/msg1",tf.getPayloadAsUTF8(),is(msg1));
+            assertThat("Text Frame/msg1",tf.getPayloadAsUTF8(),is(msg1));
             tf = frames.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-            Assert.assertThat("Text Frame/msg2",tf.getPayloadAsUTF8(),is(msg2));
+            assertThat("Text Frame/msg2",tf.getPayloadAsUTF8(),is(msg2));
         }
     }
 
@@ -153,7 +154,7 @@ public class TooFastClientTest
             LinkedBlockingQueue<WebSocketFrame> frames = clientConn.getFrameQueue();
 
             WebSocketFrame tf = frames.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-            Assert.assertThat("Text Frame/msg1",tf.getPayloadAsUTF8(),is(bigMsg));
+            assertThat("Text Frame/msg1",tf.getPayloadAsUTF8(),is(bigMsg));
         }
     }
 }

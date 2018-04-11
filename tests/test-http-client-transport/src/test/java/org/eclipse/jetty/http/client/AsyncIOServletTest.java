@@ -78,19 +78,19 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+
 import org.junit.Assume;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.nio.ByteBuffer.wrap;
 import static org.eclipse.jetty.util.BufferUtil.toArray;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AsyncIOServletTest extends AbstractTest
 {
@@ -129,7 +129,7 @@ public class AsyncIOServletTest extends AbstractTest
 
     private void assertScope()
     {
-        Assert.assertNotNull("Not in scope", scope.get());
+        assertNotNull(scope.get(), "Not in scope");
     }
 
     private void checkScope()
@@ -204,8 +204,8 @@ public class AsyncIOServletTest extends AbstractTest
                     public void onError(Throwable t)
                     {
                         assertScope();
-                        Assert.assertThat("onError type", t, instanceOf(throwable.getClass()));
-                        Assert.assertThat("onError message", t.getMessage(), is(throwable.getMessage()));
+                        assertThat("onError type", t, instanceOf(throwable.getClass()));
+                        assertThat("onError message", t.getMessage(), is(throwable.getMessage()));
                         latch.countDown();
                         response.setStatus(500);
                         asyncContext.complete();
@@ -364,7 +364,7 @@ public class AsyncIOServletTest extends AbstractTest
                     .send();
 
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR_500, response.getStatus());
-            Assert.assertEquals(1, errors.get());
+            assertEquals(1, errors.get());
         }
     }
 
@@ -410,7 +410,7 @@ public class AsyncIOServletTest extends AbstractTest
                         latch.countDown();
                         response.setStatus(500);
                         asyncContext.complete();
-                        Assert.assertSame(throwable, t);
+                        assertSame(throwable, t);
                     }
                 });
             }
@@ -985,7 +985,7 @@ public class AsyncIOServletTest extends AbstractTest
         assertThat(response.getStatus(), Matchers.equalTo(HttpStatus.OK_200));
         assertTrue(latch.await(5, TimeUnit.SECONDS));
         // onDataAvailable must not be called.
-        Assert.assertFalse(oda.get());
+        assertFalse(oda.get());
     }
 
     @Test
@@ -1018,7 +1018,7 @@ public class AsyncIOServletTest extends AbstractTest
                             if (output.isReady())
                                 output.write(buffer, 0, read);
                             else
-                                Assert.fail();
+                                fail();
                         }
                     }
 
@@ -1177,7 +1177,7 @@ public class AsyncIOServletTest extends AbstractTest
                 ((HTTP2Session)session).getEndPoint().shutdownOutput();
                 break;
             default:
-                Assert.fail();
+                fail();
         }
 
         // Wait for the response to arrive before finishing the request.
@@ -1352,7 +1352,7 @@ public class AsyncIOServletTest extends AbstractTest
         contentProvider.close();
         
         
-        Assert.assertTrue(clientLatch.await(10,TimeUnit.SECONDS));
+        assertTrue(clientLatch.await(10,TimeUnit.SECONDS));
         
 
     }
@@ -1396,7 +1396,7 @@ public class AsyncIOServletTest extends AbstractTest
                                     }
                                 }))
                                 .send();
-                        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+                        assertEquals(HttpStatus.OK_200, response.getStatus());
                         latch.countDown();
                     }
                     catch (Throwable x)
@@ -1407,8 +1407,8 @@ public class AsyncIOServletTest extends AbstractTest
             });
         }
 
-        Assert.assertTrue(latch.await(30, TimeUnit.SECONDS));
-        Assert.assertTrue(failures.isEmpty());
+        assertTrue(latch.await(30, TimeUnit.SECONDS));
+        assertTrue(failures.isEmpty());
     }
 
     private class Listener implements ReadListener, WriteListener

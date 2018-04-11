@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +38,9 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LocalAsyncContextTest
 {
@@ -220,11 +223,11 @@ public class LocalAsyncContextTest
 
     protected void check(String response, String... content)
     {
-        Assert.assertThat(response, Matchers.startsWith("HTTP/1.1 200 OK"));
+        assertThat(response, Matchers.startsWith("HTTP/1.1 200 OK"));
         int i = 0;
         for (String m : content)
         {
-            Assert.assertThat(response, Matchers.containsString(m));
+            assertThat(response, Matchers.containsString(m));
             i = response.indexOf(m, i);
             i += m.length();
         }
@@ -515,6 +518,6 @@ public class LocalAsyncContextTest
             now = System.nanoTime();
         }
 
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }

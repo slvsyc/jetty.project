@@ -18,6 +18,11 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
@@ -40,8 +45,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class ClientConnectionCloseTest extends AbstractHttpClientServerTest
 {
@@ -97,13 +102,13 @@ public class ClientConnectionCloseTest extends AbstractHttpClientServerTest
                 .onRequestSuccess(request ->
                 {
                     HttpConnectionOverHTTP connection = (HttpConnectionOverHTTP)connectionPool.getActiveConnections().iterator().next();
-                    Assert.assertFalse(connection.getEndPoint().isOutputShutdown());
+                    assertFalse(connection.getEndPoint().isOutputShutdown());
                 })
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-        Assert.assertArrayEquals(data, response.getContent());
-        Assert.assertEquals(0, connectionPool.getConnectionCount());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertArrayEquals(data, response.getContent());
+        assertEquals(0, connectionPool.getConnectionCount());
     }
 
     @Test
@@ -135,7 +140,7 @@ public class ClientConnectionCloseTest extends AbstractHttpClientServerTest
                 .onRequestSuccess(request ->
                 {
                     HttpConnectionOverHTTP connection = (HttpConnectionOverHTTP)connectionPool.getActiveConnections().iterator().next();
-                    Assert.assertFalse(connection.getEndPoint().isOutputShutdown());
+                    assertFalse(connection.getEndPoint().isOutputShutdown());
                 })
                 .send(result ->
                 {
@@ -143,8 +148,8 @@ public class ClientConnectionCloseTest extends AbstractHttpClientServerTest
                         resultLatch.countDown();
                 });
 
-        Assert.assertTrue(resultLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(0, connectionPool.getConnectionCount());
+        assertTrue(resultLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertEquals(0, connectionPool.getConnectionCount());
     }
 
     @Test
@@ -196,7 +201,7 @@ public class ClientConnectionCloseTest extends AbstractHttpClientServerTest
                 .onRequestSuccess(request ->
                 {
                     HttpConnectionOverHTTP connection = (HttpConnectionOverHTTP)connectionPool.getActiveConnections().iterator().next();
-                    Assert.assertFalse(connection.getEndPoint().isOutputShutdown());
+                    assertFalse(connection.getEndPoint().isOutputShutdown());
                 })
                 .send(result ->
                 {
@@ -206,8 +211,8 @@ public class ClientConnectionCloseTest extends AbstractHttpClientServerTest
         content.offer(ByteBuffer.allocate(8));
         content.close();
 
-        Assert.assertTrue(resultLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(0, connectionPool.getConnectionCount());
+        assertTrue(resultLatch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertEquals(0, connectionPool.getConnectionCount());
     }
 
     @Test
@@ -246,12 +251,12 @@ public class ClientConnectionCloseTest extends AbstractHttpClientServerTest
                 .onRequestSuccess(request ->
                 {
                     HttpConnectionOverHTTP connection = (HttpConnectionOverHTTP)connectionPool.getActiveConnections().iterator().next();
-                    Assert.assertFalse(connection.getEndPoint().isOutputShutdown());
+                    assertFalse(connection.getEndPoint().isOutputShutdown());
                 })
                 .onResponseHeaders(r -> r.getHeaders().remove(HttpHeader.CONNECTION))
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-        Assert.assertEquals(0, connectionPool.getConnectionCount());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(0, connectionPool.getConnectionCount());
     }
 }

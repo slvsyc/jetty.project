@@ -18,6 +18,14 @@
 
 package org.eclipse.jetty.proxy;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -91,8 +99,8 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -203,17 +211,13 @@ public class ProxyServletTest
         // Shutdown the proxy
         proxy.stop();
 
-        try
-        {
+        ExecutionException x = assertThrows(ExecutionException.class,
+                ()->{
             client.newRequest("localhost", serverConnector.getLocalPort())
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
-            Assert.fail();
-        }
-        catch (ExecutionException x)
-        {
-            Assert.assertThat(x.getCause(), Matchers.instanceOf(ConnectException.class));
-        }
+        });
+        assertThat(x.getCause(), instanceOf(ConnectException.class));
     }
 
     @Test
@@ -235,9 +239,9 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals("OK", response.getReason());
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals("OK", response.getReason());
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -269,9 +273,9 @@ public class ProxyServletTest
 
         for (int i = 0; i < 10; ++i)
         {
-            Assert.assertEquals(200, responses[i].getStatus());
-            Assert.assertTrue(responses[i].getHeaders().containsKey(PROXIED_HEADER));
-            Assert.assertArrayEquals(content, responses[i].getContent());
+            assertEquals(200, responses[i].getStatus());
+            assertTrue(responses[i].getHeaders().containsKey(PROXIED_HEADER));
+            assertArrayEquals(content, responses[i].getContent());
         }
     }
 
@@ -299,9 +303,9 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
-        Assert.assertArrayEquals(content, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertArrayEquals(content, response.getContent());
     }
 
     @Test
@@ -337,8 +341,8 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -364,7 +368,7 @@ public class ProxyServletTest
                         break;
                     for (int i=0;i<value;i++)
                     {
-                        Assert.assertEquals("Content mismatch at index=" + index, content[index] & 0xFF, buffer[i] & 0xFF);
+                        assertEquals(content[index] & 0xFF, buffer[i] & 0xFF, "Content mismatch at index=" + index);
                         ++index;
                     }
                 }
@@ -379,8 +383,8 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -434,13 +438,13 @@ public class ProxyServletTest
             @Override
             public void onComplete(Result result)
             {
-                Assert.assertFalse(result.isFailed());
-                Assert.assertEquals(200, result.getResponse().getStatus());
-                Assert.assertEquals(length * 1024, getContent().length);
+                assertFalse(result.isFailed());
+                assertEquals(200, result.getResponse().getStatus());
+                assertEquals(length * 1024, getContent().length);
                 latch.countDown();
             }
         });
-        Assert.assertTrue(latch.await(30, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS));
     }
 
     @Test
@@ -461,8 +465,8 @@ public class ProxyServletTest
         ContentResponse response = client.newRequest("http://localhost:" + serverConnector.getLocalPort() + "/?" + query)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(query, response.getContentAsString());
+        assertEquals(200, response.getStatus());
+        assertEquals(query, response.getContentAsString());
     }
 
     @Test
@@ -512,8 +516,8 @@ public class ProxyServletTest
         Response response = client.newRequest("localhost", serverConnector.getLocalPort())
                 .timeout(2 * timeout, TimeUnit.MILLISECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -533,7 +537,7 @@ public class ProxyServletTest
         startClient();
 
         ContentResponse response = client.GET("http://localhost:" + serverConnector.getLocalPort());
-        Assert.assertThat("Response expected to contain content of X-Forwarded-Host Header from the request",
+        assertThat("Response expected to contain content of X-Forwarded-Host Header from the request",
                 response.getContentAsString(),
                 Matchers.equalTo("localhost:" + serverConnector.getLocalPort()));
     }
@@ -551,13 +555,13 @@ public class ProxyServletTest
         ContentResponse response = client.newRequest("localhost", port)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(403, response.getStatus());
+        assertEquals(403, response.getStatus());
 
         // Try again with the right host
         response = client.newRequest("127.0.0.1", port)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -573,13 +577,13 @@ public class ProxyServletTest
         ContentResponse response = client.newRequest("localhost", port)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(403, response.getStatus());
+        assertEquals(403, response.getStatus());
 
         // Try again with the right host
         response = client.newRequest("127.0.0.1", port)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -603,15 +607,15 @@ public class ProxyServletTest
         ContentResponse response = client.newRequest("localhost", port)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
 
         // Try again with an excluded host
         response = client.newRequest("127.0.0.1", port)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -652,8 +656,8 @@ public class ProxyServletTest
                 .path((prefix + target).replaceAll("//", "/"))
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -718,8 +722,8 @@ public class ProxyServletTest
                 .path(prefix + target + "?" + query)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -760,8 +764,8 @@ public class ProxyServletTest
                 .path(prefix + target + "?" + query)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -790,8 +794,8 @@ public class ProxyServletTest
                 .path(target)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -864,17 +868,17 @@ public class ProxyServletTest
         ContentResponse response = client.newRequest("localhost", serverConnector.getLocalPort())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
-        Assert.assertArrayEquals(content, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertArrayEquals(content, response.getContent());
 
         // Second request should be cached
         response = client.newRequest("localhost", serverConnector.getLocalPort())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(cacheHeader));
-        Assert.assertArrayEquals(content, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(cacheHeader));
+        assertArrayEquals(content, response.getContent());
     }
 
     @Test
@@ -898,8 +902,8 @@ public class ProxyServletTest
         ContentResponse response = client.newRequest("localhost", serverConnector.getLocalPort())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(302, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(302, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
     @Test
@@ -926,9 +930,9 @@ public class ProxyServletTest
         ContentResponse response = client.newRequest("localhost", serverConnector.getLocalPort())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
-        Assert.assertArrayEquals(content, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertArrayEquals(content, response.getContent());
     }
 
     @Test
@@ -954,11 +958,11 @@ public class ProxyServletTest
             ContentResponse response = client.newRequest("localhost", serverConnector.getLocalPort())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-            Assert.assertThat(response.getStatus(),Matchers.greaterThanOrEqualTo(500));   
+            assertThat(response.getStatus(),Matchers.greaterThanOrEqualTo(500));
         }
         catch(ExecutionException e)
         {     
-            Assert.assertThat(e.getCause(),Matchers.instanceOf(IOException.class));
+            assertThat(e.getCause(),instanceOf(IOException.class));
         }
     }
 
@@ -984,7 +988,7 @@ public class ProxyServletTest
                 else
                 {
                     Cookie[] cookies = req.getCookies();
-                    Assert.assertEquals(1, cookies.length);
+                    assertEquals(1, cookies.length);
                 }
             }
         });
@@ -996,12 +1000,12 @@ public class ProxyServletTest
                 .header(name, value1)
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertEquals(200, response1.getStatus());
-        Assert.assertTrue(response1.getHeaders().containsKey(PROXIED_HEADER));
+        assertEquals(200, response1.getStatus());
+        assertTrue(response1.getHeaders().containsKey(PROXIED_HEADER));
         List<HttpCookie> cookies = client.getCookieStore().getCookies();
-        Assert.assertEquals(1, cookies.size());
-        Assert.assertEquals(name, cookies.get(0).getName());
-        Assert.assertEquals(value1, cookies.get(0).getValue());
+        assertEquals(1, cookies.size());
+        assertEquals(name, cookies.get(0).getName());
+        assertEquals(value1, cookies.get(0).getValue());
 
         HttpClient client2 = prepareClient();
         try
@@ -1011,19 +1015,19 @@ public class ProxyServletTest
                     .header(name, value2)
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
-            Assert.assertEquals(200, response2.getStatus());
-            Assert.assertTrue(response2.getHeaders().containsKey(PROXIED_HEADER));
+            assertEquals(200, response2.getStatus());
+            assertTrue(response2.getHeaders().containsKey(PROXIED_HEADER));
             cookies = client2.getCookieStore().getCookies();
-            Assert.assertEquals(1, cookies.size());
-            Assert.assertEquals(name, cookies.get(0).getName());
-            Assert.assertEquals(value2, cookies.get(0).getValue());
+            assertEquals(1, cookies.size());
+            assertEquals(name, cookies.get(0).getName());
+            assertEquals(value2, cookies.get(0).getValue());
 
             // Make a third request to be sure the proxy does not mix cookies
             ContentResponse response3 = client.newRequest("localhost", serverConnector.getLocalPort())
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
-            Assert.assertEquals(200, response3.getStatus());
-            Assert.assertTrue(response3.getHeaders().containsKey(PROXIED_HEADER));
+            assertEquals(200, response3.getStatus());
+            assertTrue(response3.getHeaders().containsKey(PROXIED_HEADER));
         }
         finally
         {
@@ -1080,24 +1084,24 @@ public class ProxyServletTest
         TimeUnit.MILLISECONDS.sleep(2 * proxyTimeout);
 
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(504, response.getStatus());
+        assertEquals(504, response.getStatus());
 
         // Make sure there is error page content, as the proxy-to-client response has been reset.
         InputStream input = listener.getInputStream();
         String body = IO.toString(input);
-        Assert.assertThat(body,Matchers.containsString("HTTP ERROR 504"));
+        assertThat(body,Matchers.containsString("HTTP ERROR 504"));
         chunk1Latch.countDown();
 
         // Result succeeds because a 504 is a valid HTTP response.
         Result result = listener.await(5, TimeUnit.SECONDS);
-        Assert.assertTrue(result.isSucceeded());
+        assertTrue(result.isSucceeded());
 
         // Make sure the proxy does not receive chunk2.
-        Assert.assertEquals(-1, input.read());
+        assertEquals(-1, input.read());
 
         HttpDestinationOverHTTP destination = (HttpDestinationOverHTTP)client.getDestination("http", "localhost", port);
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
-        Assert.assertEquals(0, connectionPool.getIdleConnections().size());
+        assertEquals(0, connectionPool.getIdleConnections().size());
     }
 
     @Test
@@ -1148,30 +1152,25 @@ public class ProxyServletTest
         client.newRequest("localhost", port).send(listener);
 
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         InputStream input = listener.getInputStream();
         for (int i = 0; i < chunk1.length; ++i)
-            Assert.assertEquals(chunk1[i] & 0xFF, input.read());
+            assertEquals(chunk1[i] & 0xFF, input.read());
 
         TimeUnit.MILLISECONDS.sleep(2 * proxyTimeout);
 
         chunk1Latch.countDown();
 
-        try
-        {
-            // Make sure the proxy does not receive chunk2.
-            input.read();
-            Assert.fail();
-        }
-        catch (EOFException x)
-        {
-            // Expected
-        }
+        assertThrows(EOFException.class,
+                () -> {
+                    // Make sure the proxy does not receive chunk2.
+                    input.read();
+                });
 
         HttpDestinationOverHTTP destination = (HttpDestinationOverHTTP)client.getDestination("http", "localhost", port);
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
-        Assert.assertEquals(0, connectionPool.getIdleConnections().size());
+        assertEquals(0, connectionPool.getIdleConnections().size());
     }
 
     @Test
@@ -1208,8 +1207,8 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(headerValue, response.getHeaders().get(headerName));
+        assertEquals(200, response.getStatus());
+        assertEquals(headerValue, response.getHeaders().get(headerName));
     }
 
     @Test
@@ -1244,7 +1243,7 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -1302,16 +1301,16 @@ public class ProxyServletTest
                 });
 
         // Wait until we arrive on the server.
-        Assert.assertTrue(serverLatch1.await(5, TimeUnit.SECONDS));
+        assertTrue(serverLatch1.await(5, TimeUnit.SECONDS));
         // The client should not send the content yet.
-        Assert.assertFalse(contentLatch.await(1, TimeUnit.SECONDS));
+        assertFalse(contentLatch.await(1, TimeUnit.SECONDS));
 
         // Make the server send the 100 Continue.
         serverLatch2.countDown();
 
         // The client has sent the content.
-        Assert.assertTrue(contentLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(contentLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1361,7 +1360,7 @@ public class ProxyServletTest
         contentProvider.offer(ByteBuffer.wrap(content, chunk1, content.length - chunk1));
         contentProvider.close();
 
-        Assert.assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1410,8 +1409,8 @@ public class ProxyServletTest
         // Wait more than the idle timeout to break the connection.
         Thread.sleep(2 * idleTimeout);
 
-        Assert.assertTrue(serverLatch.await(555, TimeUnit.SECONDS));
-        Assert.assertTrue(clientLatch.await(555, TimeUnit.SECONDS));
+        assertTrue(serverLatch.await(555, TimeUnit.SECONDS));
+        assertTrue(clientLatch.await(555, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1459,15 +1458,15 @@ public class ProxyServletTest
                 });
 
         // Wait until we arrive on the server.
-        Assert.assertTrue(serverLatch1.await(5, TimeUnit.SECONDS));
+        assertTrue(serverLatch1.await(5, TimeUnit.SECONDS));
         // The client should not send the content yet.
-        Assert.assertFalse(contentLatch.await(1, TimeUnit.SECONDS));
+        assertFalse(contentLatch.await(1, TimeUnit.SECONDS));
 
         // Make the server send the 417 Expectation Failed.
         serverLatch2.countDown();
 
         // The client should not send the content.
-        Assert.assertFalse(contentLatch.await(1, TimeUnit.SECONDS));
-        Assert.assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
+        assertFalse(contentLatch.await(1, TimeUnit.SECONDS));
+        assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
     }
 }

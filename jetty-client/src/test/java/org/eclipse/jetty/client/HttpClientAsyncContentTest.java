@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
@@ -36,8 +39,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpClientAsyncContentTest extends AbstractHttpClientServerTest
 {
@@ -86,34 +89,34 @@ public class HttpClientAsyncContentTest extends AbstractHttpClientServerTest
                     }
                 });
 
-        Assert.assertTrue(contentLatch.get().await(5, TimeUnit.SECONDS));
+        assertTrue(contentLatch.get().await(5, TimeUnit.SECONDS));
         Callback callback = callbackRef.get();
 
         // Wait a while to be sure that the parsing does not proceed.
         TimeUnit.MILLISECONDS.sleep(1000);
 
-        Assert.assertEquals(1, contentCount.get());
+        assertEquals(1, contentCount.get());
 
         // Succeed the content callback to proceed with parsing.
         callbackRef.set(null);
         contentLatch.set(new CountDownLatch(1));
         callback.succeeded();
 
-        Assert.assertTrue(contentLatch.get().await(5, TimeUnit.SECONDS));
+        assertTrue(contentLatch.get().await(5, TimeUnit.SECONDS));
         callback = callbackRef.get();
 
         // Wait a while to be sure that the parsing does not proceed.
         TimeUnit.MILLISECONDS.sleep(1000);
 
-        Assert.assertEquals(2, contentCount.get());
-        Assert.assertEquals(1, completeLatch.getCount());
+        assertEquals(2, contentCount.get());
+        assertEquals(1, completeLatch.getCount());
 
         // Succeed the content callback to proceed with parsing.
         callbackRef.set(null);
         contentLatch.set(new CountDownLatch(1));
         callback.succeeded();
 
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertEquals(2, contentCount.get());
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertEquals(2, contentCount.get());
     }
 }

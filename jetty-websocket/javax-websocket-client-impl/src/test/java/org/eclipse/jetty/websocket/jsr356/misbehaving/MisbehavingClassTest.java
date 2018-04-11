@@ -20,7 +20,7 @@ package org.eclipse.jetty.websocket.jsr356.misbehaving;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.net.URI;
@@ -38,7 +38,7 @@ import org.eclipse.jetty.websocket.jsr356.EchoHandler;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class MisbehavingClassTest

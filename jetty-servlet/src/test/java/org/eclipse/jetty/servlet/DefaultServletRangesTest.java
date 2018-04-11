@@ -18,7 +18,8 @@
 
 package org.eclipse.jetty.servlet;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,10 +34,9 @@ import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DefaultServletRangesTest
 {
@@ -224,12 +224,12 @@ public class DefaultServletRangesTest
 
     private void assertResponseNotContains(String forbidden, String response)
     {
-        Assert.assertThat(response,Matchers.not(Matchers.containsString(forbidden)));
+        assertThat(response,Matchers.not(Matchers.containsString(forbidden)));
     }
 
     private int assertResponseContains(String expected, String response)
     {
-        Assert.assertThat(response,Matchers.containsString(expected));
+        assertThat(response,Matchers.containsString(expected));
         return response.indexOf(expected);
     }
 }

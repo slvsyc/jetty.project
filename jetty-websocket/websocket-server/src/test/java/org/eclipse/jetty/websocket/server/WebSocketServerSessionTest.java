@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.net.URI;
@@ -33,9 +34,9 @@ import org.eclipse.jetty.websocket.common.test.BlockheadConnection;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.eclipse.jetty.websocket.server.helper.SessionServlet;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testing various aspects of the server side support for WebSocket {@link org.eclipse.jetty.websocket.api.Session}
@@ -110,13 +111,13 @@ public class WebSocketServerSessionTest
             // Read frame (hopefully text frame)
             LinkedBlockingQueue<WebSocketFrame> frames = clientConn.getFrameQueue();
             WebSocketFrame tf = frames.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-            Assert.assertThat("Parameter Map[snack]", tf.getPayloadAsUTF8(), is("[cashews]"));
+            assertThat("Parameter Map[snack]", tf.getPayloadAsUTF8(), is("[cashews]"));
             tf = frames.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-            Assert.assertThat("Parameter Map[amount]", tf.getPayloadAsUTF8(), is("[handful]"));
+            assertThat("Parameter Map[amount]", tf.getPayloadAsUTF8(), is("[handful]"));
             tf = frames.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-            Assert.assertThat("Parameter Map[brand]", tf.getPayloadAsUTF8(), is("[off]"));
+            assertThat("Parameter Map[brand]", tf.getPayloadAsUTF8(), is("[off]"));
             tf = frames.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-            Assert.assertThat("Parameter Map[cost]", tf.getPayloadAsUTF8(), is("<null>"));
+            assertThat("Parameter Map[cost]", tf.getPayloadAsUTF8(), is("<null>"));
         }
     }
 }

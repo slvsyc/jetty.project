@@ -18,9 +18,11 @@
 
 package org.eclipse.jetty.util;
 
-import org.junit.Assert;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * we cannot really add env var in a unit test... so only test we get default value
@@ -36,6 +38,6 @@ public class ProcessorUtilsTest
     @Test
     public void getPropertyValue()
     {
-        Assert.assertEquals(42, ProcessorUtils.availableProcessors());
+        assertEquals(42, ProcessorUtils.availableProcessors());
     }
 }

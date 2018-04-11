@@ -18,7 +18,9 @@
 
 package org.eclipse.jetty.websocket.jsr356.endpoints;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -54,8 +56,8 @@ import org.eclipse.jetty.websocket.jsr356.endpoints.samples.close.CloseReasonSes
 import org.eclipse.jetty.websocket.jsr356.endpoints.samples.close.CloseReasonSocket;
 import org.eclipse.jetty.websocket.jsr356.endpoints.samples.close.CloseSessionReasonSocket;
 import org.eclipse.jetty.websocket.jsr356.endpoints.samples.close.CloseSocket;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -153,17 +155,17 @@ public class ClientAnnotatedEndpointScanner_GoodSignaturesTest
         AnnotatedEndpointScanner<ClientEndpoint, ClientEndpointConfig> scanner = new AnnotatedEndpointScanner<>(metadata);
         scanner.scan();
 
-        Assert.assertThat("Metadata",metadata,notNullValue());
+        assertThat("Metadata",metadata,notNullValue());
 
         JsrCallable cm = (JsrCallable)testcase.metadataField.get(metadata);
-        Assert.assertThat(testcase.metadataField.toString(),cm,notNullValue());
+        assertThat(testcase.metadataField.toString(),cm,notNullValue());
         int len = testcase.expectedParameters.length;
         for (int i = 0; i < len; i++)
         {
             Class<?> expectedParam = testcase.expectedParameters[i];
             Class<?> actualParam = cm.getParamTypes()[i];
 
-            Assert.assertTrue("Parameter[" + i + "] - expected:[" + expectedParam + "], actual:[" + actualParam + "]",actualParam.equals(expectedParam));
+            assertTrue(actualParam.equals(expectedParam),"Parameter[" + i + "] - expected:[" + expectedParam + "], actual:[" + actualParam + "]");
         }
     }
 }

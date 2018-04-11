@@ -20,18 +20,19 @@ package org.eclipse.jetty.util.thread;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class QueuedThreadPoolTest
@@ -241,7 +242,7 @@ public class QueuedThreadPoolTest
             {}
             now=TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
         }
-        Assert.assertEquals(idle, tp.getIdleThreads());
+        assertEquals(idle, tp.getIdleThreads());
     }
 
     private void waitForThreads(QueuedThreadPool tp, int threads)
@@ -302,9 +303,11 @@ public class QueuedThreadPoolTest
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testConstructorMinMaxThreadsValidation()
     {
-        new QueuedThreadPool(4, 8);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new QueuedThreadPool(4, 8);
+        });
     }
 }

@@ -23,7 +23,9 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -55,10 +57,10 @@ import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Various connect condition testing
@@ -77,13 +79,13 @@ public class ClientConnectTest
         // Validate thrown cause
         Throwable cause = e.getCause();
     
-        Assert.assertThat("ExecutionException.cause",cause,errorMatcher);
+        assertThat("ExecutionException.cause",cause,errorMatcher);
 
         // Validate websocket captured cause
-        Assert.assertThat("Error Queue Length",wsocket.errorQueue.size(),greaterThanOrEqualTo(1));
+        assertThat("Error Queue Length",wsocket.errorQueue.size(),greaterThanOrEqualTo(1));
         Throwable capcause = wsocket.errorQueue.poll();
-        Assert.assertThat("Error Queue[0]",capcause,notNullValue());
-        Assert.assertThat("Error Queue[0]",capcause,errorMatcher);
+        assertThat("Error Queue[0]",capcause,notNullValue());
+        assertThat("Error Queue[0]",capcause,errorMatcher);
 
         // Validate that websocket didn't see an open event
         wsocket.assertNotOpened();
@@ -220,19 +222,13 @@ public class ClientConnectTest
         Future<Session> future = client.connect(wsocket,wsUri);
 
         // The attempt to get upgrade response future should throw error
-        try
-        {
-            future.get(30,TimeUnit.SECONDS);
-            Assert.fail("Expected ExecutionException -> UpgradeException");
-        }
-        catch (ExecutionException e)
-        {
-            // Expected Path
-            UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
-            Assert.assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(404));
-        }
+        ExecutionException e = assertThrows(ExecutionException.class,
+                ()-> future.get(30,TimeUnit.SECONDS));
+
+        UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
+        assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
+        assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
+        assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(404));
     }
 
     @Test
@@ -250,19 +246,13 @@ public class ClientConnectTest
         Future<Session> future = client.connect(wsocket,wsUri);
 
         // The attempt to get upgrade response future should throw error
-        try
-        {
-            future.get(30,TimeUnit.SECONDS);
-            Assert.fail("Expected ExecutionException -> UpgradeException");
-        }
-        catch (ExecutionException e)
-        {
-            // Expected Path
-            UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
-            Assert.assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(200));
-        }
+        ExecutionException e = assertThrows(ExecutionException.class,
+                ()-> future.get(30,TimeUnit.SECONDS));
+
+        UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
+        assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
+        assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
+        assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(200));
     }
 
     @Test
@@ -282,19 +272,13 @@ public class ClientConnectTest
         Future<Session> future = client.connect(wsocket,wsUri);
 
         // The attempt to get upgrade response future should throw error
-        try
-        {
-            future.get(30,TimeUnit.SECONDS);
-            Assert.fail("Expected ExecutionException -> UpgradeException");
-        }
-        catch (ExecutionException e)
-        {
-            // Expected Path
-            UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
-            Assert.assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(200));
-        }
+        ExecutionException e = assertThrows(ExecutionException.class,
+                ()-> future.get(30,TimeUnit.SECONDS));
+
+        UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
+        assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
+        assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
+        assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(200));
     }
 
     @Test
@@ -315,19 +299,13 @@ public class ClientConnectTest
         Future<Session> future = client.connect(wsocket,wsUri);
 
         // The attempt to get upgrade response future should throw error
-        try
-        {
-            future.get(30,TimeUnit.SECONDS);
-            Assert.fail("Expected ExecutionException -> UpgradeException");
-        }
-        catch (ExecutionException e)
-        {
-            // Expected Path
-            UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
-            Assert.assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(101));
-        }
+        ExecutionException e = assertThrows(ExecutionException.class,
+                ()-> future.get(30,TimeUnit.SECONDS));
+
+        UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
+        assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
+        assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
+        assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(101));
     }
 
     @Test
@@ -348,19 +326,13 @@ public class ClientConnectTest
         Future<Session> future = client.connect(wsocket,wsUri);
 
         // The attempt to get upgrade response future should throw error
-        try
-        {
-            future.get(30,TimeUnit.SECONDS);
-            Assert.fail("Expected ExecutionException -> UpgradeException");
-        }
-        catch (ExecutionException e)
-        {
-            // Expected Path
-            UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
-            Assert.assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(101));
-        }
+        ExecutionException e = assertThrows(ExecutionException.class,
+                ()-> future.get(30,TimeUnit.SECONDS));
+
+        UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
+        assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
+        assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
+        assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(101));
     }
 
     @Test
@@ -379,19 +351,13 @@ public class ClientConnectTest
         Future<Session> future = client.connect(wsocket,wsUri);
 
         // The attempt to get upgrade response future should throw error
-        try
-        {
-            future.get(30,TimeUnit.SECONDS);
-            Assert.fail("Expected ExecutionException -> UpgradeException");
-        }
-        catch (ExecutionException e)
-        {
-            // Expected Path
-            UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
-            Assert.assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
-            Assert.assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(101));
-        }
+        ExecutionException e = assertThrows(ExecutionException.class,
+                ()-> future.get(30,TimeUnit.SECONDS));
+
+        UpgradeException ue = assertExpectedError(e,wsocket,instanceOf(UpgradeException.class));
+        assertThat("UpgradeException.requestURI",ue.getRequestURI(),notNullValue());
+        assertThat("UpgradeException.requestURI",ue.getRequestURI().toASCIIString(),is(wsUri.toASCIIString()));
+        assertThat("UpgradeException.responseStatusCode",ue.getResponseStatusCode(),is(101));
     }
 
     @Test
@@ -414,7 +380,7 @@ public class ClientConnectTest
             try
             {
                 future.get(3, TimeUnit.SECONDS);
-                Assert.fail("Should have Timed Out");
+                fail("Should have Timed Out");
             }
             catch (ExecutionException e)
             {
@@ -444,12 +410,12 @@ public class ClientConnectTest
 
             // The attempt to get upgrade response future should throw error
             future.get(3,TimeUnit.SECONDS);
-            Assert.fail("Expected ExecutionException -> ConnectException");
+            fail("Expected ExecutionException -> ConnectException");
         }
         catch (ConnectException e)
         {
             Throwable t = wsocket.errorQueue.remove();
-            Assert.assertThat("Error Queue[0]",t,instanceOf(ConnectException.class));
+            assertThat("Error Queue[0]",t,instanceOf(ConnectException.class));
             wsocket.assertNotOpened();
         }
         catch (ExecutionException e)
@@ -462,7 +428,7 @@ public class ClientConnectTest
         }
     }
 
-    @Test(expected = TimeoutException.class)
+    @Test
     public void testConnectionTimeout_Concurrent() throws Exception
     {
         JettyTrackingSocket wsocket = new JettyTrackingSocket();
@@ -480,16 +446,11 @@ public class ClientConnectTest
             serverSocket.accept();
 
             // The attempt to get upgrade response future should throw error
-            try
-            {
-                future.get(3, TimeUnit.SECONDS);
-                Assert.fail("Expected ExecutionException -> TimeoutException");
-            }
-            catch (ExecutionException e)
-            {
-                // Expected path - java.net.ConnectException ?
-                assertExpectedError(e, wsocket, instanceOf(ConnectException.class));
-            }
+            ExecutionException e = assertThrows(ExecutionException.class,
+                    ()-> future.get(3, TimeUnit.SECONDS));
+
+            // Expected path - java.net.ConnectException ?
+            assertExpectedError(e, wsocket, instanceOf(ConnectException.class));
         }
     }
 }

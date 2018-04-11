@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -41,9 +43,9 @@ import org.eclipse.jetty.io.SocketChannelEndPoint;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Extended Server Tester.
@@ -139,15 +141,15 @@ public class ExtendedServerTest extends HttpServerTestBase
             // Read the response.
             String response = readResponse(client);
 
-            Assert.assertThat(response, Matchers.containsString("HTTP/1.1 200 OK"));
-            Assert.assertThat(response, Matchers.containsString("DispatchedAt="));
+            assertThat(response, Matchers.containsString("HTTP/1.1 200 OK"));
+            assertThat(response, Matchers.containsString("DispatchedAt="));
             
             String s=response.substring(response.indexOf("DispatchedAt=")+13);
             s=s.substring(0,s.indexOf('\n'));
             long dispatched=Long.valueOf(s);
             
-            Assert.assertThat(dispatched, Matchers.greaterThanOrEqualTo(start));
-            Assert.assertThat(dispatched, Matchers.lessThan(end));
+            assertThat(dispatched, Matchers.greaterThanOrEqualTo(start));
+            assertThat(dispatched, Matchers.lessThan(end));
         }
     }
     

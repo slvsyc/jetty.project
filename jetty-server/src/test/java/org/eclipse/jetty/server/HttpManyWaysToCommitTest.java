@@ -20,9 +20,9 @@ package org.eclipse.jetty.server;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -432,7 +432,7 @@ public class HttpManyWaysToCommitTest extends AbstractHttpTest
         assertHeader(response, "content-length", "6");
         byte content[] = response.getContentBytes();
         assertThat("content bytes", content.length, is(0));
-        assertTrue("response eof", response.isEarlyEOF());
+        assertTrue(response.isEarlyEOF(), "response eof");
     }
 
     @Test
@@ -443,7 +443,7 @@ public class HttpManyWaysToCommitTest extends AbstractHttpTest
 
         HttpTester.Response response = executeRequest();
         assertThat("response is error", response.getStatus(), is(500));
-        assertFalse("response not eof", response.isEarlyEOF());
+        assertFalse(response.isEarlyEOF(), "response not eof");
     }
 
     @Test
@@ -454,7 +454,7 @@ public class HttpManyWaysToCommitTest extends AbstractHttpTest
 
         HttpTester.Response response = executeRequest();
         assertThat("response has no status", response.getStatus(), is(200));
-        assertTrue("response eof", response.isEarlyEOF());
+        assertTrue(response.isEarlyEOF(), "response eof");
     }
     
     

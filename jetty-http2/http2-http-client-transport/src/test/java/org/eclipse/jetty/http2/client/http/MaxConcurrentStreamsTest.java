@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.http2.client.http;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
@@ -31,8 +34,8 @@ import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Request;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class MaxConcurrentStreamsTest extends AbstractTest
 {
@@ -85,7 +88,7 @@ public class MaxConcurrentStreamsTest extends AbstractTest
                 });
 
         // When the first request returns, the second must be sent.
-        Assert.assertTrue(latch.await(5 * sleep, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(5 * sleep, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -104,7 +107,7 @@ public class MaxConcurrentStreamsTest extends AbstractTest
                                 .path("/" + i + "_" + j)
                                 .timeout(5, TimeUnit.SECONDS)
                                 .send();
-                        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+                        assertEquals(HttpStatus.OK_200, response.getStatus());
                     }
                     catch (Throwable x)
                     {
@@ -152,10 +155,10 @@ public class MaxConcurrentStreamsTest extends AbstractTest
 
         // The last exchange should remain in the queue.
         HttpDestinationOverHTTP2 destination = (HttpDestinationOverHTTP2)client.getDestination("http", "localhost", connector.getLocalPort());
-        Assert.assertEquals(1, destination.getHttpExchanges().size());
-        Assert.assertEquals(path, destination.getHttpExchanges().peek().getRequest().getPath());
+        assertEquals(1, destination.getHttpExchanges().size());
+        assertEquals(path, destination.getHttpExchanges().peek().getRequest().getPath());
 
-        Assert.assertTrue(latch.await(5 * sleep, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(5 * sleep, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -183,7 +186,7 @@ public class MaxConcurrentStreamsTest extends AbstractTest
         // Must be able to send another request.
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort()).path("/check").send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -211,7 +214,7 @@ public class MaxConcurrentStreamsTest extends AbstractTest
         }
 
         // The requests should be processed in parallel, not sequentially.
-        Assert.assertTrue(latch.await(maxConcurrent * sleep / 2, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(maxConcurrent * sleep / 2, TimeUnit.MILLISECONDS));
     }
 
     private void primeConnection() throws Exception

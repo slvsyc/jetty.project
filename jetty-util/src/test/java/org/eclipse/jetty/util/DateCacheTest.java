@@ -19,13 +19,15 @@
 package org.eclipse.jetty.util;
 
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -65,6 +67,6 @@ public class DateCacheTest
             TimeUnit.MILLISECONDS.sleep(100);
             now=TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
         }
-        Assert.assertThat(hits,Matchers.greaterThan(misses));
+        assertThat(hits,Matchers.greaterThan(misses));
     }
 }

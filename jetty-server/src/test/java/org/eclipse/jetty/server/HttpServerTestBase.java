@@ -23,10 +23,10 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -58,8 +58,8 @@ import org.eclipse.jetty.util.log.AbstractLogger;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 /**
@@ -130,8 +130,8 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             // Read the response.
             String response = readResponse(client);
 
-            Assert.assertThat(response, Matchers.containsString("HTTP/1.1 200 OK"));
-            Assert.assertThat(response, Matchers.containsString("Hello world"));
+            assertThat(response, Matchers.containsString("HTTP/1.1 200 OK"));
+            assertThat(response, Matchers.containsString("Hello world"));
         }
     }
 
@@ -153,8 +153,8 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             // Read the response.
             String response = readResponse(client);
 
-            Assert.assertThat(response, Matchers.containsString("HTTP/1.1 200 OK"));
-            Assert.assertThat(response, Matchers.containsString("Allow: GET"));
+            assertThat(response, Matchers.containsString("HTTP/1.1 200 OK"));
+            assertThat(response, Matchers.containsString("Allow: GET"));
         }
         
         try (Socket client = newSocket(_serverURI.getHost(), _serverURI.getPort()))
@@ -170,8 +170,8 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             // Read the response.
             String response = readResponse(client);
 
-            Assert.assertThat(response, Matchers.containsString("HTTP/1.1 400 "));
-            Assert.assertThat(response, Matchers.not(Matchers.containsString("Allow: ")));
+            assertThat(response, Matchers.containsString("HTTP/1.1 400 "));
+            assertThat(response, Matchers.not(Matchers.containsString("Allow: ")));
         }
     }
 
@@ -199,7 +199,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             // Read the response.
             String response = readResponse(client);
 
-            Assert.assertThat(response, Matchers.containsString("HTTP/1.1 431 "));
+            assertThat(response, Matchers.containsString("HTTP/1.1 431 "));
         }
     }
 
@@ -231,7 +231,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             // Read the response.
             String response = readResponse(client);
 
-            Assert.assertThat(response, Matchers.containsString("HTTP/1.1 414 "));
+            assertThat(response, Matchers.containsString("HTTP/1.1 414 "));
         }
     }
 
@@ -391,7 +391,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             try
             {
                 String response = readResponse(client);
-                Assert.assertThat(response, Matchers.containsString("HTTP/1.1 431 "));
+                assertThat(response, Matchers.containsString("HTTP/1.1 431 "));
             }
             catch(Exception e)
             {
@@ -420,7 +420,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             String response = readResponse(client);
 
             // Check the response
-            assertEquals("response", RESPONSE1, response);
+            assertEquals(RESPONSE1, response, "response");
         }
     }
 
@@ -508,7 +508,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             String response = readResponse(client);
 
             // Check the response
-            assertEquals("response", RESPONSE1, response);
+            assertEquals(RESPONSE1, response, "response");
         }
     }
 
@@ -531,7 +531,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
                 String response = readResponse(client);
 
                 // Check the response
-                assertEquals("response " + i, RESPONSE2, response);
+                assertEquals(RESPONSE2, response, "response " + i);
             }
             catch (IOException e)
             {
@@ -568,7 +568,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
                 String response = readResponse(client);
 
                 // Check the response
-                assertEquals("response for " + i + " " + message.toString(), RESPONSE2, response);
+                assertEquals(RESPONSE2, response, "response for " + i + " " + message.toString());
                 
                 Thread.sleep(10);
             }
@@ -600,7 +600,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
                 String response = readResponse(client);
 
                 // Check the response
-                assertEquals("response for " + i + " " + message.toString(), RESPONSE2, response);
+                assertEquals(RESPONSE2, response, "response for " + i + " " + message.toString());
                 
                 Thread.sleep(10);
             }
@@ -610,7 +610,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
     
     
 
-    @Test
+    @Test // TODO: Parameterize
     public void testFlush() throws Exception
     {
         configureServer(new DataHandler());
@@ -632,7 +632,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
                             InputStream in = (InputStream)url.getContent();
                             String response = IO.toString(in, e == 0 ? null : encoding[e]);
 
-                            assertEquals(test, b * w, response.length());
+                            assertEquals(b * w, response.length(), test);
                         }
                         catch (Exception x)
                         {
@@ -884,8 +884,8 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
                 chunked |= "Transfer-Encoding: chunked".equals(line);
                 closed |= "Connection: close".equals(line);
             }
-            Assert.assertTrue(chunked);
-            Assert.assertFalse(closed);
+            assertTrue(chunked);
+            assertFalse(closed);
 
             // Read the chunks
             int max = Integer.MIN_VALUE;
@@ -896,25 +896,25 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
                 if (line.length() == 0)
                     break;
                 int len = line.length();
-                Assert.assertEquals(Integer.valueOf(chunk, 16).intValue(), len);
+                assertEquals(Integer.valueOf(chunk, 16).intValue(), len);
                 if (max < len)
                     max = len;
             }
 
             // Check that biggest chunk was <= buffer size
-            Assert.assertEquals(_connector.getBean(HttpConnectionFactory.class).getHttpConfiguration().getOutputBufferSize() , max);
+            assertEquals(_connector.getBean(HttpConnectionFactory.class).getHttpConfiguration().getOutputBufferSize() , max);
 
             // read and check the times are < 999ms
             String[] times = in.readLine().split(",");
             for (String t : times)
-                Assert.assertTrue(Integer.valueOf(t) < 999);
+                assertTrue(Integer.valueOf(t) < 999);
 
 
             // read the EOF chunk
             String end = in.readLine();
-            Assert.assertEquals("0", end);
+            assertEquals("0", end);
             end = in.readLine();
-            Assert.assertEquals(0, end.length());
+            assertEquals(0, end.length());
 
             // read the non-chunked response header
             chunked = false;
@@ -928,19 +928,19 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
                 chunked |= "Transfer-Encoding: chunked".equals(line);
                 closed |= "Connection: close".equals(line);
             }
-            Assert.assertFalse(chunked);
-            Assert.assertTrue(closed);
+            assertFalse(chunked);
+            assertTrue(closed);
 
             String bigline = in.readLine();
-            Assert.assertEquals(10 * 128 * 1024, bigline.length());
+            assertEquals(10 * 128 * 1024, bigline.length());
 
             // read and check the times are < 999ms
             times = in.readLine().split(",");
             for (String t : times)
-                Assert.assertTrue(t, Integer.valueOf(t) < 999);
+                assertTrue(Integer.valueOf(t) < 999, t);
 
             // check close
-            Assert.assertTrue(in.readLine() == null);
+            assertTrue(in.readLine() == null);
         }
     }
 
@@ -1149,9 +1149,9 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
 
 
             String in = IO.toString(is);
-            Assert.assertThat(in,containsString("123456789"));
-            Assert.assertThat(in,not(containsString("ABCDEFGHI")));
-            Assert.assertThat(in,containsString("abcdefghi"));
+            assertThat(in,containsString("123456789"));
+            assertThat(in,not(containsString("ABCDEFGHI")));
+            assertThat(in,containsString("abcdefghi"));
         }
     }
 
@@ -1449,8 +1449,8 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
             String response2 = readResponse(client2);
 
             // Check the response
-            assertEquals("client1", RESPONSE1, response1);
-            assertEquals("client2", RESPONSE1, response2);
+            assertEquals(RESPONSE1, response1, "client1");
+            assertEquals(RESPONSE1, response2, "client2");
         }
     }
 

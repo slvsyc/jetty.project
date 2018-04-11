@@ -18,14 +18,17 @@
 
 package org.eclipse.jetty.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class UrlEncodedUtf8Test
 {
@@ -80,6 +83,7 @@ public class UrlEncodedUtf8Test
         fromInputStream(test,bytes,name,value,false);
     }
 
+    // TODO: Split thrown/not-thrown
     static void fromString(String test,String s,String field,String expected,boolean thrown) throws Exception
     {
         MultiMap<String> values=new MultiMap<>();
@@ -87,8 +91,8 @@ public class UrlEncodedUtf8Test
         {
             UrlEncoded.decodeUtf8To(s, 0, s.length(), values);
             if (thrown)
-                Assert.fail();
-            Assert.assertEquals(test, expected, values.getString(field));
+                fail("Expected an exception");
+            assertEquals(test, expected, values.getString(field));
         }
         catch (Exception e)
         {
@@ -98,6 +102,7 @@ public class UrlEncodedUtf8Test
         }
     }
 
+    // TODO: Split thrown/not-thrown
     static void fromInputStream(String test, byte[] b,String field, String expected,boolean thrown) throws Exception
     {
         InputStream is=new ByteArrayInputStream(b);
@@ -106,8 +111,8 @@ public class UrlEncodedUtf8Test
         {
             UrlEncoded.decodeUtf8To(is, values, 1000000,-1);
             if (thrown)
-                Assert.fail();
-            Assert.assertEquals(test, expected, values.getString(field));
+                fail("Expected an exception");
+            assertEquals(test, expected, values.getString(field));
         }
         catch (Exception e)
         {

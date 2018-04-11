@@ -33,8 +33,8 @@ import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpClientIdleTimeoutTest extends AbstractTest
 {
@@ -74,11 +74,11 @@ public class HttpClientIdleTimeoutTest extends AbstractTest
                         latch.countDown();
                 });
 
-        Assert.assertTrue(latch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
 
         // Verify that after the timeout we can make another request.
         ContentResponse response = client.newRequest(newURI()).send();
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -108,11 +108,11 @@ public class HttpClientIdleTimeoutTest extends AbstractTest
                         latch.countDown();
                 });
 
-        Assert.assertTrue(latch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(2 * idleTimeout, TimeUnit.MILLISECONDS));
 
         // Verify that after the timeout we can make another request.
         ContentResponse response = client.newRequest(newURI()).send();
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -125,14 +125,14 @@ public class HttpClientIdleTimeoutTest extends AbstractTest
 
         // Make a first request to open a connection.
         ContentResponse response = client.newRequest(newURI()).send();
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         // Let the connection idle timeout.
         Thread.sleep(2 * idleTimeout);
 
         // Verify that after the timeout we can make another request.
         response = client.newRequest(newURI()).send();
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -145,13 +145,13 @@ public class HttpClientIdleTimeoutTest extends AbstractTest
         }
 
         ContentResponse response1 = client.newRequest(newURI()).send();
-        Assert.assertEquals(HttpStatus.OK_200, response1.getStatus());
+        assertEquals(HttpStatus.OK_200, response1.getStatus());
 
         // Let the server idle timeout.
         Thread.sleep(2 * idleTimeout);
 
         // Make sure we can make another request successfully.
         ContentResponse response2 = client.newRequest(newURI()).send();
-        Assert.assertEquals(HttpStatus.OK_200, response2.getStatus());
+        assertEquals(HttpStatus.OK_200, response2.getStatus());
     }
 }

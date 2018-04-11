@@ -20,7 +20,7 @@ package org.eclipse.jetty.server.handler;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +55,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -379,7 +379,7 @@ public class RequestLogHandlerTest
      * Test a RequestLogHandler at the end of a HandlerCollection. all other configuration on server at defaults.
      * @throws Exception if test failure
      */
-    @Test(timeout = 4000)
+    @Test
     public void testLogHandlerCollection() throws Exception
     {
         Server server = new Server();
@@ -439,7 +439,7 @@ public class RequestLogHandlerTest
         }
     }
 
-    @Test(timeout = 4000)
+    @Test
     public void testMultipleLogHandlers() throws Exception
     {
         Server server = new Server();
@@ -511,7 +511,7 @@ public class RequestLogHandlerTest
      * Test a RequestLogHandler at the end of a HandlerCollection and also with the default ErrorHandler as server bean in place.
      * @throws Exception if test failure
      */
-    @Test(timeout = 4000)
+    @Test
     public void testLogHandlerCollection_ErrorHandler_ServerBean() throws Exception
     {
         Server server = new Server();
@@ -578,7 +578,7 @@ public class RequestLogHandlerTest
      * Test a RequestLogHandler at the end of a HandlerCollection and also with the ErrorHandler in place.
      * @throws Exception if test failure
      */
-    @Test(timeout=4000)
+    @Test
     public void testLogHandlerCollection_AltErrorHandler() throws Exception
     {
         Server server = new Server();
@@ -652,7 +652,7 @@ public class RequestLogHandlerTest
      * Test a RequestLogHandler at the end of a HandlerCollection and also with the ErrorHandler in place.
      * @throws Exception if test failure
      */
-    @Test(timeout=4000)
+    @Test
     public void testLogHandlerCollection_OKErrorHandler() throws Exception
     {
         Server server = new Server();
@@ -726,7 +726,7 @@ public class RequestLogHandlerTest
      * Test a RequestLogHandler at the end of a HandlerCollection and also with the ErrorHandler in place.
      * @throws Exception if test failure
      */
-    @Test(timeout=4000)
+    @Test
     public void testLogHandlerCollection_DispatchErrorHandler() throws Exception
     {
         Server server = new Server();
@@ -796,7 +796,7 @@ public class RequestLogHandlerTest
         }
     }
 
-    @Test(timeout = 4000)
+    @Test
     public void testLogHandlerWrapped() throws Exception
     {
         Server server = new Server();
@@ -813,7 +813,7 @@ public class RequestLogHandlerTest
 
         server.setHandler(requestLog);
         
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class,HttpChannelState.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class,HttpChannelState.class))
         {
             server.start();
 

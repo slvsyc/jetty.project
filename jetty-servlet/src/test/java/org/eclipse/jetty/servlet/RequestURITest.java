@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.servlet;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,9 +40,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -210,9 +211,9 @@ public class RequestURITest
             String response = readResponse(client);
 
             // TODO: is HTTP/1.1 response appropriate for a HTTP/1.0 request?
-            Assert.assertThat(response,Matchers.containsString("HTTP/1.1 200 OK"));
-            Assert.assertThat(response,Matchers.containsString("RequestURI: " + expectedReqUri));
-            Assert.assertThat(response,Matchers.containsString("QueryString: " + expectedQuery));
+            assertThat(response,Matchers.containsString("HTTP/1.1 200 OK"));
+            assertThat(response,Matchers.containsString("RequestURI: " + expectedReqUri));
+            assertThat(response,Matchers.containsString("QueryString: " + expectedQuery));
         }
     }
 
@@ -230,9 +231,9 @@ public class RequestURITest
             // Read the response.
             String response = readResponse(client);
 
-            Assert.assertThat(response,Matchers.containsString("HTTP/1.1 200 OK"));
-            Assert.assertThat(response,Matchers.containsString("RequestURI: " + expectedReqUri));
-            Assert.assertThat(response,Matchers.containsString("QueryString: " + expectedQuery));
+            assertThat(response,Matchers.containsString("HTTP/1.1 200 OK"));
+            assertThat(response,Matchers.containsString("RequestURI: " + expectedReqUri));
+            assertThat(response,Matchers.containsString("QueryString: " + expectedQuery));
         }
     }
 }

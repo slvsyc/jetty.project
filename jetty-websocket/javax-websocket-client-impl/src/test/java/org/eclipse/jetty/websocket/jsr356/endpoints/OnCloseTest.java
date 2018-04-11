@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.jsr356.endpoints;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
@@ -43,8 +44,8 @@ import org.eclipse.jetty.websocket.jsr356.endpoints.samples.close.CloseReasonSoc
 import org.eclipse.jetty.websocket.jsr356.endpoints.samples.close.CloseSessionReasonSocket;
 import org.eclipse.jetty.websocket.jsr356.endpoints.samples.close.CloseSessionSocket;
 import org.eclipse.jetty.websocket.jsr356.endpoints.samples.close.CloseSocket;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -121,6 +122,6 @@ public class OnCloseTest
         // Test captured event
         LinkedBlockingQueue<String> events = endpoint.eventQueue;
         String closeEvent = events.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
-        Assert.assertThat("Close Event",closeEvent,is(testcase.expectedCloseEvent));
+        assertThat("Close Event",closeEvent,is(testcase.expectedCloseEvent));
     }
 }

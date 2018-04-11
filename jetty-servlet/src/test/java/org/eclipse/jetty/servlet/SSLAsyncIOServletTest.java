@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.servlet;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,8 +42,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -165,8 +167,8 @@ public class SSLAsyncIOServletTest
     
             InputStream inputStream = client.getInputStream();
             HttpTester.Response response = HttpTester.parseResponse(inputStream);
-            Assert.assertEquals(200, response.getStatus());
-            Assert.assertArrayEquals(content, response.getContent().getBytes("UTF-8"));
+            assertEquals(200, response.getStatus());
+            assertArrayEquals(content, response.getContent().getBytes("UTF-8"));
         }
     }
 

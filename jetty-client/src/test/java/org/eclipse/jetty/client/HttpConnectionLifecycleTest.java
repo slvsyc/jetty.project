@@ -18,6 +18,10 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -44,8 +48,8 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
@@ -73,10 +77,10 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
         final Collection<Connection> idleConnections = connectionPool.getIdleConnections();
-        Assert.assertEquals(0, idleConnections.size());
+        assertEquals(0, idleConnections.size());
 
         final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, activeConnections.size());
 
         final CountDownLatch headersLatch = new CountDownLatch(1);
         final CountDownLatch successLatch = new CountDownLatch(3);
@@ -85,8 +89,8 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                 .onRequestSuccess(request -> successLatch.countDown())
                 .onResponseHeaders(response ->
                 {
-                    Assert.assertEquals(0, idleConnections.size());
-                    Assert.assertEquals(1, activeConnections.size());
+                    assertEquals(0, idleConnections.size());
+                    assertEquals(1, activeConnections.size());
                     headersLatch.countDown();
                 })
                 .send(new Response.Listener.Adapter()
@@ -100,16 +104,16 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertFalse(result.isFailed());
+                        assertFalse(result.isFailed());
                         successLatch.countDown();
                     }
                 });
 
-        Assert.assertTrue(headersLatch.await(30, TimeUnit.SECONDS));
-        Assert.assertTrue(successLatch.await(30, TimeUnit.SECONDS));
+        assertTrue(headersLatch.await(30, TimeUnit.SECONDS));
+        assertTrue(successLatch.await(30, TimeUnit.SECONDS));
 
-        Assert.assertEquals(1, idleConnections.size());
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(1, idleConnections.size());
+        assertEquals(0, activeConnections.size());
     }
 
     @Test
@@ -123,10 +127,10 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
         final Collection<Connection> idleConnections = connectionPool.getIdleConnections();
-        Assert.assertEquals(0, idleConnections.size());
+        assertEquals(0, idleConnections.size());
 
         final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, activeConnections.size());
 
         final CountDownLatch beginLatch = new CountDownLatch(1);
         final CountDownLatch failureLatch = new CountDownLatch(2);
@@ -149,18 +153,18 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
             @Override
             public void onComplete(Result result)
             {
-                Assert.assertTrue(result.isFailed());
-                Assert.assertEquals(0, idleConnections.size());
-                Assert.assertEquals(0, activeConnections.size());
+                assertTrue(result.isFailed());
+                assertEquals(0, idleConnections.size());
+                assertEquals(0, activeConnections.size());
                 failureLatch.countDown();
             }
         });
 
-        Assert.assertTrue(beginLatch.await(30, TimeUnit.SECONDS));
-        Assert.assertTrue(failureLatch.await(30, TimeUnit.SECONDS));
+        assertTrue(beginLatch.await(30, TimeUnit.SECONDS));
+        assertTrue(failureLatch.await(30, TimeUnit.SECONDS));
 
-        Assert.assertEquals(0, idleConnections.size());
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, idleConnections.size());
+        assertEquals(0, activeConnections.size());
     }
 
     @Test
@@ -174,10 +178,10 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
         final Queue<Connection> idleConnections = connectionPool.getIdleConnections();
-        Assert.assertEquals(0, idleConnections.size());
+        assertEquals(0, idleConnections.size());
 
         final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, activeConnections.size());
 
         final CountDownLatch successLatch = new CountDownLatch(3);
         client.newRequest(host, port)
@@ -202,7 +206,7 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                     @Override
                     public void onSuccess(Response response)
                     {
-                        Assert.assertEquals(400, response.getStatus());
+                        assertEquals(400, response.getStatus());
                         // 400 response also come with a Connection: close,
                         // so the connection is closed and removed
                         successLatch.countDown();
@@ -211,15 +215,15 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertFalse(result.isFailed());
+                        assertFalse(result.isFailed());
                         successLatch.countDown();
                     }
                 });
 
-        Assert.assertTrue(successLatch.await(30, TimeUnit.SECONDS));
+        assertTrue(successLatch.await(30, TimeUnit.SECONDS));
 
-        Assert.assertEquals(0, idleConnections.size());
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, idleConnections.size());
+        assertEquals(0, activeConnections.size());
     }
 
     @Test
@@ -234,10 +238,10 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
         final Collection<Connection> idleConnections = connectionPool.getIdleConnections();
-        Assert.assertEquals(0, idleConnections.size());
+        assertEquals(0, idleConnections.size());
 
         final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, activeConnections.size());
 
         final long delay = 1000;
         final CountDownLatch successLatch = new CountDownLatch(3);
@@ -276,7 +280,7 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                     @Override
                     public void onSuccess(Response response)
                     {
-                        Assert.assertEquals(400, response.getStatus());
+                        assertEquals(400, response.getStatus());
                         // 400 response also come with a Connection: close,
                         // so the connection is closed and removed
                         successLatch.countDown();
@@ -285,15 +289,15 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertFalse(result.isFailed());
+                        assertFalse(result.isFailed());
                         successLatch.countDown();
                     }
                 });
 
-        Assert.assertTrue(successLatch.await(delay * 30, TimeUnit.MILLISECONDS));
+        assertTrue(successLatch.await(delay * 30, TimeUnit.MILLISECONDS));
 
-        Assert.assertEquals(0, idleConnections.size());
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, idleConnections.size());
+        assertEquals(0, activeConnections.size());
     }
 
     @Test
@@ -307,10 +311,10 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
         final Collection<Connection> idleConnections = connectionPool.getIdleConnections();
-        Assert.assertEquals(0, idleConnections.size());
+        assertEquals(0, idleConnections.size());
 
         final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, activeConnections.size());
 
         server.stop();
 
@@ -320,14 +324,14 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                 .onRequestFailure((request, failure) -> failureLatch.countDown())
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     failureLatch.countDown();
                 });
 
-        Assert.assertTrue(failureLatch.await(30, TimeUnit.SECONDS));
+        assertTrue(failureLatch.await(30, TimeUnit.SECONDS));
 
-        Assert.assertEquals(0, idleConnections.size());
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, idleConnections.size());
+        assertEquals(0, activeConnections.size());
     }
 
     @Test
@@ -349,10 +353,10 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
         final Collection<Connection> idleConnections = connectionPool.getIdleConnections();
-        Assert.assertEquals(0, idleConnections.size());
+        assertEquals(0, idleConnections.size());
 
         final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, activeConnections.size());
 
         final CountDownLatch latch = new CountDownLatch(1);
         client.newRequest(host, port)
@@ -362,17 +366,17 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                     @Override
                     public void onComplete(Result result)
                     {
-                        Assert.assertFalse(result.isFailed());
-                        Assert.assertEquals(0, idleConnections.size());
-                        Assert.assertEquals(0, activeConnections.size());
+                        assertFalse(result.isFailed());
+                        assertEquals(0, idleConnections.size());
+                        assertEquals(0, activeConnections.size());
                         latch.countDown();
                     }
                 });
 
-        Assert.assertTrue(latch.await(30, TimeUnit.SECONDS));
+        assertTrue(latch.await(30, TimeUnit.SECONDS));
 
-        Assert.assertEquals(0, idleConnections.size());
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, idleConnections.size());
+        assertEquals(0, activeConnections.size());
     }
 
     @Test
@@ -397,10 +401,10 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
             DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
             final Collection<Connection> idleConnections = connectionPool.getIdleConnections();
-            Assert.assertEquals(0, idleConnections.size());
+            assertEquals(0, idleConnections.size());
 
             final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-            Assert.assertEquals(0, activeConnections.size());
+            assertEquals(0, activeConnections.size());
 
             Log.getLogger(HttpConnection.class).info("Expecting java.lang.IllegalStateException: HttpParser{s=CLOSED,...");
 
@@ -415,17 +419,17 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                         @Override
                         public void onComplete(Result result)
                         {
-                            Assert.assertEquals(1, latch.getCount());
-                            Assert.assertEquals(0, idleConnections.size());
-                            Assert.assertEquals(0, activeConnections.size());
+                            assertEquals(1, latch.getCount());
+                            assertEquals(0, idleConnections.size());
+                            assertEquals(0, activeConnections.size());
                             latch.countDown();
                         }
                     });
 
-            Assert.assertTrue(latch.await(30, TimeUnit.SECONDS));
+            assertTrue(latch.await(30, TimeUnit.SECONDS));
 
-            Assert.assertEquals(0, idleConnections.size());
-            Assert.assertEquals(0, activeConnections.size());
+            assertEquals(0, idleConnections.size());
+            assertEquals(0, activeConnections.size());
 
             server.stop();
         }
@@ -443,25 +447,25 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
         final Collection<Connection> idleConnections = connectionPool.getIdleConnections();
-        Assert.assertEquals(0, idleConnections.size());
+        assertEquals(0, idleConnections.size());
 
         final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, activeConnections.size());
 
         ContentResponse response = client.newRequest(host, port)
                 .scheme(scheme)
                 .timeout(30, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         connector.stop();
 
         // Give the connection some time to process the remote close
         TimeUnit.SECONDS.sleep(1);
 
-        Assert.assertEquals(0, idleConnections.size());
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, idleConnections.size());
+        assertEquals(0, activeConnections.size());
     }
 
     @Test
@@ -475,10 +479,10 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
 
         final Collection<Connection> idleConnections = connectionPool.getIdleConnections();
-        Assert.assertEquals(0, idleConnections.size());
+        assertEquals(0, idleConnections.size());
 
         final Collection<Connection> activeConnections = connectionPool.getActiveConnections();
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, activeConnections.size());
 
         client.setStrictEventOrdering(false);
         ContentResponse response = client.newRequest(host, port)
@@ -490,9 +494,9 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
                 })
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
-        Assert.assertEquals(0, idleConnections.size());
-        Assert.assertEquals(0, activeConnections.size());
+        assertEquals(0, idleConnections.size());
+        assertEquals(0, activeConnections.size());
     }
 }

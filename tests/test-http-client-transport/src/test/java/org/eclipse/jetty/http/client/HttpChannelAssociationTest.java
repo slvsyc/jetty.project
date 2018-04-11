@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -43,8 +45,8 @@ import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.unixsocket.client.HttpClientTransportOverUnixSockets;
 import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpChannelAssociationTest extends AbstractTest
 {
@@ -72,7 +74,7 @@ public class HttpChannelAssociationTest extends AbstractTest
                         latch.countDown();
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -102,7 +104,7 @@ public class HttpChannelAssociationTest extends AbstractTest
                         latch.countDown();
                 });
 
-        Assert.assertTrue(latch.await(5 * idleTimeout, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(5 * idleTimeout, TimeUnit.MILLISECONDS));
     }
 
     private HttpClientTransport newHttpClientTransport(Transport transport, Predicate<HttpExchange> code)

@@ -22,7 +22,7 @@ package org.eclipse.jetty.gcloud.session;
 import org.eclipse.jetty.server.session.AbstractClusteredOrphanedSessionTest;
 import org.eclipse.jetty.server.session.SessionDataStoreFactory;
 import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * ClusteredOrphanedSessionTest

@@ -20,17 +20,17 @@ package org.eclipse.jetty.server;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -82,9 +82,8 @@ import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ResponseTest
 {
@@ -401,20 +400,20 @@ public class ResponseTest
         out.close();
         
         /* Test A */
-        Assert.assertThat(BufferUtil.toString(_content),Matchers.containsString("TestA1 1.234.567,89"));
-        Assert.assertThat(BufferUtil.toString(_content),Matchers.containsString("TestA2 1.234.567,89"));
+        assertThat(BufferUtil.toString(_content),Matchers.containsString("TestA1 1.234.567,89"));
+        assertThat(BufferUtil.toString(_content),Matchers.containsString("TestA2 1.234.567,89"));
         
         /* Test B */
-        Assert.assertThat(BufferUtil.toString(_content),Matchers.containsString("TestB1 1.234.567,89"));
-        Assert.assertThat(BufferUtil.toString(_content),Matchers.containsString("TestB2 1.234.567,89"));
+        assertThat(BufferUtil.toString(_content),Matchers.containsString("TestB1 1.234.567,89"));
+        assertThat(BufferUtil.toString(_content),Matchers.containsString("TestB2 1.234.567,89"));
         
         /* Test C */
-        Assert.assertThat(BufferUtil.toString(_content),Matchers.containsString("TestC1 1,234,567.89"));
-        Assert.assertThat(BufferUtil.toString(_content),Matchers.containsString("TestC2 1,234,567.89"));
+        assertThat(BufferUtil.toString(_content),Matchers.containsString("TestC1 1,234,567.89"));
+        assertThat(BufferUtil.toString(_content),Matchers.containsString("TestC2 1,234,567.89"));
         
         /* Test D */
-        Assert.assertThat(BufferUtil.toString(_content),Matchers.containsString("TestD1 1.234.567,89"));
-        Assert.assertThat(BufferUtil.toString(_content),Matchers.containsString("TestD2 1.234.567,89"));
+        assertThat(BufferUtil.toString(_content),Matchers.containsString("TestD1 1.234.567,89"));
+        assertThat(BufferUtil.toString(_content),Matchers.containsString("TestD2 1.234.567,89"));
         
         
     }
@@ -698,22 +697,15 @@ public class ResponseTest
         PrintWriter writer = response.getWriter();
         writer.println("test");
         writer.flush();
-        Assert.assertFalse(writer.checkError());
+        assertFalse(writer.checkError());
 
         Throwable cause = new IOException("problem at mill");
         _channel.abort(cause);
         writer.println("test");
-        Assert.assertTrue(writer.checkError());
-        try
-        {
-            writer.println("test");
-            Assert.fail();
-        }
-        catch(RuntimeIOException e)
-        {
-            Assert.assertEquals(cause,e.getCause());
-        }
+        assertTrue(writer.checkError());
 
+        RuntimeIOException e = assertThrows(RuntimeIOException.class, ()-> writer.println("test"));
+        assertEquals(cause,e.getCause());
     }
 
     @Test
@@ -834,18 +826,18 @@ public class ResponseTest
                     String expected = tests[i][1]
                         .replace("@HOST@",host==null ? request.getLocalAddr() : (host.contains(":")?("["+host+"]"):host ))
                         .replace("@PORT@",host==null ? ":8888" : (port==80?"":(":"+port)));
-                    assertEquals("test-"+i+" "+host+":"+port,expected,location);
+                    assertEquals(expected, location, "test-"+i+" "+host+":"+port);
                 }
             }
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testInvalidSendRedirect() throws Exception
     {
         // Request is /path/info, so we need 3 ".." for an invalid redirect.
         Response response = getResponse();
-        response.sendRedirect("../../../invalid");
+        assertThrows(IllegalStateException.class, ()-> response.sendRedirect("../../../invalid"));
     }
 
     @Test
@@ -854,15 +846,8 @@ public class ResponseTest
         Response response = getResponse();
         response.setBufferSize(20 * 1024);
         response.getWriter().print("hello");
-        try
-        {
-            response.setBufferSize(21 * 1024);
-            fail("Expected IllegalStateException on Request.setBufferSize");
-        }
-        catch (Exception e)
-        {
-            assertTrue(e instanceof IllegalStateException);
-        }
+
+        assertThrows(IllegalStateException.class, ()-> response.setBufferSize(21 * 1024));
     }
 
     @Test
@@ -911,14 +896,14 @@ public class ResponseTest
 
                 LineNumberReader reader = new LineNumberReader(new InputStreamReader(socket.getInputStream()));
                 String line = reader.readLine();
-                Assert.assertThat(line, Matchers.startsWith("HTTP/1.1 200 OK"));
+                assertThat(line, startsWith("HTTP/1.1 200 OK"));
                 // look for blank line
                 while (line != null && line.length() > 0)
                     line = reader.readLine();
 
                 // Read the first line of the GET
                 line = reader.readLine();
-                Assert.assertThat(line, Matchers.startsWith("HTTP/1.1 200 OK"));
+                assertThat(line, startsWith("HTTP/1.1 200 OK"));
 
                 String last = null;
                 while (line != null)

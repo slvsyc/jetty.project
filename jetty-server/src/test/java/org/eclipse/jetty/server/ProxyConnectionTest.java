@@ -18,13 +18,16 @@
 
 package org.eclipse.jetty.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -72,10 +75,10 @@ public class ProxyConnectionTest
                 "Connection: close\n"+
                 "\n");
         
-        Assert.assertThat(response,Matchers.containsString("HTTP/1.1 200"));
-        Assert.assertThat(response,Matchers.containsString("pathInfo=/path"));
-        Assert.assertThat(response,Matchers.containsString("local=5.6.7.8:222"));
-        Assert.assertThat(response,Matchers.containsString("remote=1.2.3.4:111"));
+        assertThat(response,Matchers.containsString("HTTP/1.1 200"));
+        assertThat(response,Matchers.containsString("pathInfo=/path"));
+        assertThat(response,Matchers.containsString("local=5.6.7.8:222"));
+        assertThat(response,Matchers.containsString("remote=1.2.3.4:111"));
     }
     
     @Test
@@ -87,10 +90,10 @@ public class ProxyConnectionTest
                 "Connection: close\n"+
                 "\n");
         
-        Assert.assertThat(response,Matchers.containsString("HTTP/1.1 200"));
-        Assert.assertThat(response,Matchers.containsString("pathInfo=/path"));
-        Assert.assertThat(response,Matchers.containsString("remote=eeee:eeee:eeee:eeee:eeee:eeee:eeee:eeee:65535"));
-        Assert.assertThat(response,Matchers.containsString("local=ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff:65535"));
+        assertThat(response,Matchers.containsString("HTTP/1.1 200"));
+        assertThat(response,Matchers.containsString("pathInfo=/path"));
+        assertThat(response,Matchers.containsString("remote=eeee:eeee:eeee:eeee:eeee:eeee:eeee:eeee:65535"));
+        assertThat(response,Matchers.containsString("local=ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff:65535"));
     }
     
     @Test
@@ -102,7 +105,7 @@ public class ProxyConnectionTest
                 "Connection: close\n"+
                 "\n");
         
-        Assert.assertNull(response);
+        assertNull(response);
     }
     
     @Test
@@ -110,7 +113,7 @@ public class ProxyConnectionTest
     {
         _connector.setIdleTimeout(100);
         String response=_connector.getResponse("PROXY TIMEOUT");
-        Assert.assertNull(response);
+        assertNull(response);
     }
     
     @Test
@@ -121,7 +124,7 @@ public class ProxyConnectionTest
                 "Host: server:80\n"+
                 "Connection: close\n"+
                 "\n");
-        Assert.assertNull(response);
+        assertNull(response);
     }
     
     @Test
@@ -132,7 +135,7 @@ public class ProxyConnectionTest
                 "Host: server:80\n"+
                 "Connection: close\n"+
                 "\n");
-        Assert.assertNull(response);
+        assertNull(response);
     }
     
     @Test
@@ -145,7 +148,7 @@ public class ProxyConnectionTest
                     "Host: server:80\n"+
                     "Connection: close\n"+
                     "\n");
-        Assert.assertNull(response);
+        assertNull(response);
         }
     }
     
@@ -157,7 +160,7 @@ public class ProxyConnectionTest
                 "Host: server:80\n"+
                 "Connection: close\n"+
                 "\n");
-        Assert.assertNull(response);
+        assertNull(response);
     }
     
     @Test
@@ -168,7 +171,7 @@ public class ProxyConnectionTest
                 "Host: server:80\n"+
                 "Connection: close\n"+
                 "\n");
-        Assert.assertNull(response);
+        assertNull(response);
     }
 }
 

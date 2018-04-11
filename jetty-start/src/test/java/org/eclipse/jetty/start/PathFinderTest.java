@@ -30,7 +30,7 @@ import java.util.List;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PathFinderTest
 {
@@ -57,7 +57,7 @@ public class PathFinderTest
         expected.add("${jetty.home}/start.d/logging.ini");
         expected.add("${jetty.home}/start.d/ssl.ini");
         expected.add("${jetty.home}/start.ini");
-        FSTest.toOsSeparators(expected);
+        FSTest.toFsSeparators(expected);
 
         BaseHome hb = new BaseHome(new String[] { "jetty.home=" + homePath.toString(), "jetty.base=" + basePath.toString() });
         BaseHomeTest.assertPathList(hb,"Files found",expected,finder);
@@ -79,7 +79,7 @@ public class PathFinderTest
                 expected.add("${jetty.home}/modules/" + file.getName());
             }
         }
-        FSTest.toOsSeparators(expected);
+        FSTest.toFsSeparators(expected);
         
         Path modulesPath = modulesDir.toPath();
 

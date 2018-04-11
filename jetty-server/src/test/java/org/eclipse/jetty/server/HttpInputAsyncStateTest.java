@@ -22,9 +22,10 @@ import static org.eclipse.jetty.server.HttpInput.EARLY_EOF_CONTENT;
 import static org.eclipse.jetty.server.HttpInput.EOF_CONTENT;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -39,9 +40,9 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -177,7 +178,7 @@ public class HttpInputAsyncStateTest
             {
                 case DISPATCH:
                     if (run==null)
-                        Assert.fail();
+                        fail("Run is null during DISPATCH");
                     run.run();
                     break;
                     
@@ -194,7 +195,7 @@ public class HttpInputAsyncStateTest
                     break;
                     
                 default:
-                    Assert.fail();
+                    fail("Bad Action: " + action);
             }
             action = _state.unhandle();
         }
@@ -268,7 +269,7 @@ public class HttpInputAsyncStateTest
     @After
     public void after()
     {
-        Assert.assertThat(__history.poll(), Matchers.nullValue());
+        assertThat(__history.poll(), Matchers.nullValue());
     }
 
     @Test

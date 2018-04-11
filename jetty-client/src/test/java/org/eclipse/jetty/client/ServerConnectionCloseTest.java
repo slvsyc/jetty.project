@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,8 +35,8 @@ import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class ServerConnectionCloseTest
 {
@@ -140,7 +142,7 @@ public class ServerConnectionCloseTest
             socket.shutdownOutput();
 
         ContentResponse response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
 
         // Give some time to process the connection.
         Thread.sleep(1000);
@@ -148,9 +150,9 @@ public class ServerConnectionCloseTest
         // Connection should have been removed from pool.
         HttpDestinationOverHTTP destination = (HttpDestinationOverHTTP)client.getDestination("http", "localhost", port);
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
-        Assert.assertEquals(0, connectionPool.getConnectionCount());
-        Assert.assertEquals(0, connectionPool.getIdleConnectionCount());
-        Assert.assertEquals(0, connectionPool.getActiveConnectionCount());
+        assertEquals(0, connectionPool.getConnectionCount());
+        assertEquals(0, connectionPool.getIdleConnectionCount());
+        assertEquals(0, connectionPool.getActiveConnectionCount());
     }
 
     private boolean consumeRequest(InputStream input) throws IOException

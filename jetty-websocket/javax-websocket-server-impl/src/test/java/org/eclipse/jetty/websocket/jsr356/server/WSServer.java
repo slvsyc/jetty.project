@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.jsr356.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.File;
@@ -46,7 +47,7 @@ import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
-import org.junit.Assert;
+
 
 /**
  * Utility to build out exploded directory WebApps, in the /target/tests/ directory, for testing out servers that use javax.websocket endpoints.
@@ -81,7 +82,7 @@ public class WSServer
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         String endpointPath = clazz.getName().replace('.','/') + ".class";
         URL classUrl = cl.getResource(endpointPath);
-        Assert.assertThat("Class URL for: " + clazz,classUrl,notNullValue());
+        assertThat("Class URL for: " + clazz,classUrl,notNullValue());
         File destFile = new File(classesDir,FS.separators(endpointPath));
         FS.ensureDirExists(destFile.getParentFile());
         File srcFile = new File(classUrl.toURI());

@@ -18,6 +18,12 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -53,9 +59,9 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpClientTest extends AbstractTest
 {
@@ -82,8 +88,8 @@ public class HttpClientTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(status, response.getStatus());
-        Assert.assertEquals(0, response.getContent().length);
+        assertEquals(status, response.getStatus());
+        assertEquals(0, response.getContent().length);
     }
 
     @Test
@@ -118,8 +124,8 @@ public class HttpClientTest extends AbstractTest
         request.timeout(10, TimeUnit.SECONDS).send(listener);
         ContentResponse response = listener.get();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(bytes, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(bytes, response.getContent());
     }
 
     @Test
@@ -162,8 +168,8 @@ public class HttpClientTest extends AbstractTest
         request.timeout(10, TimeUnit.SECONDS).send(listener);
         ContentResponse response = listener.get();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(bytes, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(bytes, response.getContent());
     }
 
     @Test
@@ -196,8 +202,8 @@ public class HttpClientTest extends AbstractTest
                 baseRequest.setHandled(true);
                 ServletInputStream input = request.getInputStream();
                 for (int i = 0; i < bytes.length; ++i)
-                    Assert.assertEquals(bytes[i] & 0xFF, input.read());
-                Assert.assertEquals(-1, input.read());
+                    assertEquals(bytes[i] & 0xFF, input.read());
+                assertEquals(-1, input.read());
             }
         });
 
@@ -207,8 +213,8 @@ public class HttpClientTest extends AbstractTest
                 .timeout(15, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(0, response.getContent().length);
+        assertEquals(200, response.getStatus());
+        assertEquals(0, response.getContent().length);
     }
 
     @Test
@@ -252,8 +258,8 @@ public class HttpClientTest extends AbstractTest
                 .timeout(15, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-        Assert.assertEquals(chunks * chunkSize, Integer.parseInt(response.getContentAsString()));
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(chunks * chunkSize, Integer.parseInt(response.getContentAsString()));
     }
 
     @Test
@@ -280,7 +286,7 @@ public class HttpClientTest extends AbstractTest
         FutureResponseListener listener = new FutureResponseListener(request, length);
         request.send(listener);
         ContentResponse response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(response.getStatus(), 200);
+        assertEquals(response.getStatus(), 200);
 
         // Make a request with a small response buffer, should fail.
         try
@@ -289,11 +295,11 @@ public class HttpClientTest extends AbstractTest
             listener = new FutureResponseListener(request, length / 10);
             request.send(listener);
             listener.get(5, TimeUnit.SECONDS);
-            Assert.fail();
+            fail();
         }
         catch (ExecutionException x)
         {
-            Assert.assertThat(x.getMessage(),Matchers.containsString("Buffering capacity exceeded"));
+            assertThat(x.getMessage(),Matchers.containsString("Buffering capacity exceeded"));
         }
 
         // Verify that we can make another request.
@@ -301,7 +307,7 @@ public class HttpClientTest extends AbstractTest
         listener = new FutureResponseListener(request, length);
         request.send(listener);
         response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(response.getStatus(), 200);
+        assertEquals(response.getStatus(), 200);
     }
 
     @Test(expected = ExecutionException.class)
@@ -333,9 +339,9 @@ public class HttpClientTest extends AbstractTest
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertTrue(HttpMethod.OPTIONS.is(request.getMethod()));
-                Assert.assertEquals("*", target);
-                Assert.assertEquals("*", request.getPathInfo());
+                assertTrue(HttpMethod.OPTIONS.is(request.getMethod()));
+                assertEquals("*", target);
+                assertEquals("*", request.getPathInfo());
             }
         });
 
@@ -346,7 +352,7 @@ public class HttpClientTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -375,7 +381,7 @@ public class HttpClientTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
     @Test
@@ -399,15 +405,15 @@ public class HttpClientTest extends AbstractTest
                 .onResponseSuccess(response -> latch.countDown())
                 .send(listener);
         Response response = listener.get(5, TimeUnit.SECONDS);
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         // Response cannot succeed until we read the content.
-        Assert.assertFalse(latch.await(500, TimeUnit.MILLISECONDS));
+        assertFalse(latch.await(500, TimeUnit.MILLISECONDS));
 
         InputStream input = listener.getInputStream();
-        Assert.assertEquals(content, IO.toString(input));
+        assertEquals(content, IO.toString(input));
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -440,11 +446,11 @@ public class HttpClientTest extends AbstractTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-        Assert.assertTrue(openLatch.await(1, TimeUnit.SECONDS));
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertTrue(openLatch.await(1, TimeUnit.SECONDS));
 
         Thread.sleep(2 * idleTimeout);
-        Assert.assertTrue(closeLatch.await(1, TimeUnit.SECONDS));
+        assertTrue(closeLatch.await(1, TimeUnit.SECONDS));
     }
 
     @Test
@@ -481,13 +487,13 @@ public class HttpClientTest extends AbstractTest
                 })
                 .send(result -> completeLatch.countDown());
 
-        Assert.assertTrue(latchRef.get().await(5, TimeUnit.SECONDS));
+        assertTrue(latchRef.get().await(5, TimeUnit.SECONDS));
         // Wait some time to verify that back pressure is applied correctly.
         Thread.sleep(1000);
-        Assert.assertEquals(1, counter.get());
+        assertEquals(1, counter.get());
         callbackRef.get().succeeded();
 
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -508,7 +514,7 @@ public class HttpClientTest extends AbstractTest
 
         sleep(1000);
 
-        Assert.assertEquals(1, completes.get());
+        assertEquals(1, completes.get());
     }
 
     @Test
@@ -541,8 +547,8 @@ public class HttpClientTest extends AbstractTest
                 .path(path)
                 .send();
 
-        Assert.assertEquals(status, response.getStatus());
-        Assert.assertEquals(0, response.getContent().length);
+        assertEquals(status, response.getStatus());
+        assertEquals(0, response.getContent().length);
     }
 
     @Test
@@ -564,8 +570,8 @@ public class HttpClientTest extends AbstractTest
                 .header(HttpHeader.ACCEPT, "*/*")
                 .send();
 
-        Assert.assertEquals(status, response.getStatus());
-        Assert.assertEquals(0, response.getContent().length);
+        assertEquals(status, response.getStatus());
+        assertEquals(0, response.getContent().length);
     }
 
     private void sleep(long time) throws IOException

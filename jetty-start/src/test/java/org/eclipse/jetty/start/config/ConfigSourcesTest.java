@@ -18,9 +18,11 @@
 
 package org.eclipse.jetty.start.config;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,9 +37,9 @@ import org.eclipse.jetty.start.TestEnv;
 import org.eclipse.jetty.start.UsageException;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Assert;
+
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ConfigSourcesTest
 {
@@ -76,8 +78,8 @@ public class ConfigSourcesTest
     private void assertProperty(ConfigSources sources, String key, String expectedValue)
     {
         Prop prop = sources.getProp(key);
-        Assert.assertThat("getProp('" + key + "') should not be null",prop,notNullValue());
-        Assert.assertThat("getProp('" + key + "')",prop.value,is(expectedValue));
+        assertThat("getProp('" + key + "') should not be null",prop,notNullValue());
+        assertThat("getProp('" + key + "')",prop.value,is(expectedValue));
     }
 
     @Test
@@ -586,18 +588,12 @@ public class ConfigSourcesTest
 
         ConfigSources sources = new ConfigSources();
 
-        try
-        {
+        UsageException e = assertThrows(UsageException.class, ()->{
             String cmdLine[] = new String[0];
             sources.add(new CommandLineConfigSource(cmdLine));
             sources.add(new JettyHomeConfigSource(home));
             sources.add(new JettyBaseConfigSource(base));
-            
-            Assert.fail("Should have thrown a UsageException");
-        }
-        catch (UsageException e)
-        {
-            Assert.assertThat("UsageException",e.getMessage(),containsString("Duplicate"));
-        }
+        });
+        assertThat("UsageException",e.getMessage(),containsString("Duplicate"));
     }
 }

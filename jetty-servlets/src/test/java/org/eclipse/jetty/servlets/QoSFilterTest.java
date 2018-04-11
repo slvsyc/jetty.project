@@ -19,7 +19,8 @@
 package org.eclipse.jetty.servlets;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,9 +49,9 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class QoSFilterTest
 {
@@ -126,7 +127,7 @@ public class QoSFilterTest
         if (TestServlet.__maxSleepers < MAX_QOS)
             LOG.warn("TEST WAS NOT PARALLEL ENOUGH!");
         else
-            Assert.assertEquals(TestServlet.__maxSleepers, MAX_QOS);
+            assertEquals(TestServlet.__maxSleepers, MAX_QOS);
     }
 
     @Test
@@ -151,7 +152,7 @@ public class QoSFilterTest
         if (TestServlet.__maxSleepers < MAX_QOS)
             LOG.warn("TEST WAS NOT PARALLEL ENOUGH!");
         else
-            Assert.assertEquals(TestServlet.__maxSleepers, MAX_QOS);
+            assertEquals(TestServlet.__maxSleepers, MAX_QOS);
     }
 
     private void rethrowExceptions(List<Future<Void>> futures) throws Exception

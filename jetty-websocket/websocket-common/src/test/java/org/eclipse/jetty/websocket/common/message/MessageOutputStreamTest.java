@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.websocket.common.message;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -37,10 +38,10 @@ import org.eclipse.jetty.websocket.common.io.LocalWebSocketSession;
 import org.eclipse.jetty.websocket.common.scopes.SimpleContainerScope;
 import org.eclipse.jetty.websocket.common.scopes.WebSocketContainerScope;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TestName;
 
 public class MessageOutputStreamTest
@@ -104,9 +105,9 @@ public class MessageOutputStreamTest
             stream.write("World".getBytes("UTF-8"));
         }
 
-        Assert.assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
+        assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
         String msg = socket.messageQueue.poll();
-        Assert.assertThat("Message",msg,allOf(containsString("byte[11]"),containsString("Hello World")));
+        assertThat("Message",msg,allOf(containsString("byte[11]"),containsString("Hello World")));
     }
 
     @Test
@@ -117,9 +118,9 @@ public class MessageOutputStreamTest
             stream.write("Hello World".getBytes("UTF-8"));
         }
 
-        Assert.assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
+        assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
         String msg = socket.messageQueue.poll();
-        Assert.assertThat("Message",msg,allOf(containsString("byte[11]"),containsString("Hello World")));
+        assertThat("Message",msg,allOf(containsString("byte[11]"),containsString("Hello World")));
     }
 
     @Test
@@ -136,8 +137,8 @@ public class MessageOutputStreamTest
             stream.write(buf);
         }
 
-        Assert.assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
+        assertThat("Socket.messageQueue.size",socket.messageQueue.size(),is(1));
         String msg = socket.messageQueue.poll();
-        Assert.assertThat("Message",msg,allOf(containsString("byte[" + bufsize + "]"),containsString("xxxo>>>")));
+        assertThat("Message",msg,allOf(containsString("byte[" + bufsize + "]"),containsString("xxxo>>>")));
     }
 }

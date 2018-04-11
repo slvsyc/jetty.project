@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.test.jsp;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -42,9 +43,9 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -143,8 +144,8 @@ public class JspAndDefaultWithoutAliasesTest
         // make sure that jsp actually ran, and didn't just get passed onto
         // the default servlet to return the jsp source
         String body = getResponseBody(conn);
-        Assert.assertThat("Body",body,not(containsString("<%@")));
-        Assert.assertThat("Body",body,not(containsString("<jsp:")));
+        assertThat("Body",body,not(containsString("<%@")));
+        assertThat("Body",body,not(containsString("<jsp:")));
     }
 
     private void assertResponse(HttpURLConnection conn) throws IOException
@@ -157,7 +158,7 @@ public class JspAndDefaultWithoutAliasesTest
         }
 
         // Of other possible paths, only 404 Not Found is expected
-        Assert.assertThat("Response Code",conn.getResponseCode(),is(404));
+        assertThat("Response Code",conn.getResponseCode(),is(404));
     }
 
     @Test

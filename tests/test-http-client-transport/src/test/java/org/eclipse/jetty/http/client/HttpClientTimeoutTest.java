@@ -18,6 +18,14 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -55,9 +63,9 @@ import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.IO;
-import org.junit.Assert;
+
 import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpClientTimeoutTest extends AbstractTest
 {
@@ -66,15 +74,17 @@ public class HttpClientTimeoutTest extends AbstractTest
         super(transport);
     }
 
-    @Test(expected = TimeoutException.class)
+    @Test
     public void testTimeoutOnFuture() throws Exception
     {
         long timeout = 1000;
         start(new TimeoutHandler(2 * timeout));
 
-        client.newRequest(newURI())
-                .timeout(timeout, TimeUnit.MILLISECONDS)
-                .send();
+        assertThrows(TimeoutException.class, ()-> {
+            client.newRequest(newURI())
+                    .timeout(timeout, TimeUnit.MILLISECONDS)
+                    .send();
+        });
     }
 
     @Test
@@ -88,10 +98,10 @@ public class HttpClientTimeoutTest extends AbstractTest
                 .timeout(timeout, TimeUnit.MILLISECONDS);
         request.send(result ->
         {
-            Assert.assertTrue(result.isFailed());
+            assertTrue(result.isFailed());
             latch.countDown();
         });
-        Assert.assertTrue(latch.await(3 * timeout, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(3 * timeout, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -109,7 +119,7 @@ public class HttpClientTimeoutTest extends AbstractTest
                 .timeout(4 * timeout, TimeUnit.MILLISECONDS);
         request.send(result ->
         {
-            Assert.assertFalse(result.isFailed());
+            assertFalse(result.isFailed());
             firstLatch.countDown();
         });
 
@@ -119,14 +129,14 @@ public class HttpClientTimeoutTest extends AbstractTest
                 .timeout(timeout, TimeUnit.MILLISECONDS);
         request.send(result ->
         {
-            Assert.assertTrue(result.isFailed());
+            assertTrue(result.isFailed());
             secondLatch.countDown();
         });
 
-        Assert.assertTrue(secondLatch.await(2 * timeout, TimeUnit.MILLISECONDS));
+        assertTrue(secondLatch.await(2 * timeout, TimeUnit.MILLISECONDS));
         // The second request must fail before the first request has completed
-        Assert.assertTrue(firstLatch.getCount() > 0);
-        Assert.assertTrue(firstLatch.await(5 * timeout, TimeUnit.MILLISECONDS));
+        assertTrue(firstLatch.getCount() > 0);
+        assertTrue(firstLatch.await(5 * timeout, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -145,17 +155,17 @@ public class HttpClientTimeoutTest extends AbstractTest
             @Override
             public void onComplete(Result result)
             {
-                Assert.assertFalse(result.isFailed());
-                Assert.assertArrayEquals(content, getContent());
+                assertFalse(result.isFailed());
+                assertArrayEquals(content, getContent());
                 latch.countDown();
             }
         });
 
-        Assert.assertTrue(latch.await(3 * timeout, TimeUnit.MILLISECONDS));
+        assertTrue(latch.await(3 * timeout, TimeUnit.MILLISECONDS));
 
         TimeUnit.MILLISECONDS.sleep(2 * timeout);
 
-        Assert.assertNull(request.getAbortCause());
+        assertNull(request.getAbortCause());
     }
 
     @Test
@@ -177,11 +187,11 @@ public class HttpClientTimeoutTest extends AbstractTest
                     .timeout(timeout, TimeUnit.MILLISECONDS);
             connection.send(request, result ->
             {
-                Assert.assertTrue(result.isFailed());
+                assertTrue(result.isFailed());
                 latch.countDown();
             });
 
-            Assert.assertTrue(latch.await(3 * timeout, TimeUnit.MILLISECONDS));
+            assertTrue(latch.await(3 * timeout, TimeUnit.MILLISECONDS));
         }
     }
 
@@ -205,16 +215,16 @@ public class HttpClientTimeoutTest extends AbstractTest
             connection.send(request, result ->
             {
                 Response response = result.getResponse();
-                Assert.assertEquals(200, response.getStatus());
-                Assert.assertFalse(result.isFailed());
+                assertEquals(200, response.getStatus());
+                assertFalse(result.isFailed());
                 latch.countDown();
             });
 
-            Assert.assertTrue(latch.await(3 * timeout, TimeUnit.MILLISECONDS));
+            assertTrue(latch.await(3 * timeout, TimeUnit.MILLISECONDS));
 
             TimeUnit.MILLISECONDS.sleep(2 * timeout);
 
-            Assert.assertNull(request.getAbortCause());
+            assertNull(request.getAbortCause());
         }
     }
 
@@ -255,11 +265,11 @@ public class HttpClientTimeoutTest extends AbstractTest
         {
             client.newRequest(newURI())
                     .send();
-            Assert.fail();
+            fail();
         }
         catch (Exception x)
         {
-            Assert.assertFalse(sslIdle.get());
+            assertFalse(sslIdle.get());
             throw x;
         }
     }
@@ -300,8 +310,8 @@ public class HttpClientTimeoutTest extends AbstractTest
                         latch.countDown();
                 });
 
-        Assert.assertTrue(latch.await(2 * connectTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertNotNull(request.getAbortCause());
+        assertTrue(latch.await(2 * connectTimeout, TimeUnit.MILLISECONDS));
+        assertNotNull(request.getAbortCause());
     }
 
     @Test
@@ -329,9 +339,9 @@ public class HttpClientTimeoutTest extends AbstractTest
                     latch.countDown();
                 });
 
-        Assert.assertFalse(latch.await(2 * connectTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertEquals(1, completes.get());
-        Assert.assertNotNull(request.getAbortCause());
+        assertFalse(latch.await(2 * connectTimeout, TimeUnit.MILLISECONDS));
+        assertEquals(1, completes.get());
+        assertNotNull(request.getAbortCause());
     }
 
     @Test
@@ -367,8 +377,8 @@ public class HttpClientTimeoutTest extends AbstractTest
                     }
                 });
 
-        Assert.assertTrue(latch.await(333 * connectTimeout, TimeUnit.MILLISECONDS));
-        Assert.assertNotNull(request.getAbortCause());
+        assertTrue(latch.await(333 * connectTimeout, TimeUnit.MILLISECONDS));
+        assertNotNull(request.getAbortCause());
     }
 
     @Test
@@ -381,7 +391,7 @@ public class HttpClientTimeoutTest extends AbstractTest
                 .timeout(1, TimeUnit.MILLISECONDS) // Very short timeout
                 .send(result -> latch.countDown());
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -399,7 +409,7 @@ public class HttpClientTimeoutTest extends AbstractTest
         {
             request.timeout(timeout, TimeUnit.MILLISECONDS)
                     .send(result -> {});
-            Assert.fail();
+            fail();
         }
         catch (Exception ignored)
         {
@@ -408,7 +418,7 @@ public class HttpClientTimeoutTest extends AbstractTest
         Thread.sleep(2 * timeout);
 
         // If the task was not cancelled, it aborted the request.
-        Assert.assertNull(request.getAbortCause());
+        assertNull(request.getAbortCause());
     }
 
     @Test
@@ -449,8 +459,8 @@ public class HttpClientTimeoutTest extends AbstractTest
                 .timeout(timeout, TimeUnit.MILLISECONDS)
                 .send();
 
-        Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertEquals(HttpStatus.OK_200, response.getStatus());
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     private void assumeConnectTimeout(String host, int port, int connectTimeout)

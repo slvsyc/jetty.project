@@ -18,11 +18,12 @@
 
 package org.eclipse.jetty.annotations;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,9 +50,8 @@ import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.eclipse.jetty.util.resource.PathResource;
 import org.eclipse.jetty.util.resource.Resource;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestAnnotationParser
 {
@@ -171,11 +171,9 @@ public class TestAnnotationParser
 
             @Override
             public void handle(FieldInfo info, String annotation)
-            {                
-                if (annotation == null || ! "org.eclipse.jetty.annotations.Multi".equals(annotation))
-                    return;
-                // there should not be any
-                fail();
+            {
+                assertTrue(annotation == null || ! "org.eclipse.jetty.annotations.Multi".equals(annotation),
+                        "There should not be any");
             }
 
             @Override
@@ -256,7 +254,7 @@ public class TestAnnotationParser
         parser.parse(Collections.singleton(tracker), basedir.toURI());
         
         // Validate
-        Assert.assertThat("Found Class", tracker.foundClasses, contains(ClassA.class.getName()));
+        assertThat("Found Class", tracker.foundClasses, contains(ClassA.class.getName()));
     }
     
     
@@ -271,9 +269,9 @@ public class TestAnnotationParser
         parser.parse(handlers, testJar);
         parser.parse(handlers, testJar2);        
         List<String> locations = handler.getParsedList("org.acme.ClassOne");
-        Assert.assertNotNull(locations);
-        Assert.assertEquals(2, locations.size());
-        Assert.assertTrue(!(locations.get(0).equals(locations.get(1))));
+        assertNotNull(locations);
+        assertEquals(2, locations.size());
+        assertTrue(!(locations.get(0).equals(locations.get(1))));
     }
     
     
@@ -288,9 +286,9 @@ public class TestAnnotationParser
         parser.parse(handlers, testJar);
         parser.parse(handlers, Resource.newResource(testClasses));        
         List<String>locations = handler.getParsedList("org.acme.ClassOne");
-        Assert.assertNotNull(locations);
-        Assert.assertEquals(2, locations.size());
-        Assert.assertTrue(!(locations.get(0).equals(locations.get(1))));
+        assertNotNull(locations);
+        assertEquals(2, locations.size());
+        assertTrue(!(locations.get(0).equals(locations.get(1))));
     }
     
     
@@ -299,7 +297,7 @@ public class TestAnnotationParser
     {
         String classname = clazz.getName().replace('.',File.separatorChar) + ".class";
         URL url = this.getClass().getResource('/'+classname);
-        Assert.assertThat("URL for: " + classname,url,notNullValue());
+        assertThat("URL for: " + classname,url,notNullValue());
 
         String classpath = classname.substring(0,classname.lastIndexOf(File.separatorChar));
         FS.ensureDirExists(new File(basedir,classpath));

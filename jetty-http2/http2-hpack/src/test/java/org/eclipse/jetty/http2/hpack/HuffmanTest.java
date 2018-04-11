@@ -18,13 +18,16 @@
 
 package org.eclipse.jetty.http2.hpack;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.nio.ByteBuffer;
 import java.util.Locale;
 
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.TypeUtil;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HuffmanTest
 {
@@ -46,7 +49,7 @@ public class HuffmanTest
         {
             byte[] encoded=TypeUtil.fromHexString(test[1]);
             String decoded=Huffman.decode(ByteBuffer.wrap(encoded));
-            Assert.assertEquals(test[0],test[2],decoded);
+            assertEquals(test[0],test[2],decoded);
         }
     }
 
@@ -57,7 +60,7 @@ public class HuffmanTest
         {
             byte[] encoded=TypeUtil.fromHexString(test[1]+"FF");
             String decoded=Huffman.decode(ByteBuffer.wrap(encoded));
-            Assert.assertEquals(test[0],test[2],decoded);
+            assertEquals(test[0],test[2],decoded);
         }
     }
 
@@ -71,8 +74,8 @@ public class HuffmanTest
             Huffman.encode(buf,test[2]);
             BufferUtil.flipToFlush(buf,pos);
             String encoded=TypeUtil.toHexString(BufferUtil.toArray(buf)).toLowerCase(Locale.ENGLISH);
-            Assert.assertEquals(test[0],test[1],encoded);
-            Assert.assertEquals(test[1].length()/2,Huffman.octetsNeeded(test[2]));
+            assertEquals(test[0],test[1],encoded);
+            assertEquals(test[1].length()/2,Huffman.octetsNeeded(test[2]));
         }
     }
 
@@ -84,23 +87,13 @@ public class HuffmanTest
         {
             String s="bad '"+bad[i]+"'";
 
-            try
-            {
-                Huffman.octetsNeeded(s);
-                Assert.fail("i="+i);
-            }
-            catch(IllegalArgumentException e)
-            {
-            }
+            assertThrows(IllegalArgumentException.class,
+                    () -> Huffman.octetsNeeded(s),
+                    "i=" + i);
 
-            try
-            {
-                Huffman.encode(BufferUtil.allocate(32),s);
-                Assert.fail("i="+i);
-            }
-            catch(IllegalArgumentException e)
-            {
-            }
+            assertThrows(IllegalArgumentException.class,
+                    () -> Huffman.encode(BufferUtil.allocate(32), s),
+                    "i=" + i);
         }
     }
 

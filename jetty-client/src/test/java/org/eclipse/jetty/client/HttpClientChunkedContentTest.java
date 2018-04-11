@@ -18,7 +18,8 @@
 
 package org.eclipse.jetty.client;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,8 +40,8 @@ import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpClientChunkedContentTest
 {
@@ -109,7 +110,7 @@ public class HttpClientChunkedContentTest
                 Result result = resultRef.get();
                 assertTrue(result.isSucceeded());
                 Response response = result.getResponse();
-                Assert.assertEquals(200, response.getStatus());
+                assertEquals(200, response.getStatus());
             }
         }
     }
@@ -177,7 +178,7 @@ public class HttpClientChunkedContentTest
                 assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
                 Result result = resultRef.get();
                 assertTrue(result.isSucceeded());
-                Assert.assertEquals(200, result.getResponse().getStatus());
+                assertEquals(200, result.getResponse().getStatus());
 
                 // Issue another request to be sure the connection is sane.
                 Request request = client.newRequest("localhost", server.getLocalPort())
@@ -189,7 +190,7 @@ public class HttpClientChunkedContentTest
                 output.write(response.getBytes(StandardCharsets.UTF_8));
                 output.flush();
 
-                Assert.assertEquals(200, listener.get(5, TimeUnit.SECONDS).getStatus());
+                assertEquals(200, listener.get(5, TimeUnit.SECONDS).getStatus());
             }
         }
     }

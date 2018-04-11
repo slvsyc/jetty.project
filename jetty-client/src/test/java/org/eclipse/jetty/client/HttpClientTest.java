@@ -18,6 +18,16 @@
 
 package org.eclipse.jetty.client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -80,7 +90,8 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.AbstractConnection;
 import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.IO;
@@ -89,16 +100,15 @@ import org.eclipse.jetty.util.SocketAddressResolver;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class HttpClientTest extends AbstractHttpClientServerTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     public HttpClientTest(SslContextFactory sslContextFactory)
     {
@@ -114,7 +124,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
         int port = connector.getLocalPort();
         String path = "/";
         Response response = client.GET(scheme + "://" + host + ":" + port + path);
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         HttpDestinationOverHTTP destination = (HttpDestinationOverHTTP)client.getDestination(scheme, host, port);
         DuplexConnectionPool connectionPool = (DuplexConnectionPool)destination.getConnectionPool();
@@ -126,17 +136,17 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             connection = (HttpConnectionOverHTTP)connectionPool.getIdleConnections().peek();
             TimeUnit.MILLISECONDS.sleep(10);
         }
-        Assert.assertNotNull(connection);
+        assertNotNull(connection);
 
         String uri = destination.getScheme() + "://" + destination.getHost() + ":" + destination.getPort();
         client.getCookieStore().add(URI.create(uri), new HttpCookie("foo", "bar"));
 
         client.stop();
 
-        Assert.assertEquals(0, client.getDestinations().size());
-        Assert.assertEquals(0, connectionPool.getIdleConnectionCount());
-        Assert.assertEquals(0, connectionPool.getActiveConnectionCount());
-        Assert.assertFalse(connection.getEndPoint().isOpen());
+        assertEquals(0, client.getDestinations().size());
+        assertEquals(0, connectionPool.getIdleConnectionCount());
+        assertEquals(0, connectionPool.getActiveConnectionCount());
+        assertFalse(connection.getEndPoint().isOpen());
     }
 
     @Test
@@ -149,13 +159,13 @@ public class HttpClientTest extends AbstractHttpClientServerTest
         client.GET(scheme + "://" + host + ":" + port);
 
         List<Destination> destinations = client.getDestinations();
-        Assert.assertNotNull(destinations);
-        Assert.assertEquals(1, destinations.size());
+        assertNotNull(destinations);
+        assertEquals(1, destinations.size());
         Destination destination = destinations.get(0);
-        Assert.assertNotNull(destination);
-        Assert.assertEquals(scheme, destination.getScheme());
-        Assert.assertEquals(host, destination.getHost());
-        Assert.assertEquals(port, destination.getPort());
+        assertNotNull(destination);
+        assertEquals(scheme, destination.getScheme());
+        assertEquals(host, destination.getHost());
+        assertEquals(port, destination.getPort());
     }
 
     @Test
@@ -165,8 +175,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
 
         Response response = client.GET(scheme + "://localhost:" + connector.getLocalPort());
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -186,10 +196,10 @@ public class HttpClientTest extends AbstractHttpClientServerTest
         client.setConnectBlocking(true);
         ContentResponse response = client.GET(scheme + "://localhost:" + connector.getLocalPort());
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
         byte[] content = response.getContent();
-        Assert.assertArrayEquals(data, content);
+        assertArrayEquals(data, content);
     }
 
     @Test
@@ -207,7 +217,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 String paramValue1 = request.getParameter(paramName1);
                 output.write(paramValue1.getBytes(StandardCharsets.UTF_8));
                 String paramValue2 = request.getParameter(paramName2);
-                Assert.assertEquals("", paramValue2);
+                assertEquals("", paramValue2);
                 output.write("empty".getBytes(StandardCharsets.UTF_8));
                 baseRequest.setHandled(true);
             }
@@ -218,10 +228,10 @@ public class HttpClientTest extends AbstractHttpClientServerTest
         String query = paramName1 + "=" + paramValue1 + "&" + paramName2;
         ContentResponse response = client.GET(scheme + "://localhost:" + connector.getLocalPort() + "/?" + query);
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
         String content = new String(response.getContent(), StandardCharsets.UTF_8);
-        Assert.assertEquals(value1 + "empty", content);
+        assertEquals(value1 + "empty", content);
     }
 
     @Test
@@ -254,10 +264,10 @@ public class HttpClientTest extends AbstractHttpClientServerTest
         String query = paramName1 + "=" + paramValue11 + "&" + paramName1 + "=" + paramValue12 + "&" + paramName2 + "=" + paramValue2;
         ContentResponse response = client.GET(scheme + "://localhost:" + connector.getLocalPort() + "/?" + query);
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
         String content = new String(response.getContent(), StandardCharsets.UTF_8);
-        Assert.assertEquals(value11 + value12 + value2, content);
+        assertEquals(value11 + value12 + value2, content);
     }
 
     @Test
@@ -286,9 +296,9 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(paramValue, new String(response.getContent(), StandardCharsets.UTF_8));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertEquals(paramValue, new String(response.getContent(), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -319,9 +329,9 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(paramValue, new String(response.getContent(), StandardCharsets.UTF_8));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertEquals(paramValue, new String(response.getContent(), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -353,9 +363,9 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(content, response.getContent());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(content, response.getContent());
     }
 
     @Test
@@ -384,8 +394,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -406,17 +416,17 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .onRequestContent((request, buffer) ->
                 {
                     byte[] bytes = new byte[buffer.remaining()];
-                    Assert.assertEquals(1, bytes.length);
+                    assertEquals(1, bytes.length);
                     buffer.get(bytes);
-                    Assert.assertEquals(bytes[0], progress.getAndIncrement());
+                    assertEquals(bytes[0], progress.getAndIncrement());
                 })
                 .content(new BytesContentProvider(new byte[]{0}, new byte[]{1}, new byte[]{2}, new byte[]{3}, new byte[]{4}))
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(5, progress.get());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertEquals(5, progress.get());
     }
 
     @Test
@@ -446,7 +456,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                     @Override
                     public void onSuccess(Response response)
                     {
-                        Assert.assertEquals(200, response.getStatus());
+                        assertEquals(200, response.getStatus());
                         successLatch.countDown();
                     }
                 });
@@ -459,12 +469,12 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                     @Override
                     public void onSuccess(Response response)
                     {
-                        Assert.assertEquals(200, response.getStatus());
+                        assertEquals(200, response.getStatus());
                         successLatch.countDown();
                     }
                 });
 
-        Assert.assertTrue(successLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(successLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -498,12 +508,12 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             .path("/two")
             .onResponseSuccess(response ->
             {
-                Assert.assertEquals(200, response.getStatus());
+                assertEquals(200, response.getStatus());
                 latch.countDown();
             })
             .send(null);
 
-            Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+            assertTrue(latch.await(5, TimeUnit.SECONDS));
         }
     }
 
@@ -552,10 +562,10 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                     }
                 });
 
-        Assert.assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
 
-        Assert.assertTrue(requestTime.get() <= exchangeTime.get());
-        Assert.assertTrue(responseTime.get() <= exchangeTime.get());
+        assertTrue(requestTime.get() <= exchangeTime.get());
+        assertTrue(responseTime.get() <= exchangeTime.get());
 
         // Give some time to the server to consume the request content
         // This is just to avoid exception traces in the test output
@@ -623,7 +633,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -651,7 +661,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                     }
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -678,18 +688,13 @@ public class HttpClientTest extends AbstractHttpClientServerTest
 
         final String host = "localhost";
         final int port = connector.getLocalPort();
-        try
-        {
+        assertThrows(TimeoutException.class, ()->{
             client.newRequest(host, port)
                     .scheme(scheme)
                     .idleTimeout(idleTimeout, TimeUnit.MILLISECONDS)
                     .timeout(3 * idleTimeout, TimeUnit.MILLISECONDS)
                     .send();
-            Assert.fail();
-        }
-        catch (TimeoutException expected)
-        {
-        }
+        });
 
         // Make another request without specifying the idle timeout, should not fail
         ContentResponse response = client.newRequest(host, port)
@@ -697,8 +702,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(3 * idleTimeout, TimeUnit.MILLISECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -711,8 +716,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -735,9 +740,9 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(headerName));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(headerName));
     }
 
     @Test
@@ -768,7 +773,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                     });
         }
 
-        Assert.assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
@@ -793,9 +798,9 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(0, response.getContent().length);
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertEquals(0, response.getContent().length);
 
         // Perform a normal GET request to be sure the content is now read
         response = client.newRequest("localhost", connector.getLocalPort())
@@ -803,9 +808,9 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(length, response.getContent().length);
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertEquals(length, response.getContent().length);
     }
 
     @Test
@@ -830,12 +835,12 @@ public class HttpClientTest extends AbstractHttpClientServerTest
         client.newRequest(host, port)
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     Throwable failure = result.getFailure();
-                    Assert.assertTrue(failure instanceof UnknownHostException);
+                    assertTrue(failure instanceof UnknownHostException);
                     latch.countDown();
                 });
-        Assert.assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
     @Test
@@ -886,8 +891,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             {
                 baseRequest.setHandled(true);
                 ArrayList<String> userAgents = Collections.list(request.getHeaders("User-Agent"));
-                Assert.assertEquals(1, userAgents.size());
-                Assert.assertEquals(userAgent, userAgents.get(0));
+                assertEquals(1, userAgents.size());
+                assertEquals(userAgent, userAgents.get(0));
             }
         });
 
@@ -897,7 +902,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         response = client.newRequest("localhost", connector.getLocalPort())
                 .scheme(scheme)
@@ -906,7 +911,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -920,9 +925,9 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 baseRequest.setHandled(true);
                 ArrayList<String> userAgents = Collections.list(request.getHeaders("User-Agent"));
                 if ("/ua".equals(target))
-                    Assert.assertEquals(1, userAgents.size());
+                    assertEquals(1, userAgents.size());
                 else
-                    Assert.assertEquals(0, userAgents.size());
+                    assertEquals(0, userAgents.size());
             }
         });
 
@@ -933,7 +938,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         // User agent explicitly removed.
         response = client.newRequest("localhost", connector.getLocalPort())
@@ -942,7 +947,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         // User agent explicitly removed.
         response = client.newRequest("localhost", connector.getLocalPort())
@@ -951,7 +956,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -1018,11 +1023,11 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .listener(listener)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
         int expectedEventsTriggeredByOnRequestXXXListeners = 5;
         int expectedEventsTriggeredByListener = 5;
         int expected = expectedEventsTriggeredByOnRequestXXXListeners + expectedEventsTriggeredByListener;
-        Assert.assertEquals(expected, counter.get());
+        assertEquals(expected, counter.get());
     }
 
     @Test
@@ -1083,7 +1088,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             @Override
             public void onComplete(Result result)
             {
-                Assert.assertEquals(200, result.getResponse().getStatus());
+                assertEquals(200, result.getResponse().getStatus());
                 counter.incrementAndGet();
                 latch.countDown();
             }
@@ -1099,11 +1104,11 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .onResponseFailure(listener)
                 .send(listener);
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
         int expectedEventsTriggeredByOnResponseXXXListeners = 3;
         int expectedEventsTriggeredByCompletionListener = 4;
         int expected = expectedEventsTriggeredByOnResponseXXXListeners + expectedEventsTriggeredByCompletionListener;
-        Assert.assertEquals(expected, counter.get());
+        assertEquals(expected, counter.get());
     }
 
     @Test
@@ -1145,8 +1150,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
 
         Response response = ex.exchange(null);
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(content, listener.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(content, listener.getContent());
 
     }
 
@@ -1160,7 +1165,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertEquals(host, request.getServerName());
+                assertEquals(host, request.getServerName());
             }
         });
 
@@ -1169,7 +1174,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .header(HttpHeader.HOST, host)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -1195,8 +1200,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().contains(HttpHeader.CONNECTION, HttpHeaderValue.KEEP_ALIVE.asString()));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().contains(HttpHeader.CONNECTION, HttpHeaderValue.KEEP_ALIVE.asString()));
     }
 
     @Test
@@ -1229,12 +1234,12 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             connection.send(request, listener);
             ContentResponse response = listener.get(2 * timeout, TimeUnit.MILLISECONDS);
 
-            Assert.assertEquals(200, response.getStatus());
+            assertEquals(200, response.getStatus());
             // The parser notifies end-of-content and therefore the CompleteListener
             // before closing the connection, so we need to wait before checking
             // that the connection is closed to avoid races.
             Thread.sleep(1000);
-            Assert.assertTrue(connection.isClosed());
+            assertTrue(connection.isClosed());
         }
     }
 
@@ -1250,8 +1255,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertTrue(response.getHeaders().contains(HttpHeader.CONNECTION, HttpHeaderValue.KEEP_ALIVE.asString()));
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getHeaders().contains(HttpHeader.CONNECTION, HttpHeaderValue.KEEP_ALIVE.asString()));
     }
 
     @Test
@@ -1278,40 +1283,34 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                         completeLatch.countDown();
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
 
         // Stop the client, the complete listener must be invoked.
         client.stop();
 
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
     public void testSmallContentDelimitedByEOFWithSlowRequestHTTP10() throws Exception
     {
-        try
-        {
+        ExecutionException e = assertThrows(ExecutionException.class, ()->{
             testContentDelimitedByEOFWithSlowRequest(HttpVersion.HTTP_1_0, 1024);
-        }
-        catch(ExecutionException e)
-        {
-            Assert.assertThat(e.getCause(), Matchers.instanceOf(BadMessageException.class));
-            Assert.assertThat(e.getCause().getMessage(), Matchers.containsString("Unknown content"));
-        }
+        });
+
+        assertThat(e.getCause(), instanceOf(BadMessageException.class));
+        assertThat(e.getCause().getMessage(), containsString("Unknown content"));
     }
 
     @Test
     public void testBigContentDelimitedByEOFWithSlowRequestHTTP10() throws Exception
     {
-        try
-        {
+        ExecutionException e = assertThrows(ExecutionException.class, ()->{
             testContentDelimitedByEOFWithSlowRequest(HttpVersion.HTTP_1_0, 128 * 1024);
-        }
-        catch(ExecutionException e)
-        {
-            Assert.assertThat(e.getCause(), Matchers.instanceOf(BadMessageException.class));
-            Assert.assertThat(e.getCause().getMessage(), Matchers.containsString("Unknown content"));
-        }
+        });
+
+        assertThat(e.getCause(), instanceOf(BadMessageException.class));
+        assertThat(e.getCause().getMessage(), containsString("Unknown content"));
     }
 
     @Test
@@ -1363,8 +1362,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
 
         ContentResponse response = listener.get(5, TimeUnit.SECONDS);
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(data, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(data, response.getContent());
     }
 
     @Test
@@ -1394,7 +1393,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             }
         }.perform();
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1434,16 +1433,16 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                     }
                 });
 
-        Assert.assertTrue(contentLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(contentLatch.await(5, TimeUnit.SECONDS));
 
         // Make sure the complete event is not emitted.
-        Assert.assertFalse(completeLatch.await(1, TimeUnit.SECONDS));
+        assertFalse(completeLatch.await(1, TimeUnit.SECONDS));
 
         // Consume the content.
         callbackRef.get().succeeded();
 
         // Now the complete event is emitted.
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1482,7 +1481,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .scheme(scheme)
                 .onRequestBegin(request ->
                 {
-                    Assert.assertTrue(open.get());
+                    assertTrue(open.get());
                     latch.countDown();
                 })
                 .send(result ->
@@ -1491,7 +1490,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                         latch.countDown();
                 });
 
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -1527,7 +1526,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 output.flush();
 
                 ContentResponse response = listener.get(5, TimeUnit.SECONDS);
-                Assert.assertEquals(200, response.getStatus());
+                assertEquals(200, response.getStatus());
 
                 // Because the tunnel was successful, this connection will be
                 // upgraded to an SslConnection, so it will not be fill interested.
@@ -1573,9 +1572,9 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             .timeout(5, TimeUnit.SECONDS)
             .send();
 
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertThat(new String(response.getContent(), StandardCharsets.ISO_8859_1),Matchers.startsWith("[::1]:"));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertThat(new String(response.getContent(), StandardCharsets.ISO_8859_1),Matchers.startsWith("[::1]:"));
     }
 
     @Test
@@ -1635,7 +1634,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
             {
                 baseRequest.setHandled(true);
-                Assert.assertThat(request.getHeader("Host"), Matchers.notNullValue());
+                assertThat(request.getHeader("Host"), Matchers.notNullValue());
             }
         });
 
@@ -1645,7 +1644,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     @Test
@@ -1684,11 +1683,11 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 output.flush();
 
                 ContentResponse response = listener.get(5, TimeUnit.SECONDS);
-                Assert.assertEquals(204, response.getStatus());
+                assertEquals(204, response.getStatus());
 
                 byte[] responseContent = response.getContent();
-                Assert.assertNotNull(responseContent);
-                Assert.assertEquals(0, responseContent.length);
+                assertNotNull(responseContent);
+                assertEquals(0, responseContent.length);
 
                 // Send another request to verify we have handled the wrong response correctly.
                 request = client.newRequest("localhost", server.getLocalPort())
@@ -1707,7 +1706,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                 output.flush();
 
                 response = listener.get(5, TimeUnit.SECONDS);
-                Assert.assertEquals(200, response.getStatus());
+                assertEquals(200, response.getStatus());
             }
         }
     }
@@ -1715,14 +1714,14 @@ public class HttpClientTest extends AbstractHttpClientServerTest
     private void assertCopyRequest(Request original)
     {
         Request copy = client.copyRequest((HttpRequest) original, original.getURI());
-        Assert.assertEquals(original.getURI(), copy.getURI());
-        Assert.assertEquals(original.getMethod(), copy.getMethod());
-        Assert.assertEquals(original.getVersion(), copy.getVersion());
-        Assert.assertEquals(original.getContent(), copy.getContent());
-        Assert.assertEquals(original.getIdleTimeout(), copy.getIdleTimeout());
-        Assert.assertEquals(original.getTimeout(), copy.getTimeout());
-        Assert.assertEquals(original.isFollowRedirects(), copy.isFollowRedirects());
-        Assert.assertEquals(original.getHeaders(), copy.getHeaders());
+        assertEquals(original.getURI(), copy.getURI());
+        assertEquals(original.getMethod(), copy.getMethod());
+        assertEquals(original.getVersion(), copy.getVersion());
+        assertEquals(original.getContent(), copy.getContent());
+        assertEquals(original.getIdleTimeout(), copy.getIdleTimeout());
+        assertEquals(original.getTimeout(), copy.getTimeout());
+        assertEquals(original.isFollowRedirects(), copy.isFollowRedirects());
+        assertEquals(original.getHeaders(), copy.getHeaders());
     }
 
     private void consume(InputStream input, boolean eof) throws IOException

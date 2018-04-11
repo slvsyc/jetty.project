@@ -18,6 +18,14 @@
 
 package org.eclipse.jetty.client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
@@ -44,9 +52,9 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpClientRedirectTest extends AbstractHttpClientServerTest
 {
@@ -65,9 +73,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/303/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -80,9 +88,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/303/localhost/302/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -95,9 +103,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/303/127.0.0.1/302/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -111,9 +119,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/301/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -121,24 +129,19 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
     {
         start(new RedirectHandler());
 
-        try
-        {
+        ExecutionException x = assertThrows(ExecutionException.class, ()->{
             client.newRequest("localhost", connector.getLocalPort())
                     .scheme(scheme)
                     .method(HttpMethod.DELETE)
                     .path("/301/localhost/done")
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
-            Assert.fail();
-        }
-        catch (ExecutionException x)
-        {
-            HttpResponseException xx = (HttpResponseException)x.getCause();
-            Response response = xx.getResponse();
-            Assert.assertNotNull(response);
-            Assert.assertEquals(301, response.getStatus());
-            Assert.assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
-        }
+        });
+        HttpResponseException xx = (HttpResponseException)x.getCause();
+        Response response = xx.getResponse();
+        assertNotNull(response);
+        assertEquals(301, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -154,10 +157,10 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .content(new ByteBufferContentProvider(ByteBuffer.wrap(data)))
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
-        Assert.assertArrayEquals(data, response.getContent());
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertArrayEquals(data, response.getContent());
     }
 
     @Test
@@ -166,23 +169,18 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         start(new RedirectHandler());
         client.setMaxRedirects(1);
 
-        try
-        {
+        ExecutionException x = assertThrows(ExecutionException.class, ()->{
             client.newRequest("localhost", connector.getLocalPort())
                     .scheme(scheme)
                     .path("/303/localhost/302/localhost/done")
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
-            Assert.fail();
-        }
-        catch (ExecutionException x)
-        {
-            HttpResponseException xx = (HttpResponseException)x.getCause();
-            Response response = xx.getResponse();
-            Assert.assertNotNull(response);
-            Assert.assertEquals(302, response.getStatus());
-            Assert.assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
-        }
+        });
+        HttpResponseException xx = (HttpResponseException)x.getCause();
+        Response response = xx.getResponse();
+        assertNotNull(response);
+        assertEquals(302, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -195,9 +193,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/303/localhost/done?close=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -211,9 +209,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/303/localhost/done?close=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(303, response.getStatus());
-        Assert.assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(303, response.getStatus());
+        assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -226,9 +224,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/303/localhost/done?relative=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -241,9 +239,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/303/localhost/a+space?decode=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -256,9 +254,9 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .path("/303/localhost/a+space?relative=true&decode=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
-        Assert.assertNotNull(response);
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
     @Test
@@ -282,10 +280,10 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     latch.countDown();
                 });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -305,7 +303,7 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         }
         catch (ExecutionException x)
         {
-            Assert.assertThat(x.getCause(), Matchers.instanceOf(UnresolvedAddressException.class));
+            assertThat(x.getCause(), Matchers.instanceOf(UnresolvedAddressException.class));
         }
     }
 
@@ -394,25 +392,25 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .followRedirects(false);
         ContentResponse response1 = request1.send();
 
-        Assert.assertEquals(303, response1.getStatus());
-        Assert.assertTrue(redirector.isRedirect(response1));
+        assertEquals(303, response1.getStatus());
+        assertTrue(redirector.isRedirect(response1));
 
         Result result = redirector.redirect(request1, response1);
         org.eclipse.jetty.client.api.Request request2 = result.getRequest();
         Response response2 = result.getResponse();
 
-        Assert.assertEquals(302, response2.getStatus());
-        Assert.assertTrue(redirector.isRedirect(response2));
+        assertEquals(302, response2.getStatus());
+        assertTrue(redirector.isRedirect(response2));
 
         final CountDownLatch latch = new CountDownLatch(1);
         redirector.redirect(request2, response2, r ->
         {
             Response response3 = r.getResponse();
-            Assert.assertEquals(200, response3.getStatus());
-            Assert.assertFalse(redirector.isRedirect(response3));
+            assertEquals(200, response3.getStatus());
+            assertFalse(redirector.isRedirect(response3));
             latch.countDown();
         });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -447,8 +445,8 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
-        Assert.assertArrayEquals(bytes, response.getContent());
+        assertEquals(200, response.getStatus());
+        assertArrayEquals(bytes, response.getContent());
     }
 
     private void testSameMethodRedirect(final HttpMethod method, int redirectCode) throws Exception
@@ -496,7 +494,7 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
-        Assert.assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatus());
     }
 
     private class RedirectHandler extends AbstractHandler

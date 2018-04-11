@@ -19,7 +19,9 @@
 package org.eclipse.jetty.server;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,8 +48,8 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class ConnectionOpenCloseTest extends AbstractHttpTest
@@ -95,15 +97,15 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
         {
             socket.setSoTimeout((int)connector.getIdleTimeout());
 
-            Assert.assertTrue(openLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(openLatch.await(5, TimeUnit.SECONDS));
             socket.shutdownOutput();
-            Assert.assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
             String response=IO.toString(socket.getInputStream());
-            Assert.assertEquals(0,response.length());
+            assertEquals(0,response.length());
 
             // Wait some time to see if the callbacks are called too many times
             TimeUnit.MILLISECONDS.sleep(200);
-            Assert.assertEquals(2, callbacks.get());
+            assertEquals(2, callbacks.get());
         }
     }
     
@@ -156,16 +158,16 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
             HttpTester.Response response = HttpTester.parseResponse(inputStream);
             assertThat("Status Code", response.getStatus(), is(200));
     
-            Assert.assertEquals(-1, inputStream.read());
+            assertEquals(-1, inputStream.read());
             socket.close();
     
-            Assert.assertTrue(openLatch.await(5, TimeUnit.SECONDS));
-            Assert.assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(openLatch.await(5, TimeUnit.SECONDS));
+            assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
     
             // Wait some time to see if the callbacks are called too many times
             TimeUnit.SECONDS.sleep(1);
     
-            Assert.assertEquals(2, callbacks.get());
+            assertEquals(2, callbacks.get());
         }
     }
 
@@ -229,12 +231,12 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
         assertThat(response,Matchers.containsString("200 OK"));
         socket.close();
 
-        Assert.assertTrue(openLatch.await(5, TimeUnit.SECONDS));
-        Assert.assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(openLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
 
         // Wait some time to see if the callbacks are called too many times
         TimeUnit.SECONDS.sleep(1);
 
-        Assert.assertEquals(4, callbacks.get());
+        assertEquals(4, callbacks.get());
     }
 }

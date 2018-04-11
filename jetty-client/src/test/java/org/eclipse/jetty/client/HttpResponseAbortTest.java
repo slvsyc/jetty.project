@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -33,8 +36,8 @@ import org.eclipse.jetty.client.util.DeferredContentProvider;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class HttpResponseAbortTest extends AbstractHttpClientServerTest
 {
@@ -54,10 +57,10 @@ public class HttpResponseAbortTest extends AbstractHttpClientServerTest
                 .onResponseBegin(response -> response.abort(new Exception()))
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     latch.countDown();
                 });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -75,10 +78,10 @@ public class HttpResponseAbortTest extends AbstractHttpClientServerTest
                 })
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     latch.countDown();
                 });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -92,10 +95,10 @@ public class HttpResponseAbortTest extends AbstractHttpClientServerTest
                 .onResponseHeaders(response -> response.abort(new Exception()))
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     latch.countDown();
                 });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -128,10 +131,10 @@ public class HttpResponseAbortTest extends AbstractHttpClientServerTest
                 .onResponseContent((response, content) -> response.abort(new Exception()))
                 .send(result ->
                 {
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     latch.countDown();
                 });
-        Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
     @Test
@@ -181,14 +184,14 @@ public class HttpResponseAbortTest extends AbstractHttpClientServerTest
                 .send(result ->
                 {
                     completes.incrementAndGet();
-                    Assert.assertTrue(result.isFailed());
+                    assertTrue(result.isFailed());
                     completeLatch.countDown();
                 });
-        Assert.assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(completeLatch.await(5, TimeUnit.SECONDS));
 
         // Wait to be sure that the complete event is only notified once.
         Thread.sleep(1000);
 
-        Assert.assertEquals(1, completes.get());
+        assertEquals(1, completes.get());
     }
 }

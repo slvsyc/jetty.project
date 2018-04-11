@@ -18,6 +18,10 @@
 
 package org.eclipse.jetty.proxy;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
@@ -43,8 +47,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -172,11 +176,11 @@ public class ForwardProxyServerTest
                             // the client, and convert it to a relative URI.
                             // The ConnectHandler won't modify what the client
                             // sent, which must be a relative URI.
-                            Assert.assertThat(request.length(), Matchers.greaterThan(0));
+                            assertThat(request.length(), Matchers.greaterThan(0));
                             if (serverSslContextFactory == null)
-                                Assert.assertFalse(request.contains("http://"));
+                                assertFalse(request.contains("http://"));
                             else
-                                Assert.assertFalse(request.contains("https://"));
+                                assertFalse(request.contains("https://"));
 
                             String response = "" +
                                     "HTTP/1.1 200 OK\r\n" +
@@ -207,7 +211,7 @@ public class ForwardProxyServerTest
                     .path("/test")
                     .send();
 
-            Assert.assertEquals(HttpStatus.OK_200, response.getStatus());
+            assertEquals(HttpStatus.OK_200, response.getStatus());
         }
         finally
         {

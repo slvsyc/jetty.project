@@ -18,6 +18,11 @@
 
 package org.eclipse.jetty.test.jsp;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,16 +43,11 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Test various paths for JSP resources that tickle various java.io.File bugs to get around the JspServlet matching, that then flows to the DefaultServlet to be
@@ -150,8 +150,8 @@ public class JspAndDefaultWithAliasesTest
             LOG.info("Known bypass of mapping by "+path);
         else
         {
-            Assert.assertThat("Body",body,not(containsString("<%@")));
-            Assert.assertThat("Body",body,not(containsString("<jsp:")));
+            assertThat("Body",body,not(containsString("<%@")));
+            assertThat("Body",body,not(containsString("<jsp:")));
         }
     }
 
@@ -168,7 +168,7 @@ public class JspAndDefaultWithAliasesTest
             System.err.println(conn.getResponseMessage());
 
         // Of other possible paths, only 404 Not Found is expected
-        Assert.assertThat("Response Code",conn.getResponseCode(),is(404));
+        assertThat("Response Code",conn.getResponseCode(),is(404));
     }
 
     @Test

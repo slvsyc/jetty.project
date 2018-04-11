@@ -18,11 +18,11 @@
 
 package org.eclipse.jetty.servlet;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,9 +66,8 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AsyncServletTest
 {
@@ -137,7 +136,7 @@ public class AsyncServletTest
     {
         _server.stop();
         assertEquals(_expectedLogs,_log.size());
-        Assert.assertThat(_log.get(0), Matchers.containsString(_expectedCode));
+        assertThat(_log.get(0), Matchers.containsString(_expectedCode));
     }
 
     @Test
@@ -170,7 +169,7 @@ public class AsyncServletTest
     public void testNonAsync() throws Exception
     {
         String response=process("",null);
-        Assert.assertThat(response,Matchers.startsWith("HTTP/1.1 200 OK"));
+        assertThat(response,Matchers.startsWith("HTTP/1.1 200 OK"));
         assertThat(__history,contains(
             "REQUEST /ctx/path/info",
             "initial"));
@@ -183,7 +182,7 @@ public class AsyncServletTest
     {
         _expectedCode="200 ";
         String response=process("noasync","",null);
-        Assert.assertThat(response,Matchers.startsWith("HTTP/1.1 200 OK"));
+        assertThat(response,Matchers.startsWith("HTTP/1.1 200 OK"));
         assertThat(__history,contains(
             "REQUEST /ctx/noasync/info",
             "initial"
@@ -199,7 +198,7 @@ public class AsyncServletTest
         {
             _expectedCode="500 ";
             String response=process("noasync","start=200",null);
-            Assert.assertThat(response,Matchers.startsWith("HTTP/1.1 500 "));
+            assertThat(response,Matchers.startsWith("HTTP/1.1 500 "));
             assertThat(__history,contains(
                     "REQUEST /ctx/noasync/info",
                     "initial",
@@ -218,7 +217,7 @@ public class AsyncServletTest
     {
         _expectedCode="500 ";
         String response=process("start=200",null);
-        Assert.assertThat(response,Matchers.startsWith("HTTP/1.1 500 Server Error"));
+        assertThat(response,Matchers.startsWith("HTTP/1.1 500 Server Error"));
         assertThat(__history,contains(
             "REQUEST /ctx/path/info",
             "initial",
@@ -709,12 +708,12 @@ public class AsyncServletTest
 
     protected void assertContains(String content,String response)
     {
-        Assert.assertThat(response, Matchers.containsString(content));
+        assertThat(response, Matchers.containsString(content));
     }
 
     protected void assertNotContains(String content,String response)
     {
-        Assert.assertThat(response,Matchers.not(Matchers.containsString(content)));
+        assertThat(response,Matchers.not(Matchers.containsString(content)));
     }
 
     private static class FwdServlet extends HttpServlet

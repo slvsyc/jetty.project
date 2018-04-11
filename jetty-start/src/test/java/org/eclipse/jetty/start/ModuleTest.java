@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.start;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
@@ -32,9 +33,9 @@ import org.eclipse.jetty.start.config.JettyBaseConfigSource;
 import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Assert;
+
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ModuleTest
 {
@@ -62,11 +63,11 @@ public class ModuleTest
         File file = MavenTestingUtils.getTestResourceFile("dist-home/modules/main.mod");
         Module module = new Module(basehome,file.toPath());
         
-        Assert.assertThat("Module Name",module.getName(),is("main"));
-        Assert.assertThat("Module Depends Size",module.getDepends().size(),is(1));
-        Assert.assertThat("Module Depends",module.getDepends(),containsInAnyOrder("base"));
-        Assert.assertThat("Module Xmls Size",module.getXmls().size(),is(1));
-        Assert.assertThat("Module Lib Size",module.getLibs().size(),is(2));
-        Assert.assertThat("Module Lib",module.getLibs(),contains("lib/main.jar","lib/other.jar"));
+        assertThat("Module Name",module.getName(),is("main"));
+        assertThat("Module Depends Size",module.getDepends().size(),is(1));
+        assertThat("Module Depends",module.getDepends(),containsInAnyOrder("base"));
+        assertThat("Module Xmls Size",module.getXmls().size(),is(1));
+        assertThat("Module Lib Size",module.getLibs().size(),is(2));
+        assertThat("Module Lib",module.getLibs(),contains("lib/main.jar","lib/other.jar"));
     }
 }

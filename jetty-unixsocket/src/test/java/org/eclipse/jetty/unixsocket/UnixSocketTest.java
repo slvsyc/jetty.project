@@ -18,6 +18,11 @@
 
 package org.eclipse.jetty.unixsocket;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 import static org.junit.jupiter.api.condition.OS.MAC;
 
@@ -42,8 +47,6 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.unixsocket.client.HttpClientTransportOverUnixSockets;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +54,6 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 
 public class UnixSocketTest
 {
-
     private Logger log = Log.getLogger( getClass() );
 
     Server server;
@@ -131,7 +133,7 @@ public class UnixSocketTest
 
         log.debug( "response from server: {}", contentResponse.getContentAsString() );
 
-        Assert.assertTrue(contentResponse.getContentAsString().contains( "Hello World" ));
+        assertTrue(contentResponse.getContentAsString().contains( "Hello World" ));
     }
 
     
@@ -141,17 +143,10 @@ public class UnixSocketTest
         httpClient = new HttpClient( new HttpClientTransportOverUnixSockets( sockFile.toString() ), null );
         httpClient.start();
         
-        try
-        {
+        ExecutionException e = assertThrows(ExecutionException.class, ()->{
             httpClient.newRequest( "http://google.com" ).send();
-            Assert.fail();
-        }
-        catch(ExecutionException e)
-        {
-            Throwable cause = e.getCause();
-            Assert.assertTrue(cause instanceof IOException);
-            Assert.assertThat(cause.getMessage(),Matchers.containsString("UnixSocket cannot connect to google.com"));
-        }
-
+        });
+        assertThat(e.getCause(), instanceOf(IOException.class));
+        assertThat(e.getCause().getMessage(),containsString("UnixSocket cannot connect to google.com"));
     }
 }

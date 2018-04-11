@@ -18,6 +18,11 @@
 
 package org.eclipse.jetty.util.thread;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -27,9 +32,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -85,9 +90,9 @@ public class SchedulerTest
         },1000,TimeUnit.MILLISECONDS);
 
         Thread.sleep(1500);
-        Assert.assertFalse(task.cancel());
-        Assert.assertThat(executed.get(),Matchers.greaterThanOrEqualTo(expected));
-        Assert.assertThat(expected-executed.get(),Matchers.lessThan(1000L));
+        assertFalse(task.cancel());
+        assertThat(executed.get(),Matchers.greaterThanOrEqualTo(expected));
+        assertThat(expected-executed.get(),Matchers.lessThan(1000L));
     }
 
     @Test
@@ -105,9 +110,9 @@ public class SchedulerTest
         },1000,TimeUnit.MILLISECONDS);
 
         Thread.sleep(1500);
-        Assert.assertFalse(task.cancel());
-        Assert.assertThat(executed.get(),Matchers.greaterThanOrEqualTo(expected));
-        Assert.assertThat(expected-executed.get(),Matchers.lessThan(1000L));
+        assertFalse(task.cancel());
+        assertThat(executed.get(),Matchers.greaterThanOrEqualTo(expected));
+        assertThat(expected-executed.get(),Matchers.lessThan(1000L));
 
         final AtomicLong executed1 = new AtomicLong();
         long expected1=System.currentTimeMillis()+1000;
@@ -121,9 +126,9 @@ public class SchedulerTest
         },1000,TimeUnit.MILLISECONDS);
 
         Thread.sleep(1500);
-        Assert.assertFalse(task1.cancel());
-        Assert.assertThat(executed1.get(),Matchers.greaterThanOrEqualTo(expected1));
-        Assert.assertThat(expected1-executed1.get(),Matchers.lessThan(1000L));
+        assertFalse(task1.cancel());
+        assertThat(executed1.get(),Matchers.greaterThanOrEqualTo(expected1));
+        assertThat(expected1-executed1.get(),Matchers.lessThan(1000L));
     }
 
     @Test
@@ -140,9 +145,9 @@ public class SchedulerTest
         },2000,TimeUnit.MILLISECONDS);
 
         Thread.sleep(100);
-        Assert.assertTrue(task.cancel());
+        assertTrue(task.cancel());
         Thread.sleep(2500);
-        Assert.assertEquals(0,executed.get());
+        assertEquals(0,executed.get());
     }
 
     @Test
@@ -159,9 +164,9 @@ public class SchedulerTest
         },2000,TimeUnit.MILLISECONDS);
 
         Thread.sleep(100);
-        Assert.assertTrue(task.cancel());
+        assertTrue(task.cancel());
         Thread.sleep(2500);
-        Assert.assertEquals(0,executed.get());
+        assertEquals(0,executed.get());
     }
 
     @Test
@@ -193,7 +198,7 @@ public class SchedulerTest
                 }
             }, delay, TimeUnit.MILLISECONDS);
 
-            Assert.assertTrue(latch.await(2 * delay, TimeUnit.MILLISECONDS));
+            assertTrue(latch.await(2 * delay, TimeUnit.MILLISECONDS));
         }
     }
 }

@@ -19,8 +19,8 @@
 package org.eclipse.jetty.start;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -32,7 +32,7 @@ import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MainTest
 {
@@ -83,10 +83,10 @@ public class MainTest
         StartArgs args = main.processCommandLine(cmdLineArgs.toArray(new String[cmdLineArgs.size()]));
         // System.err.println(args);
 
-        // Assert.assertEquals("--stop should not build module tree", 0, args.getEnabledModules().size());
-        assertEquals("--stop missing port","10000",args.getProperties().getString("STOP.PORT"));
-        assertEquals("--stop missing key","foo",args.getProperties().getString("STOP.KEY"));
-        assertEquals("--stop missing wait","300",args.getProperties().getString("STOP.WAIT"));
+        // assertEquals(0, args.getEnabledModules().size(), "--stop should not build module tree");
+        assertEquals("10000", args.getProperties().getString("STOP.PORT"), "--stop missing port");
+        assertEquals("foo", args.getProperties().getString("STOP.KEY"), "--stop missing key");
+        assertEquals("300", args.getProperties().getString("STOP.WAIT"), "--stop missing wait");
     }
 
     @Test

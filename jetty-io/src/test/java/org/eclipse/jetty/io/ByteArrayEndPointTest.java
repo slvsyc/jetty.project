@@ -18,15 +18,15 @@
 
 package org.eclipse.jetty.io;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -40,7 +40,7 @@ import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ByteArrayEndPointTest
 {
@@ -87,7 +87,7 @@ public class ByteArrayEndPointTest
         try
         {
             endp.fill(buffer);
-            fail();
+            fail("Expected IOException");
         }
         catch(IOException e)
         {
@@ -200,10 +200,11 @@ public class ByteArrayEndPointTest
 
         fcb = new FutureCallback();
         endp.fillInterested(fcb);
+
         try
         {
             fcb.get(1000,TimeUnit.MILLISECONDS);
-            fail();
+            fail("Expected ExecutionException");
         }
         catch (ExecutionException e)
         {
@@ -294,7 +295,7 @@ public class ByteArrayEndPointTest
         try
         {
             fcb.get();
-            fail();
+            fail("Expected ExecutionException");
         }
         catch (ExecutionException t)
         {

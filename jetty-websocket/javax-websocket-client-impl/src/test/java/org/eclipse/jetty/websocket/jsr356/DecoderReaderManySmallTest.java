@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.websocket.jsr356;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -51,11 +54,11 @@ import org.eclipse.jetty.websocket.common.test.BlockheadServer;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @Ignore("Not working atm")
 public class DecoderReaderManySmallTest
@@ -190,14 +193,14 @@ public class DecoderReaderManySmallTest
             {
                 EventId id = ids.messageQueue.poll(Timeouts.POLL_EVENT, Timeouts.POLL_EVENT_UNIT);
                 // validate that ids don't repeat.
-                Assert.assertFalse("Already saw ID: " + id.eventId, seen.contains(id.eventId));
+                assertFalse(seen.contains(id.eventId), "Already saw ID: " + id.eventId);
                 seen.add(id.eventId);
             }
 
             // validate that all expected ids have been seen (order is irrelevant here)
             for (int expected = from; expected < to; expected++)
             {
-                Assert.assertTrue("Has expected id:" + expected, seen.contains(expected));
+                assertTrue(seen.contains(expected), "Has expected id:" + expected);
             }
         }
     }

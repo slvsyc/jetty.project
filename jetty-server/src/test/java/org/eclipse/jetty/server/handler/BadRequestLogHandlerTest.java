@@ -18,8 +18,9 @@
 
 package org.eclipse.jetty.server.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +53,7 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -113,7 +115,7 @@ public class BadRequestLogHandlerTest
     @Parameter(1)
     public String expectedLog;
     
-    @Test(timeout=4000)
+    @Test
     public void testLogHandler() throws Exception
     {
         Server server = new Server();
@@ -148,20 +150,24 @@ public class BadRequestLogHandlerTest
             socket.setSoTimeout(1000);
             socket.connect(endpoint);
 
-            try(OutputStream out = socket.getOutputStream();
-                OutputStreamWriter writer = new OutputStreamWriter(out,StandardCharsets.UTF_8);
-                InputStream in = socket.getInputStream();
-                InputStreamReader reader = new InputStreamReader(in,StandardCharsets.UTF_8))
-            {
-                StringReader request = new StringReader(requestHeader);
-                IO.copy(request,writer);
-                writer.flush();
-                StringWriter response = new StringWriter();
-                IO.copy(reader,response);
-                LOG.info("Response: {}",response);
-            } finally {
-                socket.close();
-            }
+            assertTimeoutPreemptively(Duration.ofSeconds(4), ()-> {
+                try (OutputStream out = socket.getOutputStream();
+                     OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+                     InputStream in = socket.getInputStream();
+                     InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8))
+                {
+                    StringReader request = new StringReader(requestHeader);
+                    IO.copy(request, writer);
+                    writer.flush();
+                    StringWriter response = new StringWriter();
+                    IO.copy(reader, response);
+                    LOG.info("Response: {}", response);
+                }
+                finally
+                {
+                    socket.close();
+                }
+            });
 
             assertRequestLog(captureLog);
         }

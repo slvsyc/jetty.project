@@ -19,7 +19,11 @@
 package org.eclipse.jetty.server.handler;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,8 +42,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class ContextHandlerTest
 {
@@ -92,9 +96,9 @@ public class ContextHandlerTest
             server.start();
             connector.getResponse("GET / HTTP/1.0\n" + "Host: www.example.com.\n\n");
 
-            Assert.assertTrue(handlerA.isHandled());
-            Assert.assertFalse(handlerB.isHandled());
-            Assert.assertFalse(handlerC.isHandled());
+            assertTrue(handlerA.isHandled());
+            assertFalse(handlerB.isHandled());
+            assertFalse(handlerC.isHandled());
 
             handlerA.reset();
             handlerB.reset();
@@ -102,9 +106,9 @@ public class ContextHandlerTest
 
             connector.getResponse("GET / HTTP/1.0\n" + "Host: www.example2.com\n\n");
 
-            Assert.assertFalse(handlerA.isHandled());
-            Assert.assertTrue(handlerB.isHandled());
-            Assert.assertFalse(handlerC.isHandled());
+            assertFalse(handlerA.isHandled());
+            assertTrue(handlerB.isHandled());
+            assertFalse(handlerC.isHandled());
 
         }
         finally
@@ -148,33 +152,33 @@ public class ContextHandlerTest
         try
         {
             connector.getResponse("GET / HTTP/1.0\n" + "Host: www.example.com.\n\n");
-            Assert.assertTrue(handlerA.isHandled());
-            Assert.assertFalse(handlerB.isHandled());
-            Assert.assertFalse(handlerC.isHandled());
+            assertTrue(handlerA.isHandled());
+            assertFalse(handlerB.isHandled());
+            assertFalse(handlerC.isHandled());
             handlerA.reset();
             handlerB.reset();
             handlerC.reset();
 
             connector.getResponse("GET / HTTP/1.0\n" + "Host: localhost\n\n");
-            Assert.assertFalse(handlerA.isHandled());
-            Assert.assertFalse(handlerB.isHandled());
-            Assert.assertTrue(handlerC.isHandled());
+            assertFalse(handlerA.isHandled());
+            assertFalse(handlerB.isHandled());
+            assertTrue(handlerC.isHandled());
             handlerA.reset();
             handlerB.reset();
             handlerC.reset();
 
             connectorN.getResponse("GET / HTTP/1.0\n" + "Host: www.example.com.\n\n");
-            Assert.assertTrue(handlerA.isHandled());
-            Assert.assertFalse(handlerB.isHandled());
-            Assert.assertFalse(handlerC.isHandled());
+            assertTrue(handlerA.isHandled());
+            assertFalse(handlerB.isHandled());
+            assertFalse(handlerC.isHandled());
             handlerA.reset();
             handlerB.reset();
             handlerC.reset();
 
             connectorN.getResponse("GET / HTTP/1.0\n" + "Host: localhost\n\n");
-            Assert.assertFalse(handlerA.isHandled());
-            Assert.assertTrue(handlerB.isHandled());
-            Assert.assertFalse(handlerC.isHandled());
+            assertFalse(handlerA.isHandled());
+            assertTrue(handlerB.isHandled());
+            assertFalse(handlerC.isHandled());
             handlerA.reset();
             handlerB.reset();
             handlerC.reset();
@@ -204,19 +208,19 @@ public class ContextHandlerTest
 
         // System.err.println(server.dump());
 
-        Assert.assertEquals(rootA._scontext, rootA._scontext.getContext("/"));
-        Assert.assertEquals(fooA._scontext, rootA._scontext.getContext("/foo"));
-        Assert.assertEquals(foobarA._scontext, rootA._scontext.getContext("/foo/bar"));
-        Assert.assertEquals(foobarA._scontext, rootA._scontext.getContext("/foo/bar/bob.jsp"));
-        Assert.assertEquals(rootA._scontext, rootA._scontext.getContext("/other"));
-        Assert.assertEquals(fooA._scontext, rootA._scontext.getContext("/foo/other"));
+        assertEquals(rootA._scontext, rootA._scontext.getContext("/"));
+        assertEquals(fooA._scontext, rootA._scontext.getContext("/foo"));
+        assertEquals(foobarA._scontext, rootA._scontext.getContext("/foo/bar"));
+        assertEquals(foobarA._scontext, rootA._scontext.getContext("/foo/bar/bob.jsp"));
+        assertEquals(rootA._scontext, rootA._scontext.getContext("/other"));
+        assertEquals(fooA._scontext, rootA._scontext.getContext("/foo/other"));
 
-        Assert.assertEquals(rootA._scontext, foobarA._scontext.getContext("/"));
-        Assert.assertEquals(fooA._scontext, foobarA._scontext.getContext("/foo"));
-        Assert.assertEquals(foobarA._scontext, foobarA._scontext.getContext("/foo/bar"));
-        Assert.assertEquals(foobarA._scontext, foobarA._scontext.getContext("/foo/bar/bob.jsp"));
-        Assert.assertEquals(rootA._scontext, foobarA._scontext.getContext("/other"));
-        Assert.assertEquals(fooA._scontext, foobarA._scontext.getContext("/foo/other"));
+        assertEquals(rootA._scontext, foobarA._scontext.getContext("/"));
+        assertEquals(fooA._scontext, foobarA._scontext.getContext("/foo"));
+        assertEquals(foobarA._scontext, foobarA._scontext.getContext("/foo/bar"));
+        assertEquals(foobarA._scontext, foobarA._scontext.getContext("/foo/bar/bob.jsp"));
+        assertEquals(rootA._scontext, foobarA._scontext.getContext("/other"));
+        assertEquals(fooA._scontext, foobarA._scontext.getContext("/foo/other"));
     }
 
     @Test
@@ -237,39 +241,39 @@ public class ContextHandlerTest
 
         // check that all contexts start normally
         server.start();
-        Assert.assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
-        Assert.assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
-        Assert.assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo/bar'"));
+        assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
+        assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
+        assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo/bar'"));
 
         // If we stop foobar, then requests will be handled by foo
         foobar.stop();
-        Assert.assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
-        Assert.assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
-        Assert.assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
+        assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
+        assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
+        assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
 
         // If we shutdown foo then requests will be 503'd
         foo.shutdown().get();
-        Assert.assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
-        Assert.assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("503"));
-        Assert.assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("503"));
+        assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
+        assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("503"));
+        assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("503"));
 
         // If we stop foo then requests will be handled by root
         foo.stop();
-        Assert.assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
-        Assert.assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
-        Assert.assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
+        assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
+        assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
+        assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
 
         // If we start foo then foobar requests will be handled by foo
         foo.start();
-        Assert.assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
-        Assert.assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
-        Assert.assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
+        assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
+        assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
+        assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
 
         // If we start foobar then foobar requests will be handled by foobar
         foobar.start();
-        Assert.assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
-        Assert.assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
-        Assert.assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo/bar'"));
+        assertThat(connector.getResponse("GET / HTTP/1.0\n\n"), Matchers.containsString("ctx=''"));
+        assertThat(connector.getResponse("GET /foo/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo'"));
+        assertThat(connector.getResponse("GET /foo/bar/xxx HTTP/1.0\n\n"), Matchers.containsString("ctx='/foo/bar'"));
     }
 
 
@@ -306,17 +310,17 @@ public class ContextHandlerTest
 
         // System.err.println(server.dump());
 
-        Assert.assertEquals(rootA._scontext, rootA._scontext.getContext("/"));
-        Assert.assertEquals(fooA._scontext, rootA._scontext.getContext("/foo"));
-        Assert.assertEquals(foobarA._scontext, rootA._scontext.getContext("/foo/bar"));
-        Assert.assertEquals(foobarA._scontext, rootA._scontext.getContext("/foo/bar/bob"));
+        assertEquals(rootA._scontext, rootA._scontext.getContext("/"));
+        assertEquals(fooA._scontext, rootA._scontext.getContext("/foo"));
+        assertEquals(foobarA._scontext, rootA._scontext.getContext("/foo/bar"));
+        assertEquals(foobarA._scontext, rootA._scontext.getContext("/foo/bar/bob"));
 
-        Assert.assertEquals(rootA._scontext, rootA._scontext.getContext("/other"));
-        Assert.assertEquals(rootB._scontext, rootB._scontext.getContext("/other"));
-        Assert.assertEquals(rootC._scontext, rootC._scontext.getContext("/other"));
+        assertEquals(rootA._scontext, rootA._scontext.getContext("/other"));
+        assertEquals(rootB._scontext, rootB._scontext.getContext("/other"));
+        assertEquals(rootC._scontext, rootC._scontext.getContext("/other"));
 
-        Assert.assertEquals(fooB._scontext, rootB._scontext.getContext("/foo/other"));
-        Assert.assertEquals(rootC._scontext, rootC._scontext.getContext("/foo/other"));
+        assertEquals(fooB._scontext, rootB._scontext.getContext("/foo/other"));
+        assertEquals(rootC._scontext, rootC._scontext.getContext("/foo/other"));
     }
 
 
@@ -366,27 +370,27 @@ public class ContextHandlerTest
 
         // test singular
         context.setVirtualHosts(new String[] { "www.example.com"} );
-        Assert.assertEquals(1, context.getVirtualHosts().length);
+        assertEquals(1, context.getVirtualHosts().length);
 
         // test adding two more
         context.addVirtualHosts(new String[] { "www.example2.com", "www.example3.com"});
-        Assert.assertEquals(3, context.getVirtualHosts().length);
+        assertEquals(3, context.getVirtualHosts().length);
 
         // test adding existing context
         context.addVirtualHosts(new String[] { "www.example.com" });
-        Assert.assertEquals(3, context.getVirtualHosts().length);
+        assertEquals(3, context.getVirtualHosts().length);
 
         // test removing existing
         context.removeVirtualHosts(new String[] { "www.example3.com" });
-        Assert.assertEquals(2, context.getVirtualHosts().length);
+        assertEquals(2, context.getVirtualHosts().length);
 
         // test removing non-existent
         context.removeVirtualHosts(new String[] { "www.example3.com" });
-        Assert.assertEquals(2, context.getVirtualHosts().length);
+        assertEquals(2, context.getVirtualHosts().length);
 
         // test removing all remaining and resets to null
         context.removeVirtualHosts(new String[] { "www.example.com", "www.example2.com" });
-        Assert.assertArrayEquals(null, context.getVirtualHosts());
+        assertArrayEquals(null, context.getVirtualHosts());
 
     }
 
@@ -396,31 +400,31 @@ public class ContextHandlerTest
         ContextHandler handler = new ContextHandler();
         handler.setServer(new Server());
         handler.setAttribute("aaa","111");
-        Assert.assertEquals("111", handler.getServletContext().getAttribute("aaa"));
-        Assert.assertEquals(null, handler.getAttribute("bbb"));
+        assertEquals("111", handler.getServletContext().getAttribute("aaa"));
+        assertEquals(null, handler.getAttribute("bbb"));
 
         handler.start();
 
         handler.getServletContext().setAttribute("aaa","000");
         handler.setAttribute("ccc","333");
         handler.getServletContext().setAttribute("ddd","444");
-        Assert.assertEquals("111", handler.getServletContext().getAttribute("aaa"));
-        Assert.assertEquals(null, handler.getServletContext().getAttribute("bbb"));
+        assertEquals("111", handler.getServletContext().getAttribute("aaa"));
+        assertEquals(null, handler.getServletContext().getAttribute("bbb"));
         handler.getServletContext().setAttribute("bbb","222");
-        Assert.assertEquals("333", handler.getServletContext().getAttribute("ccc"));
-        Assert.assertEquals("444", handler.getServletContext().getAttribute("ddd"));
+        assertEquals("333", handler.getServletContext().getAttribute("ccc"));
+        assertEquals("444", handler.getServletContext().getAttribute("ddd"));
 
-        Assert.assertEquals("111", handler.getAttribute("aaa"));
-        Assert.assertEquals(null, handler.getAttribute("bbb"));
-        Assert.assertEquals("333", handler.getAttribute("ccc"));
-        Assert.assertEquals(null, handler.getAttribute("ddd"));
+        assertEquals("111", handler.getAttribute("aaa"));
+        assertEquals(null, handler.getAttribute("bbb"));
+        assertEquals("333", handler.getAttribute("ccc"));
+        assertEquals(null, handler.getAttribute("ddd"));
 
         handler.stop();
 
-        Assert.assertEquals("111", handler.getServletContext().getAttribute("aaa"));
-        Assert.assertEquals(null, handler.getServletContext().getAttribute("bbb"));
-        Assert.assertEquals("333", handler.getServletContext().getAttribute("ccc"));
-        Assert.assertEquals(null, handler.getServletContext().getAttribute("ddd"));
+        assertEquals("111", handler.getServletContext().getAttribute("aaa"));
+        assertEquals(null, handler.getServletContext().getAttribute("bbb"));
+        assertEquals("333", handler.getServletContext().getAttribute("ccc"));
+        assertEquals(null, handler.getServletContext().getAttribute("ddd"));
     }
 
     @Test
@@ -430,10 +434,10 @@ public class ContextHandlerTest
         String[] protectedTargets = {"/foo-inf", "/bar-inf"};
         handler.setProtectedTargets(protectedTargets);
 
-        Assert.assertTrue(handler.isProtectedTarget("/foo-inf/x/y/z"));
-        Assert.assertFalse(handler.isProtectedTarget("/foo/x/y/z"));
-        Assert.assertTrue(handler.isProtectedTarget("/foo-inf?x=y&z=1"));
-        Assert.assertFalse(handler.isProtectedTarget("/foo-inf-bar"));
+        assertTrue(handler.isProtectedTarget("/foo-inf/x/y/z"));
+        assertFalse(handler.isProtectedTarget("/foo/x/y/z"));
+        assertTrue(handler.isProtectedTarget("/foo-inf?x=y&z=1"));
+        assertFalse(handler.isProtectedTarget("/foo-inf-bar"));
 
         protectedTargets = new String[4];
         System.arraycopy(handler.getProtectedTargets(), 0, protectedTargets, 0, 2);
@@ -441,20 +445,20 @@ public class ContextHandlerTest
         protectedTargets[3] = "/def";
         handler.setProtectedTargets(protectedTargets);
 
-        Assert.assertTrue(handler.isProtectedTarget("/foo-inf/x/y/z"));
-        Assert.assertFalse(handler.isProtectedTarget("/foo/x/y/z"));
-        Assert.assertTrue(handler.isProtectedTarget("/foo-inf?x=y&z=1"));
-        Assert.assertTrue(handler.isProtectedTarget("/abc/124"));
-        Assert.assertTrue(handler.isProtectedTarget("//def"));
+        assertTrue(handler.isProtectedTarget("/foo-inf/x/y/z"));
+        assertFalse(handler.isProtectedTarget("/foo/x/y/z"));
+        assertTrue(handler.isProtectedTarget("/foo-inf?x=y&z=1"));
+        assertTrue(handler.isProtectedTarget("/abc/124"));
+        assertTrue(handler.isProtectedTarget("//def"));
 
-        Assert.assertTrue(handler.isProtectedTarget("/ABC/7777"));
+        assertTrue(handler.isProtectedTarget("/ABC/7777"));
     }
 
     @Test
     public void testIsShutdown()
     {
         ContextHandler handler = new ContextHandler();
-        Assert.assertEquals(false, handler.isShutdown());
+        assertEquals(false, handler.isShutdown());
     }
     
     @Test
@@ -547,15 +551,15 @@ public class ContextHandlerTest
 
         ContextHandler handler = new ContextHandler();
 
-        Assert.assertTrue("Not a directory " + testDirectory, testDirectory.isDirectory());
+        assertTrue(testDirectory.isDirectory(),"Not a directory " + testDirectory);
         handler.setBaseResource(Resource.newResource(Resource.toURL(testDirectory)));
 
         List<String> paths = new ArrayList<>(handler.getResourcePaths(root));
-        Assert.assertEquals(2, paths.size());
+        assertEquals(2, paths.size());
 
         Collections.sort(paths);
-        Assert.assertEquals("/WEB-INF/jsp/", paths.get(0));
-        Assert.assertEquals("/WEB-INF/web.xml", paths.get(1));
+        assertEquals("/WEB-INF/jsp/", paths.get(0));
+        assertEquals("/WEB-INF/web.xml", paths.get(1));
     }
 
     private File setupTestDirectory() throws IOException
@@ -563,19 +567,19 @@ public class ContextHandlerTest
         File tmpDir = new File( System.getProperty( "basedir",".") + "/target/tmp/ContextHandlerTest" );
         tmpDir=tmpDir.getCanonicalFile();
         if (!tmpDir.exists())
-            Assert.assertTrue(tmpDir.mkdirs());
+            assertTrue(tmpDir.mkdirs());
         File tmp = File.createTempFile("cht",null, tmpDir );
-        Assert.assertTrue(tmp.delete());
-        Assert.assertTrue(tmp.mkdir());
+        assertTrue(tmp.delete());
+        assertTrue(tmp.mkdir());
         tmp.deleteOnExit();
         File root = new File(tmp,getClass().getName());
-        Assert.assertTrue(root.mkdir());
+        assertTrue(root.mkdir());
 
         File webInf = new File(root,"WEB-INF");
-        Assert.assertTrue(webInf.mkdir());
+        assertTrue(webInf.mkdir());
 
-        Assert.assertTrue(new File(webInf, "jsp").mkdir());
-        Assert.assertTrue(new File(webInf, "web.xml").createNewFile());
+        assertTrue(new File(webInf, "jsp").mkdir());
+        assertTrue(new File(webInf, "web.xml").createNewFile());
 
         return root;
     }
@@ -591,9 +595,9 @@ public class ContextHandlerTest
         {
             connector.getResponse("GET / HTTP/1.1\n" + "Host: "+host+"\nConnection:close\n\n");
             if(succeed)
-                Assert.assertTrue("'" + host + "' should have been handled.", handler.isHandled());
+                assertTrue(handler.isHandled(),"'" + host + "' should have been handled.");
             else
-                Assert.assertFalse("'" + host + "' should not have been handled.", handler.isHandled());
+                assertFalse(handler.isHandled(),"'" + host + "' should not have been handled.");
             handler.reset();
         }
 

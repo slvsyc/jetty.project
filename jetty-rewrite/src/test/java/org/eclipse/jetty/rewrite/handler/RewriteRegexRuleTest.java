@@ -18,7 +18,7 @@
 
 package org.eclipse.jetty.rewrite.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,11 +26,12 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RewriteRegexRuleTest extends AbstractRuleTestCase
 {
+    // TODO: Parameterize
     private String[][] _tests=
     {
             {"/foo0/bar",null,".*","/replace","/replace",null},
@@ -52,7 +53,7 @@ public class RewriteRegexRuleTest extends AbstractRuleTestCase
     };
     private RewriteRegexRule _rule;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         start(false);
