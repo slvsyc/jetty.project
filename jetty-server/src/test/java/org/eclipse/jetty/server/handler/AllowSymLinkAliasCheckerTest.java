@@ -54,7 +54,7 @@ public class AllowSymLinkAliasCheckerTest
     {
         List<Object[]> data = new ArrayList<>();
 
-        String dirs[] = {"/testdir/", "/testdirlnk/", "/testdirprefixlnk/", "/testdirsuffixlnk/",
+        String dirs[] = {"/workDir/", "/testdirlnk/", "/testdirprefixlnk/", "/testdirsuffixlnk/",
                 "/testdirwraplnk/"};
 
         for (String dirname : dirs)
@@ -93,22 +93,22 @@ public class AllowSymLinkAliasCheckerTest
         rootPath = MavenTestingUtils.getTargetTestingPath(AllowSymLinkAliasCheckerTest.class.getSimpleName());
         FS.ensureEmpty(rootPath);
 
-        Path testdir = rootPath.resolve("testdir");
+        Path testdir = rootPath.resolve("workDir");
         FS.ensureDirExists(testdir);
 
         try
         {
-            // If we used testdir (Path) from above, these symlinks
+            // If we used workDir (Path) from above, these symlinks
             // would point to an absolute path.
 
-            // Create a relative symlink testdirlnk -> testdir
-            Files.createSymbolicLink(rootPath.resolve("testdirlnk"), new File("testdir").toPath());
-            // Create a relative symlink testdirprefixlnk -> ./testdir
-            Files.createSymbolicLink(rootPath.resolve("testdirprefixlnk"), new File("./testdir").toPath());
-            // Create a relative symlink testdirsuffixlnk -> testdir/
-            Files.createSymbolicLink(rootPath.resolve("testdirsuffixlnk"), new File("testdir/").toPath());
-            // Create a relative symlink testdirwraplnk -> ./testdir/
-            Files.createSymbolicLink(rootPath.resolve("testdirwraplnk"), new File("./testdir/").toPath());
+            // Create a relative symlink testdirlnk -> workDir
+            Files.createSymbolicLink(rootPath.resolve("testdirlnk"), new File("workDir").toPath());
+            // Create a relative symlink testdirprefixlnk -> ./workDir
+            Files.createSymbolicLink(rootPath.resolve("testdirprefixlnk"), new File("./workDir").toPath());
+            // Create a relative symlink testdirsuffixlnk -> workDir/
+            Files.createSymbolicLink(rootPath.resolve("testdirsuffixlnk"), new File("workDir/").toPath());
+            // Create a relative symlink testdirwraplnk -> ./workDir/
+            Files.createSymbolicLink(rootPath.resolve("testdirwraplnk"), new File("./workDir/").toPath());
         }
         catch (UnsupportedOperationException | FileSystemException e)
         {

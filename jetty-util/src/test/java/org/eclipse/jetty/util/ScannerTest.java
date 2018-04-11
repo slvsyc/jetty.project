@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.util;
 
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,20 +29,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.Scanner.Notification;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
-@RunWith(AdvancedRunner.class)
 public class ScannerTest
 {
     static File _directory;
@@ -117,12 +115,10 @@ public class ScannerTest
     }
 
     @Test
-    @Slow
+    @DisabledOnOs(WINDOWS) // TODO: needs review
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testAddedChangeRemove() throws Exception
     {
-        // TODO needs to be further investigated
-        Assume.assumeTrue(!OS.IS_WINDOWS);
-
         touch("a0");
 
         // takes 2 scans to notice a0 and check that it is stable
@@ -227,11 +223,9 @@ public class ScannerTest
     }
 
     @Test
+    @DisabledOnOs(WINDOWS) // TODO: needs review
     public void testSizeChange() throws Exception
     {
-        // TODO needs to be further investigated
-        Assume.assumeTrue(!OS.IS_WINDOWS);
-
         touch("tsc0");
         _scanner.scan();
         _scanner.scan();

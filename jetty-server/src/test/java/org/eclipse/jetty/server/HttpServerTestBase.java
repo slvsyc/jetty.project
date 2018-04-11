@@ -53,8 +53,6 @@ import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.AbstractLogger;
 import org.eclipse.jetty.util.log.Log;
@@ -62,12 +60,11 @@ import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 /**
  *
  */
-@RunWith(AdvancedRunner.class)
 public abstract class HttpServerTestBase extends HttpServerTestFixture
 {
     private static final String REQUEST1_HEADER = "POST / HTTP/1.0\n" + "Host: localhost\n" + "Content-Type: text/xml; charset=utf-8\n" + "Connection: close\n" + "Content-Length: ";
@@ -547,7 +544,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
 
 
     @Test
-    @Slow
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testRequest2Sliced2() throws Exception
     {
         configureServer(new EchoHandler());
@@ -579,7 +576,7 @@ public abstract class HttpServerTestBase extends HttpServerTestFixture
     }
     
     @Test
-    @Slow
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testRequest2Sliced3() throws Exception
     {
         configureServer(new EchoHandler());

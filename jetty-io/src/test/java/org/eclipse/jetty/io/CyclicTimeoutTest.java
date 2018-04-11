@@ -21,21 +21,16 @@ package org.eclipse.jetty.io;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 
 public class CyclicTimeoutTest
 {
-    @Rule
-    public TestTracker tracker = new TestTracker();
-
     private volatile boolean _expired;
     private ScheduledExecutorScheduler _timer = new ScheduledExecutorScheduler();
     private CyclicTimeout _timeout;

@@ -18,24 +18,21 @@
 
 package org.eclipse.jetty.util;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.stream.Collectors;
 
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.MultiReleaseJarFile.VersionedJarEntry;
 import org.hamcrest.Matchers;
 import org.junit.Assume;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-@RunWith(AdvancedRunner.class)
 public class MultiReleaseJarFileTest
 {
     private File testResources = MavenTestingUtils.getTestResourcesDir().getAbsoluteFile();

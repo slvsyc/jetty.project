@@ -28,15 +28,15 @@ import java.nio.ByteBuffer;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 
-import org.eclipse.jetty.toolchain.test.JDK;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 public class SslEngineBehaviorTest
 {
@@ -61,10 +61,9 @@ public class SslEngineBehaviorTest
     }
 
     @Test
+    @EnabledOnJre(JRE.JAVA_8)
     public void checkSslEngineBehaviour() throws Exception
     {
-        Assume.assumeFalse(JDK.IS_9);
-
         SSLEngine server = sslCtxFactory.newSSLEngine();
         SSLEngine client = sslCtxFactory.newSSLEngine();
 

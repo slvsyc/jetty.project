@@ -52,13 +52,11 @@ import org.eclipse.jetty.io.LeakTrackingByteBufferPool;
 import org.eclipse.jetty.io.MappedByteBufferPool;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -70,9 +68,7 @@ public class ThreadStarvationTest
     final static int BUFFERS=64;
     final static int THREADS=5;
     final static int CLIENTS=THREADS+2;
-    @Rule
-    public TestTracker tracker = new TestTracker();
-    
+
     interface ConnectorProvider {
         ServerConnector newConnector(Server server, int acceptors, int selectors);
     }

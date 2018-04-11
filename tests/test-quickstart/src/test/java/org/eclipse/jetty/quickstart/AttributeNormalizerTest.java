@@ -32,7 +32,6 @@ import java.util.Map;
 
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.util.resource.Resource;
 import org.junit.After;
 import org.junit.Test;
@@ -89,7 +88,7 @@ public class AttributeNormalizerTest
     {
         Path rootPath = MavenTestingUtils.getTargetTestingPath(title);
         FS.ensureDirExists(rootPath);
-        Path path = rootPath.resolve(OS.separators(subpath));
+        Path path = rootPath.resolve(FS.separators(subpath));
         FS.ensureDirExists(path);
         
         return path.toString();
@@ -226,15 +225,15 @@ public class AttributeNormalizerTest
     public void testNormalizeWarDeepAsFile()
     {
         // Normalize WAR deep path as File
-        File testWarDeep = new File(new File(war), OS.separators("deep/ref")).getAbsoluteFile();
-        assertNormalize(testWarDeep, "${WAR.path}" + OS.separators("/deep/ref"));
+        File testWarDeep = new File(new File(war), FS.separators("deep/ref")).getAbsoluteFile();
+        assertNormalize(testWarDeep, "${WAR.path}" + FS.separators("/deep/ref"));
     }
     
     @Test
     public void testNormalizeWarDeepAsString()
     {
         // Normalize WAR deep path as String
-        File testWarDeep = new File(new File(war), OS.separators("deep/ref")).getAbsoluteFile();
+        File testWarDeep = new File(new File(war), FS.separators("deep/ref")).getAbsoluteFile();
         assertNormalize(testWarDeep.toString(), testWarDeep.toString());
     }
     
@@ -242,7 +241,7 @@ public class AttributeNormalizerTest
     public void testNormalizeWarDeepAsURI()
     {
         // Normalize WAR deep path as URI
-        File testWarDeep = new File(new File(war), OS.separators("deep/ref")).getAbsoluteFile();
+        File testWarDeep = new File(new File(war), FS.separators("deep/ref")).getAbsoluteFile();
         assertNormalize(testWarDeep.toURI(), "${WAR.uri}/deep/ref");
     }
     
@@ -250,7 +249,7 @@ public class AttributeNormalizerTest
     public void testExpandWarDeep()
     {
         // Expand WAR deep path
-        File testWarDeep = new File(new File(war), OS.separators("deep/ref"));
+        File testWarDeep = new File(new File(war), FS.separators("deep/ref"));
         URI uri = URI.create("jar:" + testWarDeep.toURI().toASCIIString() + "!/other/file");
         assertExpandURI("jar:${WAR.uri}/deep/ref!/other/file", uri);
     }

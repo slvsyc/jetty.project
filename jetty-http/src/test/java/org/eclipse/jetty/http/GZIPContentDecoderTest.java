@@ -31,19 +31,13 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.eclipse.jetty.io.ArrayByteBufferPool;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 
 public class GZIPContentDecoderTest
 {
-    @Rule
-    public final TestTracker tracker = new TestTracker();
-
-
     ArrayByteBufferPool pool;
     AtomicInteger buffers = new AtomicInteger(0);
     

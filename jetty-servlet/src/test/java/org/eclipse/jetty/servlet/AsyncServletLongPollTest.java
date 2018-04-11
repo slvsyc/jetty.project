@@ -34,16 +34,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 
 public class AsyncServletLongPollTest
 {
-    @Rule
-    public TestTracker tracker = new TestTracker();
     private Server server;
     private ServerConnector connector;
     private ServletContextHandler context;

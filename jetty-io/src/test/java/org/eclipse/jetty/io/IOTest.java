@@ -49,10 +49,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -202,7 +200,7 @@ public class IOTest
         // Client reads response
         assertEquals(1, client.getInputStream().read());
 
-        try
+        try // TODO: needs review!
         {
             // Client reads -1 and does ishut
             assertEquals(-1, client.getInputStream().read());
@@ -231,12 +229,10 @@ public class IOTest
             }
             //System.err.println("CLOSE "+server);
             server.close();
-
         }
         catch (Exception e)
         {
             System.err.println(e);
-            assertTrue(OS.IS_OSX);
         }
     }
 

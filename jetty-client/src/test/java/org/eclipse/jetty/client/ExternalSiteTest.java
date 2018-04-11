@@ -26,22 +26,17 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpScheme;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore
 public class ExternalSiteTest
 {
-    @Rule
-    public final TestTracker tracker = new TestTracker();
-
     private HttpClient client;
 
     @Before

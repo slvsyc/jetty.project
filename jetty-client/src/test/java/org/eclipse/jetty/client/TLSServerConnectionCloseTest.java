@@ -34,12 +34,10 @@ import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.client.http.HttpDestinationOverHTTP;
 import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -53,8 +51,6 @@ public class TLSServerConnectionCloseTest
         return new Object[]{CloseMode.NONE, CloseMode.CLOSE, CloseMode.ABRUPT};
     }
 
-    @Rule
-    public final TestTracker tracker = new TestTracker();
     private HttpClient client;
     private final CloseMode closeMode;
 

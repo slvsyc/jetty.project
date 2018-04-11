@@ -81,7 +81,6 @@ import org.eclipse.jetty.io.AbstractConnection;
 import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.IO;
@@ -94,6 +93,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class HttpClientTest extends AbstractHttpClientServerTest
 {
@@ -654,8 +654,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void test_Request_IdleTimeout() throws Exception
     {
         final long idleTimeout = 1000;

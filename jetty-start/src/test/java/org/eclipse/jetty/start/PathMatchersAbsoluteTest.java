@@ -23,9 +23,9 @@ import static org.hamcrest.Matchers.is;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jetty.toolchain.test.OS;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -39,7 +39,7 @@ public class PathMatchersAbsoluteTest
     {
         List<Object[]> cases = new ArrayList<>();
         
-        if(OS.IS_UNIX)
+        if(OS.LINUX.isCurrentOs() | OS.MAC.isCurrentOs())
         {
             cases.add(new Object[]{"/opt/app",true});
             cases.add(new Object[]{"/opt/app",true});
@@ -50,7 +50,7 @@ public class PathMatchersAbsoluteTest
             cases.add(new Object[]{"regex:/*-[^dev].ini",true});
         }
         
-        if(OS.IS_WINDOWS)
+        if(OS.WINDOWS.isCurrentOs())
         {
             // normal declaration
             cases.add(new Object[]{"D:\\code\\jetty\\jetty-start\\src\\test\\resources\\extra-libs\\example.jar",true});

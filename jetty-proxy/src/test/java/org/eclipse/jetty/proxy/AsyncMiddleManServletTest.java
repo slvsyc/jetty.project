@@ -71,8 +71,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.Utf8StringBuilder;
@@ -83,14 +81,12 @@ import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.OS;
 
 public class AsyncMiddleManServletTest
 {
     private static final Logger LOG = Log.getLogger(AsyncMiddleManServletTest.class);
-    @Rule
-    public final TestTracker tracker = new TestTracker();
     private HttpClient client;
     private Server proxy;
     private ServerConnector proxyConnector;
@@ -1075,7 +1071,7 @@ public class AsyncMiddleManServletTest
         }
 
         // File deletion is delayed on windows, testing for deletion is not going to work
-        if(!OS.IS_WINDOWS)
+        if(!OS.WINDOWS.isCurrentOs())
         {
             try (DirectoryStream<Path> paths = Files.newDirectoryStream(targetTestsDir, outputPrefix + "*.*"))
             {

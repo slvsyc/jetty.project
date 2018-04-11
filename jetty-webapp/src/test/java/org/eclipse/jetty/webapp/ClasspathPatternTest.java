@@ -22,13 +22,14 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import org.eclipse.jetty.toolchain.test.JDK;
 import org.eclipse.jetty.util.TypeUtil;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 public class ClasspathPatternTest
 {
@@ -113,10 +114,9 @@ public class ClasspathPatternTest
 
     @SuppressWarnings("restriction")
     @Test
+    @DisabledOnJre(JRE.JAVA_8)
     public void testIncludedLocations() throws Exception
     {
-        Assume.assumeFalse(JDK.IS_9);
-
         // jar from JVM classloader
         URI loc_string = TypeUtil.getLocationOfClass(String.class);
         // System.err.println(loc_string);
@@ -133,7 +133,6 @@ public class ClasspathPatternTest
         pattern.include("something");
         Assert.assertThat(pattern.match(String.class), Matchers.is(false));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(false));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
 
         // Add directory for both JVM classes
@@ -144,22 +143,19 @@ public class ClasspathPatternTest
 
         Assert.assertThat(pattern.match(String.class), Matchers.is(true));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(false));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
 
         pattern.add("-java.lang.String");
         Assert.assertThat(pattern.match(String.class), Matchers.is(false));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(false));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
     }
 
     @SuppressWarnings("restriction")
     @Test
+    @DisabledOnJre(JRE.JAVA_8)
     public void testIncludedLocationsOrModule() throws Exception
     {
-        Assume.assumeTrue(JDK.IS_9);
-
         // jar from JVM classloader
         URI mod_string = TypeUtil.getLocationOfClass(String.class);
         // System.err.println(mod_string);
@@ -176,7 +172,6 @@ public class ClasspathPatternTest
         pattern.include("something");
         Assert.assertThat(pattern.match(String.class), Matchers.is(false));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(false));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
 
         // Add module for all JVM base classes
@@ -187,22 +182,19 @@ public class ClasspathPatternTest
 
         Assert.assertThat(pattern.match(String.class), Matchers.is(true));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(false));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
 
         pattern.add("-java.lang.String");
         Assert.assertThat(pattern.match(String.class), Matchers.is(false));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(false));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
     }
 
     @SuppressWarnings("restriction")
     @Test
+    @EnabledOnJre(JRE.JAVA_8)
     public void testExcludeLocations() throws Exception
     {
-        Assume.assumeFalse(JDK.IS_9);
-
         // jar from JVM classloader
         URI loc_string = TypeUtil.getLocationOfClass(String.class);
         // System.err.println(loc_string);
@@ -222,7 +214,6 @@ public class ClasspathPatternTest
 
         Assert.assertThat(pattern.match(String.class), Matchers.is(true));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(true));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
 
         // Add directory for both JVM classes
@@ -233,16 +224,14 @@ public class ClasspathPatternTest
 
         Assert.assertThat(pattern.match(String.class), Matchers.is(false));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(true));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
     }
 
     @SuppressWarnings("restriction")
     @Test
+    @DisabledOnJre(JRE.JAVA_8)
     public void testExcludeLocationsOrModule() throws Exception
     {
-        Assume.assumeTrue(JDK.IS_9);
-
         // jar from JVM classloader
         URI mod_string = TypeUtil.getLocationOfClass(String.class);
         // System.err.println(mod_string);
@@ -262,7 +251,6 @@ public class ClasspathPatternTest
 
         Assert.assertThat(pattern.match(String.class), Matchers.is(true));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(true));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
 
         // Add directory for both JVM classes
@@ -273,7 +261,6 @@ public class ClasspathPatternTest
 
         Assert.assertThat(pattern.match(String.class), Matchers.is(false));
         Assert.assertThat(pattern.match(Test.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(JDK.class), Matchers.is(true));
         Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
     }
 

@@ -639,8 +639,8 @@ public class GzipTester
 
     public void stop()
     {
-        // NOTE: Do not cleanup the testdir. Failures can't be diagnosed if you do that.
-        // IO.delete(testdir.getDir()):
+        // NOTE: Do not cleanup the workDir. Failures can't be diagnosed if you do that.
+        // IO.delete(workDir.getDir()):
         try
         {
             tester.stop();

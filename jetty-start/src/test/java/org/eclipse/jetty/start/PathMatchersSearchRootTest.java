@@ -24,9 +24,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jetty.toolchain.test.OS;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -40,7 +40,7 @@ public class PathMatchersSearchRootTest
     {
         List<String[]> cases = new ArrayList<>();
         
-        if (OS.IS_UNIX)
+        if (OS.LINUX.isCurrentOs() || OS.MAC.isCurrentOs())
         {
             // absolute first
             cases.add(new String[]{"/opt/app/*.jar","/opt/app"});
@@ -55,7 +55,7 @@ public class PathMatchersSearchRootTest
             cases.add(new String[]{"/common.conf","/"});
         }
 
-        if (OS.IS_WINDOWS)
+        if (OS.WINDOWS.isCurrentOs())
         {
             // absolute declaration
             cases.add(new String[]{"D:\\code\\jetty\\jetty-start\\src\\test\\resources\\extra-libs\\example.jar",

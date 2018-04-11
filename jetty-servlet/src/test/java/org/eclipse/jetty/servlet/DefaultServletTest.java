@@ -18,8 +18,9 @@
 
 package org.eclipse.jetty.servlet;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,21 +49,22 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AllowSymLinkAliasChecker;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.resource.Resource;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class DefaultServletTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     public File docRoot;
 
@@ -70,7 +72,7 @@ public class DefaultServletTest
     private LocalConnector connector;
     private ServletContextHandler context;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         testdir.ensureEmpty();
@@ -92,7 +94,7 @@ public class DefaultServletTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         server.stop();
@@ -138,9 +140,9 @@ public class DefaultServletTest
         assertTrue(new File(docRoot, "one").mkdir());
         assertTrue(new File(docRoot, "two").mkdir());
         assertTrue(new File(docRoot, "three").mkdir());
-        if (!OS.IS_WINDOWS)
+        if (!OS.WINDOWS.isCurrentOs())
         {
-            assertTrue("Creating dir 'f??r' (Might not work in Windows)", new File(docRoot, "f??r").mkdir());
+            assertTrue(new File(docRoot, "f??r").mkdir(), "Creating dir 'f??r' (Might not work in Windows)");
         }
 
         StringBuffer req1 = new StringBuffer();
@@ -220,7 +222,7 @@ public class DefaultServletTest
         createFile(index, "<h1>Hello Index</h1>");
 
         File wackyDir = new File(docRoot, "dir?");
-        assumeTrue("FileSystem should support question dirs", wackyDir.mkdirs());
+        assumeTrue(wackyDir.mkdirs(), "FileSystem should support question dirs");
 
         wackyDir = new File(docRoot, "dir;");
         assertTrue(wackyDir.mkdirs());
@@ -481,7 +483,7 @@ public class DefaultServletTest
         context.setBaseResource(Resource.newResource(docRoot));
 
         File dir = new File(docRoot, "dir?");
-        assumeTrue("FileSystem should support question dirs", dir.mkdirs());
+        assumeTrue(dir.mkdirs(), "FileSystem should support question dirs");
 
         File index = new File(dir, "index.html");
         createFile(index, "<h1>Hello Index</h1>");
@@ -535,7 +537,7 @@ public class DefaultServletTest
 
         // In Windows it's impossible to delete files that are somehow in use
         // Avoid to fail the test if we're on Windows
-        if (!OS.IS_WINDOWS)
+        if (!OS.WINDOWS.isCurrentOs())
         {
             deleteFile(index);
             response = connector.getResponse("GET /context/ HTTP/1.0\r\n\r\n");
@@ -573,7 +575,7 @@ public class DefaultServletTest
         response = connector.getResponse("GET /context/dir/foobar.txt HTTP/1.0\r\n\r\n");
         assertResponseContains("Foo Bar", response);
 
-        if (!OS.IS_WINDOWS)
+        if (!OS.WINDOWS.isCurrentOs())
         {
             context.clearAliasChecks();
             
@@ -647,7 +649,7 @@ public class DefaultServletTest
 
         // In Windows it's impossible to delete files that are somehow in use
         // Avoid to fail the test if we're on Windows
-        if (!OS.IS_WINDOWS)
+        if (!OS.WINDOWS.isCurrentOs())
         {
             deleteFile(index);
             response = connector.getResponse("GET /context/ HTTP/1.0\r\n\r\n");
@@ -660,13 +662,9 @@ public class DefaultServletTest
     }
 
     @Test
+    @DisabledOnOs(OS.WINDOWS)
     public void testDirectFromResourceHttpContent() throws Exception
     {
-        if (!OS.IS_LINUX)
-            return;
-        
-        
-        
         FS.ensureDirExists(docRoot);
         context.setBaseResource(Resource.newResource(docRoot));
         
@@ -690,19 +688,15 @@ public class DefaultServletTest
         
         HttpContent content = factory.getContent("/index.html",200);
         ByteBuffer buffer = content.getDirectBuffer();
-        Assert.assertTrue(buffer.isDirect());        
+        assertTrue(buffer.isDirect());
         content = factory.getContent("/index.html",5);
         buffer = content.getDirectBuffer();
-        Assert.assertTrue(buffer==null);        
+        assertTrue(buffer==null);
     }
-    
-    
-    
+
     @Test
     public void testRangeRequests() throws Exception
     {
-        
-        
         FS.ensureDirExists(docRoot);
         File data = new File(docRoot, "data.txt");
         createFile(data, "01234567890123456789012345678901234567890123456789012345678901234567890123456789");
@@ -1418,18 +1412,18 @@ public class DefaultServletTest
 
     private void assertResponseNotContains(String forbidden, String response)
     {
-        Assert.assertThat(response,Matchers.not(Matchers.containsString(forbidden)));
+        assertThat(response,Matchers.not(Matchers.containsString(forbidden)));
     }
 
     private int assertResponseContains(String expected, String response)
     {
-        Assert.assertThat(response,Matchers.containsString(expected));
+        assertThat(response,Matchers.containsString(expected));
         return response.indexOf(expected);
     }
 
     private void deleteFile(File file) throws IOException
     {
-        if (OS.IS_WINDOWS)
+        if (OS.WINDOWS.isCurrentOs())
         {
             // Windows doesn't seem to like to delete content that was recently created
             // Attempt a delete and if it fails, attempt a rename
@@ -1446,7 +1440,7 @@ public class DefaultServletTest
         }
         else
         {
-            Assert.assertTrue("Deleting: " + file.getName(), file.delete());
+            assertTrue(file.delete(), "Unable to delete: " + file.getName());
         }
     }
     

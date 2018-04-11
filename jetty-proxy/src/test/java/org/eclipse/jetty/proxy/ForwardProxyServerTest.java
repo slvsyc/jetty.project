@@ -36,7 +36,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Utf8StringBuilder;
@@ -45,7 +44,6 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -59,8 +57,6 @@ public class ForwardProxyServerTest
         return new Object[]{null, newSslContextFactory()};
     }
 
-    @Rule
-    public final TestTracker tracker = new TestTracker();
     private final SslContextFactory serverSslContextFactory;
     private Server server;
     private ServerConnector serverConnector;

@@ -32,7 +32,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.handler.gzip.GzipTester.ContentMetadata;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,9 +48,6 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class GzipContentLengthTest
 {
-    @Rule
-    public final TestTracker tracker = new TestTracker();
-
     @Rule
     public TestingDir testingdir = new TestingDir();
     

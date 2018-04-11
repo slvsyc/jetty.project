@@ -49,11 +49,11 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.io.MappedByteBufferPool;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.toolchain.test.IO;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class HttpClientTest extends AbstractHttpClientServerTest
 {
@@ -409,8 +409,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
         Assert.assertArrayEquals(data, response.getContent());
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testRequestIdleTimeout() throws Exception
     {
         final long idleTimeout = 1000;

@@ -18,24 +18,24 @@
 
 package org.eclipse.jetty.deploy.providers;
 
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
+
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jetty.deploy.AppProvider;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.test.XmlConfiguredJetty;
-import org.eclipse.jetty.toolchain.test.OS;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.resource.Resource;
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
 /**
  * Similar in scope to {@link ScanningAppProviderStartupTest}, except is concerned with the modification of existing
@@ -45,9 +45,6 @@ public class ScanningAppProviderRuntimeUpdatesTest
 {
     private static final Logger LOG = Log.getLogger(ScanningAppProviderRuntimeUpdatesTest.class);
 
-    @Rule
-    public TestTracker tracker = new TestTracker();
-    
     @Rule
     public TestingDir testdir = new TestingDir();
     private static XmlConfiguredJetty jetty;
@@ -160,14 +157,9 @@ public class ScanningAppProviderRuntimeUpdatesTest
      * @throws Exception on test failure
      */
     @Test
+    @DisabledOnOs(WINDOWS) // This test will not work on Windows as second war file would, not be written over the first one because of a file lock
     public void testAfterStartupThenUpdateContext() throws Exception
     {
-        // This test will not work on Windows as second war file would
-        // not be written over the first one because of a file lock
-        Assume.assumeTrue(!OS.IS_WINDOWS);
-        Assume.assumeTrue(!OS.IS_OSX); // build server has issues with finding itself apparently
-
-
         jetty.copyWebapp("foo-webapp-1.war","foo.war");
         jetty.copyWebapp("foo.xml","foo.xml");
 

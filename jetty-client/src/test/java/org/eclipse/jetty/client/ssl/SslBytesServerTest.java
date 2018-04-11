@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.client.ssl;
 
+import static org.junit.jupiter.api.condition.OS.LINUX;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
+
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -67,16 +70,17 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.util.component.Dumpable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
 
 public class SslBytesServerTest extends SslBytesTest
 {
@@ -93,7 +97,7 @@ public class SslBytesServerTest extends SslBytesTest
     private SimpleProxy proxy;
     private Runnable idleHook;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         threadPool = Executors.newCachedThreadPool();
@@ -225,7 +229,7 @@ public class SslBytesServerTest extends SslBytesTest
         logger.info("proxy:{} <==> server:{}", proxy.getPort(), serverPort);
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         if (proxy != null)
@@ -236,7 +240,7 @@ public class SslBytesServerTest extends SslBytesTest
             threadPool.shutdownNow();
     }
 
-    @Test(timeout=10000)
+    @Test
     public void testHandshake() throws Exception
     {
         final SSLSocket client = newClient();
@@ -293,7 +297,7 @@ public class SslBytesServerTest extends SslBytesTest
         closeClient(client);
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testHandshakeWithResumedSessionThenClose() throws Exception
     {
         // First socket will establish the SSL session
@@ -374,7 +378,7 @@ public class SslBytesServerTest extends SslBytesTest
         Assert.assertThat(httpParses.get(), Matchers.lessThan(20));
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testHandshakeWithSplitBoundary() throws Exception
     {
         final SSLSocket client = newClient();
@@ -475,7 +479,7 @@ public class SslBytesServerTest extends SslBytesTest
         }
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testClientHelloIncompleteThenReset() throws Exception
     {
         final SSLSocket client = newClient();
@@ -504,7 +508,7 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testClientHelloThenReset() throws Exception
     {
         final SSLSocket client = newClient();
@@ -531,7 +535,7 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testHandshakeThenReset() throws Exception
     {
         final SSLSocket client = newClient();
@@ -551,7 +555,7 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testRequestIncompleteThenReset() throws Exception
     {
         final SSLSocket client = newClient();
@@ -589,7 +593,7 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testRequestResponse() throws Exception
     {
         final SSLSocket client = newClient();
@@ -638,7 +642,7 @@ public class SslBytesServerTest extends SslBytesTest
         closeClient(client);
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testHandshakeAndRequestOneByteAtATime() throws Exception
     {
         final SSLSocket client = newClient();
@@ -747,12 +751,10 @@ public class SslBytesServerTest extends SslBytesTest
         }
     }
 
-    @Test(timeout=60000)
+    @Test
+    @EnabledOnOs(LINUX) // See next test on why we only run in Linux
     public void testRequestWithCloseAlertAndShutdown() throws Exception
     {
-        // See next test on why we only run in Linux
-        Assume.assumeTrue(OS.IS_LINUX);
-
         final SSLSocket client = newClient();
 
         SimpleProxy.AutomaticFlow automaticProxyFlow = proxy.startAutomaticFlow();
@@ -811,7 +813,8 @@ public class SslBytesServerTest extends SslBytesTest
         Assert.assertThat(httpParses.get(), Matchers.lessThan(20));
     }
 
-    @Test(timeout=60000)
+    @Test
+    @EnabledOnOs(LINUX)
     public void testRequestWithCloseAlert() throws Exception
     {
         // Currently we are ignoring this test on anything other then linux
@@ -822,7 +825,6 @@ public class SslBytesServerTest extends SslBytesTest
         // and close down the connection immediately, discarding any pending writes. It is not
         // required for the initiator of the close to wait for the responding
         // close_notify alert before closing the read side of the connection.
-        Assume.assumeTrue(OS.IS_LINUX);
 
         final SSLSocket client = newClient();
 
@@ -887,7 +889,7 @@ public class SslBytesServerTest extends SslBytesTest
         proxy.flushToServer(record);
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testRequestWithRawClose() throws Exception
     {
         final SSLSocket client = newClient();
@@ -942,7 +944,7 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testRequestWithImmediateRawClose() throws Exception
     {
         final SSLSocket client = newClient();
@@ -995,12 +997,10 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
+    @DisabledOnOs(WINDOWS) // Don't run on Windows (buggy JVM)
     public void testRequestWithBigContentWriteBlockedThenReset() throws Exception
     {
-        // Don't run on Windows (buggy JVM)
-        Assume.assumeTrue(!OS.IS_WINDOWS);
-        
         final SSLSocket client = newClient();
 
         SimpleProxy.AutomaticFlow automaticProxyFlow = proxy.startAutomaticFlow();
@@ -1052,12 +1052,10 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
+    @DisabledOnOs(WINDOWS) // Don't run on Windows (buggy JVM)
     public void testRequestWithBigContentReadBlockedThenReset() throws Exception
     {
-        // Don't run on Windows (buggy JVM)
-        Assume.assumeTrue(!OS.IS_WINDOWS);
-        
         final SSLSocket client = newClient();
 
         SimpleProxy.AutomaticFlow automaticProxyFlow = proxy.startAutomaticFlow();
@@ -1104,22 +1102,19 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
+    @EnabledOnOs(LINUX) // see message below
     public void testRequestWithCloseAlertWithSplitBoundary() throws Exception
     {
-        if (!OS.IS_LINUX)
-        {
-            // currently we are ignoring this test on anything other then linux
+        // currently we are ignoring this test on anything other then linux
 
-            //http://tools.ietf.org/html/rfc2246#section-7.2.1
+        // http://tools.ietf.org/html/rfc2246#section-7.2.1
 
-            // TODO (react to this portion which seems to allow win/mac behavior)
-            //It is required that the other party respond with a close_notify alert of its own
-            //and close down the connection immediately, discarding any pending writes. It is not
-            //required for the initiator of the close to wait for the responding
-            //close_notify alert before closing the read side of the connection.
-            return;
-        }
+        // TODO (react to this portion which seems to allow win/mac behavior)
+        //It is required that the other party respond with a close_notify alert of its own
+        //and close down the connection immediately, discarding any pending writes. It is not
+        //required for the initiator of the close to wait for the responding
+        //close_notify alert before closing the read side of the connection.
 
         final SSLSocket client = newClient();
 
@@ -1188,7 +1183,7 @@ public class SslBytesServerTest extends SslBytesTest
         Assert.assertThat(httpParses.get(), Matchers.lessThan(20));
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testRequestWithContentWithSplitBoundary() throws Exception
     {
         final SSLSocket client = newClient();
@@ -1247,7 +1242,7 @@ public class SslBytesServerTest extends SslBytesTest
         closeClient(client);
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testRequestWithBigContentWithSplitBoundary() throws Exception
     {
         final SSLSocket client = newClient();
@@ -1321,8 +1316,8 @@ public class SslBytesServerTest extends SslBytesTest
     }
 
     // TODO work out why this test frequently fails
-    @Ignore
-    @Test(timeout=10000)
+    @Disabled
+    @Test
     public void testRequestWithContentWithRenegotiationInMiddleOfContentWhenRenegotiationIsForbidden() throws Exception
     {
         assumeJavaVersionSupportsTLSRenegotiations();
@@ -1407,7 +1402,7 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testRequestWithBigContentWithRenegotiationInMiddleOfContent() throws Exception
     {
         assumeJavaVersionSupportsTLSRenegotiations();
@@ -1533,7 +1528,7 @@ public class SslBytesServerTest extends SslBytesTest
         closeClient(client);
     }
 
-    @Test(timeout=10000)
+    @Test
     public void testRequestWithBigContentWithRenegotiationInMiddleOfContentWithSplitBoundary() throws Exception
     {
         assumeJavaVersionSupportsTLSRenegotiations();
@@ -1687,7 +1682,7 @@ public class SslBytesServerTest extends SslBytesTest
         closeClient(client);
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testServerShutdownOutputClientDoesNotCloseServerCloses() throws Exception
     {
         final SSLSocket client = newClient();
@@ -1741,7 +1736,7 @@ public class SslBytesServerTest extends SslBytesTest
         Assert.assertFalse(serverEndPoint.get().isOpen());
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testPlainText() throws Exception
     {
         final SSLSocket client = newClient();
@@ -1771,7 +1766,7 @@ public class SslBytesServerTest extends SslBytesTest
         client.close();
     }
 
-    @Test(timeout=60000)
+    @Test
     public void testRequestConcurrentWithIdleExpiration() throws Exception
     {
         final SSLSocket client = newClient();

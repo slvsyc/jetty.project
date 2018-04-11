@@ -23,23 +23,18 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 
 /**
  * Util meta Tests.
  */
-@RunWith(AdvancedRunner.class)
 public class DateCacheTest
 {
     /* ------------------------------------------------------------ */
     @Test
-    @Slow
     @SuppressWarnings("ReferenceEquality")
     public void testDateCache() throws Exception
     {

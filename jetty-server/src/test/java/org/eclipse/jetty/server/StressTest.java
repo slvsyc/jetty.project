@@ -20,7 +20,7 @@ package org.eclipse.jetty.server;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.condition.OS.MAC;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -35,9 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.OS;
-import org.eclipse.jetty.toolchain.test.annotation.Stress;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -46,9 +43,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
-@RunWith(AdvancedRunner.class)
 public class StressTest
 {
     private static final Logger LOG = Log.getLogger(StressTest.class);
@@ -123,19 +120,17 @@ public class StressTest
     }
 
     @Test
+    @DisabledOnOs(MAC) // TODO: needs investigation
     public void testMinNonPersistent() throws Throwable
     {
-        assumeTrue(!OS.IS_OSX);
         doThreads(10,10,false);
     }
 
     @Test
-    @Stress("Hey, its called StressTest for a reason")
+    @DisabledOnOs(MAC) // TODO: needs investigation
+    @DisabledIfSystemProperty(named = "env", matches = "ci")
     public void testNonPersistent() throws Throwable
     {
-        // TODO needs to be further investigated
-        assumeTrue(!OS.IS_OSX);
-
         doThreads(20,20,false);
         Thread.sleep(1000);
         doThreads(200,10,false);
@@ -144,19 +139,17 @@ public class StressTest
     }
 
     @Test
+    @DisabledOnOs(MAC) // TODO: needs investigation
     public void testMinPersistent() throws Throwable
     {
-        // TODO needs to be further investigated
-        assumeTrue(!OS.IS_OSX);
         doThreads(10,10,true);
     }
     
     @Test
-    @Stress("Hey, its called StressTest for a reason")
+    @DisabledOnOs(MAC) // TODO: needs investigation
+    @DisabledIfSystemProperty(named = "env", matches = "ci")
     public void testPersistent() throws Throwable
     {
-        // TODO needs to be further investigated
-        assumeTrue(!OS.IS_OSX);
         doThreads(40,40,true);
         Thread.sleep(1000);
         doThreads(200,10,true);

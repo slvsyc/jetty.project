@@ -31,15 +31,11 @@ import org.eclipse.jetty.http.CompressedContentFormat;
 import org.eclipse.jetty.http.HttpContent;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http.ResourceHttpContent;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(AdvancedRunner.class)
 public class ResourceCacheTest
 {
     @Test
@@ -151,7 +147,7 @@ public class ResourceCacheTest
         assertEquals(80,content.getContentLengthValue());
         assertEquals(0,cache.getCachedSize());
         
-        if (OS.IS_LINUX)
+        if (org.junit.jupiter.api.condition.OS.LINUX.isCurrentOs())
         {
             // Initially not using memory mapped files
             content.getDirectBuffer();
@@ -174,6 +170,7 @@ public class ResourceCacheTest
             // with both types of buffer loaded, this is not too large for cache because
             // mapped buffers don't count, so we can continue
         }
+
         content.getIndirectBuffer();
         assertEquals(80,cache.getCachedSize());
         assertEquals(1,cache.getCachedFiles());

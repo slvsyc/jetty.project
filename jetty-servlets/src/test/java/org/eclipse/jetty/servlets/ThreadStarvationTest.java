@@ -57,19 +57,15 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestTracker;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class ThreadStarvationTest
 {
-    @Rule
-    public TestTracker tracker = new TestTracker();
     private Server _server;
 
     @After
@@ -80,7 +76,7 @@ public class ThreadStarvationTest
     }
 
     @Test
-    @Slow
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testDefaultServletSuccess() throws Exception
     {
         int maxThreads = 10;

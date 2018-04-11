@@ -40,24 +40,16 @@ import org.eclipse.jetty.io.AbstractConnection;
 import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.io.ssl.SslConnection;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(AdvancedRunner.class)
 public abstract class ConnectorTimeoutTest extends HttpServerTestFixture
 {
-    @Rule
-    public TestTracker tracker = new TestTracker();
-    
     protected static final int MAX_IDLE_TIME=2000;
     private int sleepTime = MAX_IDLE_TIME + MAX_IDLE_TIME/5;
     private int minimumTestRuntime = MAX_IDLE_TIME-MAX_IDLE_TIME/5;

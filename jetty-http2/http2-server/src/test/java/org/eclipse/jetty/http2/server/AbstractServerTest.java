@@ -42,15 +42,11 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
-import org.junit.Rule;
 
 public class AbstractServerTest
 {
-    @Rule
-    public TestTracker tracker = new TestTracker();
     protected ServerConnector connector;
     protected ByteBufferPool byteBufferPool;
     protected Generator generator;

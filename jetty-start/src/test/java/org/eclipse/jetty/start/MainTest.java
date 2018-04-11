@@ -30,17 +30,12 @@ import java.util.List;
 
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 
 public class MainTest
 {
-    @Rule
-    public TestTracker ttracker = new TestTracker();
-    
     @Before
     public void clearSystemProperties()
     {

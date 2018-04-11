@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.unixsocket;
 
+import static org.junit.jupiter.api.condition.OS.LINUX;
+import static org.junit.jupiter.api.condition.OS.MAC;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,16 +39,15 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.unixsocket.client.HttpClientTransportOverUnixSockets;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
 
 public class UnixSocketTest
 {
@@ -56,7 +58,7 @@ public class UnixSocketTest
     HttpClient httpClient;
     Path sockFile;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         server = null;
@@ -65,7 +67,7 @@ public class UnixSocketTest
         Files.deleteIfExists(sockFile);
     }
     
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         if (httpClient!=null)
@@ -76,10 +78,9 @@ public class UnixSocketTest
     }
     
     @Test
+    @EnabledOnOs({LINUX, MAC})
     public void testUnixSocket() throws Exception
     {
-        Assume.assumeTrue(OS.IS_UNIX);
-
         server = new Server();
 
         HttpConnectionFactory http = new HttpConnectionFactory();

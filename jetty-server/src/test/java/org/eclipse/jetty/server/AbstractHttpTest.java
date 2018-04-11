@@ -37,19 +37,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 
 public abstract class AbstractHttpTest
 {
     private final static Set<String> __noBodyCodes = new HashSet<>(Arrays.asList(new String[]{"100","101","102","204","304"}));
     
-    @Rule
-    public TestTracker tracker = new TestTracker();
-
     protected static Server server;
     protected static ServerConnector connector;
     protected String httpVersion;

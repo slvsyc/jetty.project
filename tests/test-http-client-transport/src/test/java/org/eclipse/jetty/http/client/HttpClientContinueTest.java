@@ -50,12 +50,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class HttpClientContinueTest extends AbstractTest
 {
@@ -297,8 +297,8 @@ public class HttpClientContinueTest extends AbstractTest
         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void test_Expect100Continue_WithContent_WithResponseFailure_Before100Continue() throws Exception
     {
         final long idleTimeout = 1000;
@@ -341,8 +341,8 @@ public class HttpClientContinueTest extends AbstractTest
         Assert.assertTrue(latch.await(3 * idleTimeout, TimeUnit.MILLISECONDS));
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void test_Expect100Continue_WithContent_WithResponseFailure_After100Continue() throws Exception
     {
         final long idleTimeout = 1000;
@@ -445,8 +445,8 @@ public class HttpClientContinueTest extends AbstractTest
         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void test_Expect100Continue_WithDeferredContent_Respond100Continue() throws Exception
     {
         start(new AbstractHandler()
@@ -493,8 +493,8 @@ public class HttpClientContinueTest extends AbstractTest
         Assert.assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void test_Expect100Continue_WithInitialAndDeferredContent_Respond100Continue() throws Exception
     {
         start(new AbstractHandler()

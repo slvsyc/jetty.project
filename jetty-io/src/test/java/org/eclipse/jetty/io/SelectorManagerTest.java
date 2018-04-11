@@ -29,9 +29,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.eclipse.jetty.io.ManagedSelector.SelectorUpdate;
-import org.eclipse.jetty.io.ManagedSelector.Connect;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.TimerScheduler;
@@ -39,6 +36,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class SelectorManagerTest
 {
@@ -59,8 +57,8 @@ public class SelectorManagerTest
         executor.stop();
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testConnectTimeoutBeforeSuccessfulConnect() throws Exception
     {
         ServerSocketChannel server = ServerSocketChannel.open();

@@ -52,7 +52,6 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.JAR;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.toolchain.test.PathAssert;
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.junit.Assert;
@@ -382,7 +381,7 @@ public class JettyDistro
     public void copyTestWar(String testWarFilename) throws IOException
     {
         File srcWar = MavenTestingUtils.getTargetFile("test-wars/" + testWarFilename);
-        File destWar = new File(jettyHomeDir,OS.separators("webapps/" + testWarFilename));
+        File destWar = new File(jettyHomeDir,FS.separators("webapps/" + testWarFilename));
         FS.ensureDirExists(destWar.getParentFile());
         IO.copyFile(srcWar,destWar);
     }
@@ -400,7 +399,7 @@ public class JettyDistro
     public void copyResource(String resourcePath, String outputPath) throws IOException
     {
         File srcFile = MavenTestingUtils.getTestResourceFile(resourcePath);
-        File destFile = new File(jettyHomeDir,OS.separators(outputPath));
+        File destFile = new File(jettyHomeDir,FS.separators(outputPath));
         FS.ensureDirExists(destFile.getParentFile());
         IO.copyFile(srcFile,destFile);
     }
@@ -418,7 +417,7 @@ public class JettyDistro
     public void copyLib(String libFilename, String outputPath) throws IOException
     {
         File srcLib = MavenTestingUtils.getTargetFile("test-libs/" + libFilename);
-        File destLib = new File(jettyHomeDir,OS.separators(outputPath));
+        File destLib = new File(jettyHomeDir,FS.separators(outputPath));
         FS.ensureDirExists(destLib.getParentFile());
         IO.copyFile(srcLib,destLib);
     }
@@ -444,7 +443,7 @@ public class JettyDistro
     public void createProjectLib(String jarFilename) throws IOException
     {
         File srcDir = MavenTestingUtils.getTargetFile("classes");
-        File libSelfDir = new File(jettyHomeDir,OS.separators("lib/self"));
+        File libSelfDir = new File(jettyHomeDir,FS.separators("lib/self"));
         FS.ensureDirExists(libSelfDir);
         File jarFile = new File(libSelfDir,jarFilename);
         JAR.create(srcDir,jarFile);
@@ -472,7 +471,7 @@ public class JettyDistro
      */
     public void delete(String path)
     {
-        File jettyPath = new File(jettyHomeDir,OS.separators(path));
+        File jettyPath = new File(jettyHomeDir,FS.separators(path));
         FS.delete(jettyPath);
     }
 
@@ -796,7 +795,7 @@ public class JettyDistro
         File javaHomeDir = new File(System.getProperty("java.home"));
         for (String javaexe : javaexes)
         {
-            File javabin = new File(javaHomeDir,OS.separators("bin/" + javaexe));
+            File javabin = new File(javaHomeDir,FS.separators("bin/" + javaexe));
             if (javabin.exists() && javabin.isFile())
             {
                 return javabin.getAbsolutePath();

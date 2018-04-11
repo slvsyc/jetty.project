@@ -33,21 +33,16 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.ByteBufferContentProvider;
 import org.eclipse.jetty.io.ByteArrayEndPoint;
-import org.eclipse.jetty.toolchain.test.TestTracker;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.Promise;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class HttpSenderOverHTTPTest
 {
-    @Rule
-    public final TestTracker tracker = new TestTracker();
-
     private HttpClient client;
 
     @Before
@@ -96,8 +91,8 @@ public class HttpSenderOverHTTPTest
         Assert.assertTrue(successLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void test_Send_NoRequestContent_IncompleteFlush() throws Exception
     {
         ByteArrayEndPoint endPoint = new ByteArrayEndPoint("", 16);

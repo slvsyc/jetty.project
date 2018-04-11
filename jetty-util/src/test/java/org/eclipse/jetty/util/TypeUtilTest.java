@@ -25,10 +25,12 @@ import static org.junit.Assert.assertThat;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.eclipse.jetty.toolchain.test.JDK;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 public class TypeUtilTest
 {
@@ -142,12 +144,23 @@ public class TypeUtilTest
         
         // Class from project dependencies
         assertThat(TypeUtil.getLocationOfClass(TypeUtil.class).toASCIIString(),containsString("/classes/"));
-        
+    }
+
+    @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    public void testGetLocation_JvmCore_JPMS()
+    {
+        // Class from JVM core
+        String expectedJavaBase = "/java.base/";
+        assertThat(TypeUtil.getLocationOfClass(String.class).toASCIIString(),containsString(expectedJavaBase));
+    }
+
+    @Test
+    @EnabledOnJre(JRE.JAVA_8)
+    public void testGetLocation_JvmCore_Java8RT()
+    {
         // Class from JVM core
         String expectedJavaBase = "/rt.jar";
-        if(JDK.IS_9)
-            expectedJavaBase = "/java.base/";
-            
         assertThat(TypeUtil.getLocationOfClass(String.class).toASCIIString(),containsString(expectedJavaBase));
     }
 }

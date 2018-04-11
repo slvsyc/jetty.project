@@ -27,10 +27,16 @@
     <asm.version>6.1.1</asm.version>
     <jmh.version>1.20</jmh.version>
     <jmhjar.name>benchmarks</jmhjar.name>
-    <surefireVersion>2.21.0</surefireVersion>
+    <surefireVersion>2.19.1</surefireVersion>
 
     <mavenPluginToolsVersion>3.5</mavenPluginToolsVersion>
     <mavenVersion>3.5.0</mavenVersion>
+
+    <!-- testing -->
+    <jetty.test.version>5.0-SNAPSHOT</jetty.test.version>
+    <junit.platform.version>1.2.0-SNAPSHOT</junit.platform.version>
+    <junit.vintage.version>5.1.1</junit.vintage.version>
+    <junit.jupiter.version>5.1.1</junit.jupiter.version>
   </properties>
 
   <licenses>
@@ -614,6 +620,24 @@
               </property>
             </systemProperties>
           </configuration>
+          <!-- To support Junit 5 -->
+          <dependencies>
+            <dependency>
+              <groupId>org.junit.platform</groupId>
+              <artifactId>junit-platform-surefire-provider</artifactId>
+              <version>${junit.platform.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.junit.jupiter</groupId>
+              <artifactId>junit-jupiter-engine</artifactId>
+              <version>${junit.jupiter.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.junit.vintage</groupId>
+              <artifactId>junit-vintage-engine</artifactId>
+              <version>${junit.vintage.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -990,7 +1014,7 @@
       <dependency>
         <groupId>org.eclipse.jetty.toolchain</groupId>
         <artifactId>jetty-test-helper</artifactId>
-        <version>4.2</version>
+        <version>${jetty.test.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty.toolchain</groupId>
@@ -1792,7 +1816,8 @@
 
   <!-- SNAPSHOT Repository is only for temporary usage.
        This configuration should not be checked in, as it
-       can result in bad success on CI.
+       can result in bad success on CI. -->
+  <!--
   <repositories>
     <repository>
       <id>jetty-snapshots</id>
@@ -1815,11 +1840,33 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>oss.snapshots</id>
+      <name>OSS Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>apache.snapshots</id>
       <url>https://repository.apache.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>oss.snapshots</id>
+      <name>OSS Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>

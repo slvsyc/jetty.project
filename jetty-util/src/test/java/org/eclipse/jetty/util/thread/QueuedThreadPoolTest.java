@@ -29,14 +29,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
-@RunWith(AdvancedRunner.class)
 public class QueuedThreadPoolTest
 {
     final AtomicInteger _jobs=new AtomicInteger();
@@ -76,7 +73,7 @@ public class QueuedThreadPoolTest
 
 
     @Test
-    @Slow
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testThreadPool() throws Exception
     {
         QueuedThreadPool tp= new QueuedThreadPool();
@@ -155,7 +152,7 @@ public class QueuedThreadPoolTest
     }
 
     @Test
-    @Slow
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testShrink() throws Exception
     {
         final AtomicInteger sleep = new AtomicInteger(100);

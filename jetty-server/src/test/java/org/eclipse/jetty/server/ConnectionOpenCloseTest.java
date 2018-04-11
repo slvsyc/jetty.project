@@ -40,9 +40,7 @@ import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.resource.Resource;
@@ -50,9 +48,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
-@RunWith(AdvancedRunner.class)
 public class ConnectionOpenCloseTest extends AbstractHttpTest
 {
     public ConnectionOpenCloseTest()
@@ -60,8 +57,8 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
         super(HttpVersion.HTTP_1_1.asString());
     }
     
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testOpenClose() throws Exception
     {
         server.setHandler(new AbstractHandler()
@@ -110,8 +107,8 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
         }
     }
     
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testOpenRequestClose() throws Exception
     {
         server.setHandler(new AbstractHandler()
@@ -172,8 +169,8 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
         }
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testSSLOpenRequestClose() throws Exception
     {
         SslContextFactory sslContextFactory = new SslContextFactory();

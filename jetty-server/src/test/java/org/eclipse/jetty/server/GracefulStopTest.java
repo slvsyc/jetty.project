@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -49,21 +49,17 @@ import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
-@RunWith(AdvancedRunner.class)
-public class GracefulStopTest 
+public class GracefulStopTest
 {
     /**
      * Test of standard graceful timeout mechanism when a block request does
@@ -180,9 +176,9 @@ public class GracefulStopTest
      * @throws Exception on test failure
      */
     @Test
+    @DisabledOnOs(WINDOWS) // TODO: needs more investigation
     public void testGracefulComplete() throws Exception
     {
-        assumeTrue(!OS.IS_WINDOWS);
         Server server= new Server();
         server.setStopTimeout(10000);
 

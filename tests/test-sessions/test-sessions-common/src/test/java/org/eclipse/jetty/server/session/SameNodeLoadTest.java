@@ -39,8 +39,8 @@ import javax.servlet.http.HttpSession;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 
 /**
@@ -52,7 +52,7 @@ import org.junit.Test;
 public class SameNodeLoadTest
 {
     @Test
-    @Slow
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testLoad() throws Exception
     {
         DefaultSessionCacheFactory cacheFactory = new DefaultSessionCacheFactory();

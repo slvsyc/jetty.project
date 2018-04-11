@@ -36,7 +36,6 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -83,7 +82,7 @@ public class WSServer
         String endpointPath = clazz.getName().replace('.','/') + ".class";
         URL classUrl = cl.getResource(endpointPath);
         Assert.assertThat("Class URL for: " + clazz,classUrl,notNullValue());
-        File destFile = new File(classesDir,OS.separators(endpointPath));
+        File destFile = new File(classesDir,FS.separators(endpointPath));
         FS.ensureDirExists(destFile.getParentFile());
         File srcFile = new File(classUrl.toURI());
         IO.copy(srcFile,destFile);

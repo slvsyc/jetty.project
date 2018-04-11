@@ -23,21 +23,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  *
  */
-@RunWith(AdvancedRunner.class)
 public class CheckReverseProxyHeadersTest
 {
     @Test

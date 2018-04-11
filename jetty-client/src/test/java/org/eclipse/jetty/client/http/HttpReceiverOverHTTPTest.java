@@ -39,12 +39,10 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.ByteArrayEndPoint;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.Promise;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -52,9 +50,6 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class HttpReceiverOverHTTPTest
 {    
-    @Rule
-    public final TestTracker tracker = new TestTracker();
-
     @Parameterized.Parameter(0)
     public HttpCompliance compliance;
     

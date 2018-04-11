@@ -26,13 +26,10 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
-@RunWith(AdvancedRunner.class)
 public class BlockingArrayQueueTest
 {
     @Test
@@ -156,7 +153,7 @@ public class BlockingArrayQueueTest
     }
 
     @Test
-    @Slow
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testTake() throws Exception
     {
         final String[] data=new String[4];
@@ -200,7 +197,7 @@ public class BlockingArrayQueueTest
     }
 
     @Test
-    @Slow
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testConcurrentAccess() throws Exception
     {
         final int THREADS=50;

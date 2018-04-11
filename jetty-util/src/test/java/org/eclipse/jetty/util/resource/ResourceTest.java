@@ -33,7 +33,6 @@ import java.util.Collection;
 
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -141,7 +140,7 @@ public class ResourceTest
         public UseCases(String ref) throws Exception {
             this.data = new ArrayList<Data[]>();
             // relative directory reference
-            this.relRef = OS.separators(ref);
+            this.relRef = FS.separators(ref);
             // File object reference
             this.fileRef = MavenTestingUtils.getProjectDir(relRef);
             // URI reference
@@ -169,7 +168,7 @@ public class ResourceTest
         public void addAllSimpleCases(String subpath, boolean exists, boolean dir) 
             throws Exception
         {
-            addCase(new Data(OS.separators(relRef + subpath), exists, dir));
+            addCase(new Data(FS.separators(relRef + subpath), exists, dir));
             addCase(new Data(uriRef.resolve(subpath).toURL(), exists, dir));
             addCase(new Data(new File(fileRef,subpath),exists, dir));
         }

@@ -41,12 +41,12 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
 {
@@ -222,8 +222,8 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         Assert.assertEquals(0, activeConnections.size());
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void test_BadRequest_WithSlowRequest_RemovesConnection() throws Exception
     {
         start(new EmptyServerHandler());
@@ -431,8 +431,8 @@ public class HttpConnectionLifecycleTest extends AbstractHttpClientServerTest
         }
     }
 
-    @Slow
     @Test
+    @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void test_IdleConnection_IsClosed_OnRemoteClose() throws Exception
     {
         start(new EmptyServerHandler());

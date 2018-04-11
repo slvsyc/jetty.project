@@ -26,12 +26,10 @@ import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.SocketAddressResolver;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -43,9 +41,6 @@ public abstract class AbstractHttpClientServerTest
     {
         return Arrays.asList(new SslContextFactory[]{null}, new SslContextFactory[]{new SslContextFactory()});
     }
-
-    @Rule
-    public final TestTracker tracker = new TestTracker();
 
     protected SslContextFactory sslContextFactory;
     protected String scheme;

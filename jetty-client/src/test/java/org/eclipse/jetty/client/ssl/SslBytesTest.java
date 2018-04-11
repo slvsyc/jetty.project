@@ -33,17 +33,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.junit.Assert;
-import org.junit.Rule;
 
 public abstract class SslBytesTest
 {
-    @Rule
-    public TestTracker tracker = new TestTracker();
-
     protected final Logger logger = Log.getLogger(getClass());
 
     public static class TLSRecord

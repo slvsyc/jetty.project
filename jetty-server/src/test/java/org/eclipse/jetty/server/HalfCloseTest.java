@@ -33,12 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
 import org.eclipse.jetty.util.IO;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(AdvancedRunner.class)
 public class HalfCloseTest
 {
     @Test

@@ -52,7 +52,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.unixsocket.UnixSocketConnector;
 import org.eclipse.jetty.unixsocket.client.HttpClientTransportOverUnixSockets;
 import org.eclipse.jetty.util.SocketAddressResolver;
@@ -62,7 +61,6 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -86,9 +84,6 @@ public abstract class AbstractTest
         return EnumSet.complementOf(EnumSet.of(Transport.UNIX_SOCKET)).toArray();
     }
 
-
-    @Rule
-    public final TestTracker tracker = new TestTracker();
 
     protected final HttpConfiguration httpConfig = new HttpConfiguration();
     protected final Transport transport;

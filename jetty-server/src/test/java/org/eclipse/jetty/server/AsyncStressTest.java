@@ -39,9 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.PropertyFlag;
-import org.eclipse.jetty.toolchain.test.annotation.Stress;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
@@ -49,9 +46,8 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
-@RunWith(AdvancedRunner.class)
 public class AsyncStressTest
 {
     private static final Logger LOG = Log.getLogger(AsyncStressTest.class);
@@ -95,17 +91,10 @@ public class AsyncStressTest
     }
 
     @Test
-    @Stress("High connection count")
+    @DisabledIfSystemProperty(named = "env", matches = "ci")
     public void testAsync() throws Throwable
     {
-        if (PropertyFlag.isEnabled("test.stress"))
-        {
-            doConnections(1600,240);
-        }
-        else
-        {
-            doConnections(80,80);
-        }
+        doConnections(1600,240);
     }
 
     private void doConnections(int connections,final int loops) throws Throwable

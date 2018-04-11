@@ -44,9 +44,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipTester.ContentMetadata;
 import org.eclipse.jetty.server.handler.gzip.TestDirContentServlet;
 import org.eclipse.jetty.server.handler.gzip.TestServletLengthStreamTypeWrite;
 import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,12 +56,8 @@ import org.junit.runners.Parameterized.Parameters;
  * Test the GzipFilter support when under several layers of Filters.
  */
 @RunWith(Parameterized.class)
-@Ignore
 public class GzipFilterLayeredTest
 {
-    @Rule
-    public final TestTracker tracker = new TestTracker();
-    
     private static final HttpConfiguration defaultHttp = new HttpConfiguration();
     private static final int LARGE = defaultHttp.getOutputBufferSize() * 8;
     private static final int SMALL = defaultHttp.getOutputBufferSize() / 4;

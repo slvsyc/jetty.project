@@ -18,23 +18,6 @@
 
 package org.eclipse.jetty.io;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
-import org.eclipse.jetty.toolchain.test.annotation.Slow;
-import org.eclipse.jetty.util.BufferUtil;
-import org.eclipse.jetty.util.FutureCallback;
-import org.eclipse.jetty.util.thread.Scheduler;
-import org.eclipse.jetty.util.thread.TimerScheduler;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
@@ -45,7 +28,20 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@RunWith(AdvancedRunner.class)
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.eclipse.jetty.util.BufferUtil;
+import org.eclipse.jetty.util.FutureCallback;
+import org.eclipse.jetty.util.thread.Scheduler;
+import org.eclipse.jetty.util.thread.TimerScheduler;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 public class ByteArrayEndPointTest
 {
     private Scheduler _scheduler;
@@ -264,7 +260,6 @@ public class ByteArrayEndPointTest
         }
     }
 
-    @Slow
     @Test
     public void testIdle() throws Exception
     {

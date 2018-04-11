@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.condition.OS.WINDOWS;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,16 +59,14 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.toolchain.test.OS;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
 /**
  * HttpServer Tester.
@@ -90,11 +89,9 @@ public class SelectChannelServerSslTest extends HttpServerTestBase
     }
 
     @Override
+    @DisabledOnOs(WINDOWS) // Don't run on Windows (buggy JVM)
     public void testFullMethod() throws Exception
     {
-        // Don't run on Windows (buggy JVM)
-        Assume.assumeTrue(!OS.IS_WINDOWS);
-        
         try
         {
             super.testFullMethod();
@@ -115,10 +112,9 @@ public class SelectChannelServerSslTest extends HttpServerTestBase
     }
 
     @Override
+    @DisabledOnOs(WINDOWS) // Don't run on Windows (buggy JVM)
     public void testFullURI() throws Exception
     {
-        // Don't run on Windows (buggy JVM)
-        Assume.assumeTrue(!OS.IS_WINDOWS);
         try
         {
             super.testFullURI();
@@ -135,7 +131,7 @@ public class SelectChannelServerSslTest extends HttpServerTestBase
         super.testFullHeader();
     }
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         String keystorePath = System.getProperty("basedir",".") + "/src/test/resources/keystore";
@@ -240,12 +236,12 @@ public class SelectChannelServerSslTest extends HttpServerTestBase
 
     @Override
     @Test
-    @Ignore("Override and ignore this test as SSLSocket.shutdownOutput() is not supported, " +
+    @Disabled("Override and ignore this test as SSLSocket.shutdownOutput() is not supported, " +
             "but shutdownOutput() is needed by the test.")
     public void testInterruptedRequest(){}
 
     @Override
-    @Ignore
+    @Disabled
     public void testAvailable() throws Exception
     {
     }

@@ -29,16 +29,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.eclipse.jetty.toolchain.test.TestTracker;
-import org.junit.Rule;
 import org.junit.Test;
 
 @Deprecated 
 public class GZIPContentDecoderTest
 {
-    @Rule
-    public final TestTracker tracker = new TestTracker();
-
     @Test
     public void testStreamNoBlocks() throws Exception
     {

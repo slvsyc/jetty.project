@@ -37,7 +37,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.osgi.boot.OSGiServerConstants;
-import org.eclipse.jetty.toolchain.test.OS;
+import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Assert;
@@ -56,7 +56,7 @@ public class TestOSGiUtil
 
     public static List<Option> configureJettyHomeAndPort(boolean ssl,String jettySelectorFileName)
     {
-        File etc = new File(OS.separators("src/test/config/etc"));
+        File etc = new File(FS.separators("src/test/config/etc"));
         
         List<Option> options = new ArrayList<>();
         StringBuffer xmlConfigs = new StringBuffer();

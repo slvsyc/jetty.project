@@ -35,16 +35,12 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.toolchain.test.TestTracker;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 
 public class ReverseProxyTest
 {
-    @Rule
-    public final TestTracker tracker = new TestTracker();
     private Server server;
     private ServerConnector serverConnector;
     private Server proxy;

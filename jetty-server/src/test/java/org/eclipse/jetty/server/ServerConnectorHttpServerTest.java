@@ -18,14 +18,11 @@
 
 package org.eclipse.jetty.server;
 
-import org.eclipse.jetty.toolchain.test.AdvancedRunner;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 
 /**
  * HttpServer Tester.
  */
-@RunWith(AdvancedRunner.class)
 public class ServerConnectorHttpServerTest extends HttpServerTestBase
 {
     @Before
