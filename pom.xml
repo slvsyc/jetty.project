@@ -1851,6 +1851,18 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>jetty.snapshots</id>
+      <name>Jetty Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/jetty-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
