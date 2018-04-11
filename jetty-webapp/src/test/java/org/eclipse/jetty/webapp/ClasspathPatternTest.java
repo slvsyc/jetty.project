@@ -18,15 +18,18 @@
 
 package org.eclipse.jetty.webapp;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.eclipse.jetty.util.TypeUtil;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
@@ -35,7 +38,7 @@ public class ClasspathPatternTest
 {
     private final ClasspathPattern _pattern = new ClasspathPattern();
 
-    @Before
+    @BeforeEach
     public void before()
     {
         _pattern.clear();
@@ -48,7 +51,7 @@ public class ClasspathPatternTest
                 "org.example.Nested",
                 "org.example.Nested$Something"));
 
-        Assert.assertThat(_pattern, Matchers.containsInAnyOrder(
+        assertThat(_pattern, Matchers.containsInAnyOrder(
                 "org.package.",
                 "-org.excluded.",
                 "org.example.FooBar",
@@ -62,45 +65,45 @@ public class ClasspathPatternTest
     @Test
     public void testClassMatch()
     {
-        Assert.assertTrue(_pattern.match("org.example.FooBar"));
-        Assert.assertTrue(_pattern.match("org.example.Nested"));
+        assertTrue(_pattern.match("org.example.FooBar"));
+        assertTrue(_pattern.match("org.example.Nested"));
 
-        Assert.assertFalse(_pattern.match("org.example.Unknown"));
-        Assert.assertFalse(_pattern.match("org.example.FooBar.Unknown"));
+        assertFalse(_pattern.match("org.example.Unknown"));
+        assertFalse(_pattern.match("org.example.FooBar.Unknown"));
     }
 
     @Test
     public void testPackageMatch()
     {
-        Assert.assertTrue(_pattern.match("org.package.Something"));
-        Assert.assertTrue(_pattern.match("org.package.other.Something"));
+        assertTrue(_pattern.match("org.package.Something"));
+        assertTrue(_pattern.match("org.package.other.Something"));
 
-        Assert.assertFalse(_pattern.match("org.example.Unknown"));
-        Assert.assertFalse(_pattern.match("org.example.FooBar.Unknown"));
-        Assert.assertFalse(_pattern.match("org.example.FooBarElse"));
+        assertFalse(_pattern.match("org.example.Unknown"));
+        assertFalse(_pattern.match("org.example.FooBar.Unknown"));
+        assertFalse(_pattern.match("org.example.FooBarElse"));
     }
 
     @Test
     public void testExplicitNestedMatch()
     {
-        Assert.assertTrue(_pattern.match("org.example.Nested$Something"));
-        Assert.assertFalse(_pattern.match("org.example.Nested$Minus"));
-        Assert.assertTrue(_pattern.match("org.example.Nested$Other"));
+        assertTrue(_pattern.match("org.example.Nested$Something"));
+        assertFalse(_pattern.match("org.example.Nested$Minus"));
+        assertTrue(_pattern.match("org.example.Nested$Other"));
     }
 
     @Test
     public void testImplicitNestedMatch()
     {
-        Assert.assertTrue(_pattern.match("org.example.FooBar$Other"));
-        Assert.assertTrue(_pattern.match("org.example.Nested$Other"));
+        assertTrue(_pattern.match("org.example.FooBar$Other"));
+        assertTrue(_pattern.match("org.example.Nested$Other"));
     }
 
     @Test
     public void testDoubledNested()
     {
-        Assert.assertTrue(_pattern.match("org.example.Nested$Something$Else"));
+        assertTrue(_pattern.match("org.example.Nested$Something$Else"));
 
-        Assert.assertFalse(_pattern.match("org.example.Nested$Minus$Else"));
+        assertFalse(_pattern.match("org.example.Nested$Minus$Else"));
     }
 
     @Test
@@ -108,8 +111,8 @@ public class ClasspathPatternTest
     {
         _pattern.clear();
         _pattern.add(".");
-        Assert.assertTrue(_pattern.match("org.example.Anything"));
-        Assert.assertTrue(_pattern.match("org.example.Anything$Else"));
+        assertTrue(_pattern.match("org.example.Anything"));
+        assertTrue(_pattern.match("org.example.Anything$Else"));
     }
 
     @SuppressWarnings("restriction")
@@ -131,9 +134,9 @@ public class ClasspathPatternTest
 
         ClasspathPattern pattern = new ClasspathPattern();
         pattern.include("something");
-        Assert.assertThat(pattern.match(String.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
+        assertThat(pattern.match(String.class), Matchers.is(false));
+        assertThat(pattern.match(Test.class), Matchers.is(false));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
 
         // Add directory for both JVM classes
         pattern.include(Paths.get(loc_string).getParent().toUri().toString());
@@ -141,14 +144,14 @@ public class ClasspathPatternTest
         // Add jar for individual class and classes directory
         pattern.include(loc_junit.toString(), loc_test.toString());
 
-        Assert.assertThat(pattern.match(String.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
+        assertThat(pattern.match(String.class), Matchers.is(true));
+        assertThat(pattern.match(Test.class), Matchers.is(true));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
 
         pattern.add("-java.lang.String");
-        Assert.assertThat(pattern.match(String.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
+        assertThat(pattern.match(String.class), Matchers.is(false));
+        assertThat(pattern.match(Test.class), Matchers.is(true));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
     }
 
     @SuppressWarnings("restriction")
@@ -170,9 +173,9 @@ public class ClasspathPatternTest
 
         ClasspathPattern pattern = new ClasspathPattern();
         pattern.include("something");
-        Assert.assertThat(pattern.match(String.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
+        assertThat(pattern.match(String.class), Matchers.is(false));
+        assertThat(pattern.match(Test.class), Matchers.is(false));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
 
         // Add module for all JVM base classes
         pattern.include("jrt:/java.base");
@@ -180,14 +183,14 @@ public class ClasspathPatternTest
         // Add jar for individual class and classes directory
         pattern.include(loc_junit.toString(), loc_test.toString());
 
-        Assert.assertThat(pattern.match(String.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
+        assertThat(pattern.match(String.class), Matchers.is(true));
+        assertThat(pattern.match(Test.class), Matchers.is(true));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
 
         pattern.add("-java.lang.String");
-        Assert.assertThat(pattern.match(String.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
+        assertThat(pattern.match(String.class), Matchers.is(false));
+        assertThat(pattern.match(Test.class), Matchers.is(true));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
     }
 
     @SuppressWarnings("restriction")
@@ -212,9 +215,9 @@ public class ClasspathPatternTest
         // include everything
         pattern.include(".");
 
-        Assert.assertThat(pattern.match(String.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
+        assertThat(pattern.match(String.class), Matchers.is(true));
+        assertThat(pattern.match(Test.class), Matchers.is(true));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
 
         // Add directory for both JVM classes
         pattern.exclude(Paths.get(loc_string).getParent().toUri().toString());
@@ -222,9 +225,9 @@ public class ClasspathPatternTest
         // Add jar for individual class and classes directory
         pattern.exclude(loc_junit.toString(), loc_test.toString());
 
-        Assert.assertThat(pattern.match(String.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
+        assertThat(pattern.match(String.class), Matchers.is(false));
+        assertThat(pattern.match(Test.class), Matchers.is(false));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
     }
 
     @SuppressWarnings("restriction")
@@ -249,9 +252,9 @@ public class ClasspathPatternTest
         // include everything
         pattern.include(".");
 
-        Assert.assertThat(pattern.match(String.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(true));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
+        assertThat(pattern.match(String.class), Matchers.is(true));
+        assertThat(pattern.match(Test.class), Matchers.is(true));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(true));
 
         // Add directory for both JVM classes
         pattern.exclude("jrt:/java.base/");
@@ -259,9 +262,9 @@ public class ClasspathPatternTest
         // Add jar for individual class and classes directory
         pattern.exclude(loc_junit.toString(), loc_test.toString());
 
-        Assert.assertThat(pattern.match(String.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(Test.class), Matchers.is(false));
-        Assert.assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
+        assertThat(pattern.match(String.class), Matchers.is(false));
+        assertThat(pattern.match(Test.class), Matchers.is(false));
+        assertThat(pattern.match(ClasspathPatternTest.class), Matchers.is(false));
     }
 
     @Test
@@ -270,12 +273,12 @@ public class ClasspathPatternTest
         ClasspathPattern pattern = new ClasspathPattern();
         for (int i = 0; i < 500; i++)
         {
-            Assert.assertTrue(pattern.add("n" + i + "." + Integer.toHexString(100 + i) + ".Name"));
+            assertTrue(pattern.add("n" + i + "." + Integer.toHexString(100 + i) + ".Name"));
         }
 
         for (int i = 0; i < 500; i++)
         {
-            Assert.assertTrue(pattern.match("n" + i + "." + Integer.toHexString(100 + i) + ".Name"));
+            assertTrue(pattern.match("n" + i + "." + Integer.toHexString(100 + i) + ".Name"));
         }
     }
 

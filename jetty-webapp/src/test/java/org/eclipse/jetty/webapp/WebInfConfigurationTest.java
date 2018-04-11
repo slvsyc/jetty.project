@@ -19,14 +19,18 @@
 
 package org.eclipse.jetty.webapp;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import org.eclipse.jetty.util.JavaVersion;
 import org.eclipse.jetty.util.resource.Resource;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 /**
  * WebInfConfigurationTest
@@ -43,13 +47,14 @@ public class WebInfConfigurationTest
      * @throws Exception
      */
     @Test
+    @EnabledOnJre(JRE.JAVA_8)
     public void testFindAndFilterContainerPaths()
     throws Exception
     {
-        Assume.assumeTrue(JavaVersion.VERSION.getMajor() < 9);
         WebInfConfiguration config = new WebInfConfiguration();
         WebAppContext context = new WebAppContext();
         context.setAttribute(WebInfConfiguration.CONTAINER_JAR_PATTERN, ".*/jetty-util-[^/]*\\.jar$|.*/jetty-util/target/classes/");
+
         WebAppClassLoader loader = new WebAppClassLoader(context);
         context.setClassLoader(loader);
         config.findAndFilterContainerPaths(context);
@@ -64,11 +69,11 @@ public class WebInfConfigurationTest
      * @throws Exception
      */
     @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    @EnabledIfSystemProperty(named="jdk.module.path", matches=".*")
     public void testFindAndFilterContainerPathsJDK9()
     throws Exception
     {
-        Assume.assumeTrue(JavaVersion.VERSION.getMajor() >= 9);
-        Assume.assumeTrue(System.getProperty("jdk.module.path") != null);
         WebInfConfiguration config = new WebInfConfiguration();
         WebAppContext context = new WebAppContext();
         context.setAttribute(WebInfConfiguration.CONTAINER_JAR_PATTERN, ".*/jetty-util-[^/]*\\.jar$|.*/jetty-util/target/classes/$|.*/foo-bar-janb.jar");
@@ -93,11 +98,11 @@ public class WebInfConfigurationTest
      * @throws Exception
      */
     @Test
+    @DisabledOnJre(JRE.JAVA_8)
+    @EnabledIfSystemProperty(named="jdk.module.path", matches=".*")
     public void testFindAndFilterContainerPathsTarget8()
     throws Exception
     {
-        Assume.assumeTrue(JavaVersion.VERSION.getMajor() >= 9);
-        Assume.assumeTrue(System.getProperty("jdk.module.path") != null);
         WebInfConfiguration config = new WebInfConfiguration();
         WebAppContext context = new WebAppContext();
         context.setAttribute(JavaVersion.JAVA_TARGET_PLATFORM, "8");
