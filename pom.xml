@@ -35,8 +35,8 @@
     <!-- testing -->
     <jetty.test.version>5.0-SNAPSHOT</jetty.test.version>
     <junit.platform.version>1.2.0-SNAPSHOT</junit.platform.version>
-    <junit.vintage.version>5.1.1</junit.vintage.version>
-    <junit.jupiter.version>5.1.1</junit.jupiter.version>
+    <junit.vintage.version>5.2.0-SNAPSHOT</junit.vintage.version>
+    <junit.jupiter.version>5.2.0-SNAPSHOT</junit.jupiter.version>
   </properties>
 
   <licenses>
