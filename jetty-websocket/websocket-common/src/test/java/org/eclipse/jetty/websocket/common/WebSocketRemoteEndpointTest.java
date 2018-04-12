@@ -29,22 +29,18 @@ import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.io.MappedByteBufferPool;
 import org.eclipse.jetty.websocket.common.io.LocalWebSocketConnection;
 import org.eclipse.jetty.websocket.common.test.OutgoingFramesCapture;
-
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.TestInfo;
 
 public class WebSocketRemoteEndpointTest
 {
-    @Rule
-    public TestName testname = new TestName();
-
     public ByteBufferPool bufferPool = new MappedByteBufferPool();
 
     @Test
-    public void testTextBinaryText() throws IOException
+    public void testTextBinaryText(TestInfo testinfo) throws IOException
     {
-        LocalWebSocketConnection conn = new LocalWebSocketConnection(testname,bufferPool);
+        String id = testinfo.getDisplayName();
+        LocalWebSocketConnection conn = new LocalWebSocketConnection(id,bufferPool);
         OutgoingFramesCapture outgoing = new OutgoingFramesCapture();
         WebSocketRemoteEndpoint remote = new WebSocketRemoteEndpoint(conn,outgoing);
         conn.connect();
@@ -66,9 +62,10 @@ public class WebSocketRemoteEndpointTest
     }
 
     @Test
-    public void testTextPingText() throws IOException
+    public void testTextPingText(TestInfo testinfo) throws IOException
     {
-        LocalWebSocketConnection conn = new LocalWebSocketConnection(testname,bufferPool);
+        String id = testinfo.getDisplayName();
+        LocalWebSocketConnection conn = new LocalWebSocketConnection(id,bufferPool);
         OutgoingFramesCapture outgoing = new OutgoingFramesCapture();
         WebSocketRemoteEndpoint remote = new WebSocketRemoteEndpoint(conn,outgoing);
         conn.connect();

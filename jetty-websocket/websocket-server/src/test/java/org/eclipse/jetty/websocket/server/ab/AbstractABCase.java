@@ -38,8 +38,6 @@ import org.eclipse.jetty.websocket.server.SimpleServletServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Rule;
-import org.junit.rules.TestName;
 
 public abstract class AbstractABCase implements Fuzzed
 {
@@ -172,9 +170,6 @@ public abstract class AbstractABCase implements Fuzzed
         return ret.toString();
     }
 
-    @Rule
-    public TestName testname = new TestName();
-
     /**
      * @param clazz the class to enable
      * @param enabled true to enable the stack traces (or not)
@@ -204,12 +199,6 @@ public abstract class AbstractABCase implements Fuzzed
         return server.getServerUri();
     }
     
-    @Override
-    public String getTestMethodName()
-    {
-        return testname.getMethodName();
-    }
-
     public static byte[] masked(final byte[] data)
     {
         return RawFrameBuilder.mask(data,MASK);

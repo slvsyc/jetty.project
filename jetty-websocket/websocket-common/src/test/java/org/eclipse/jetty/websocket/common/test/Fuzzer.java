@@ -69,7 +69,6 @@ public class Fuzzer implements AutoCloseable
     private final Fuzzed testcase;
     private final BlockheadClient client;
     private final Generator generator;
-    private final String testname;
     private BlockheadConnection clientConnection;
     private SendMode sendMode = SendMode.BULK;
     private int slowSendSegmentSize = 5;
@@ -89,7 +88,6 @@ public class Fuzzer implements AutoCloseable
         client.start();
 
         this.generator = testcase.getLaxGenerator();
-        this.testname = testcase.getTestMethodName();
     }
 
     public ByteBuffer asNetworkBuffer(List<WebSocketFrame> send)
@@ -134,7 +132,6 @@ public class Fuzzer implements AutoCloseable
     {
         BlockheadClientRequest request = this.client.newWsRequest(testcase.getServerURI());
         request.idleTimeout(2, TimeUnit.SECONDS);
-        request.header("X-TestCase", testname);
         Future<BlockheadConnection> connFut = request.sendAsync();
 
         try
@@ -245,7 +242,7 @@ public class Fuzzer implements AutoCloseable
     public void send(List<WebSocketFrame> send) throws IOException
     {
         assertThat("Client connected",clientConnection.isOpen(),is(true));
-        LOG.debug("[{}] Sending {} frames (mode {})",testname,send.size(),sendMode);
+        LOG.debug("Sending {} frames (mode {})",send.size(),sendMode);
         if ((sendMode == SendMode.BULK) || (sendMode == SendMode.SLOW))
         {
             int buflen = 0;

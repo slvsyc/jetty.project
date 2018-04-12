@@ -44,16 +44,10 @@ import org.eclipse.jetty.websocket.jsr356.JsrSession;
 import org.eclipse.jetty.websocket.jsr356.annotations.AnnotatedEndpointScanner;
 import org.eclipse.jetty.websocket.jsr356.endpoints.EndpointInstance;
 import org.eclipse.jetty.websocket.jsr356.server.samples.partial.PartialTrackingSocket;
-
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.TestName;
 
 public class OnPartialTest
 {
-    @Rule
-    public TestName testname = new TestName();
-
     public EventDriver toEventDriver(Object websocket) throws Throwable
     {
         WebSocketPolicy policy = WebSocketPolicy.newServerPolicy();
@@ -82,7 +76,7 @@ public class OnPartialTest
         assertThat("EventDriver",driver,notNullValue());
 
         // Create Local JsrSession
-        String id = testname.getMethodName();
+        String id = "testSession";
         URI requestURI = URI.create("ws://localhost/" + id);
         DummyConnection connection = new DummyConnection();
         ClientContainer container = new ClientContainer();

@@ -36,18 +36,13 @@ import org.eclipse.jetty.websocket.common.io.LocalWebSocketSession;
 import org.eclipse.jetty.websocket.common.scopes.SimpleContainerScope;
 import org.eclipse.jetty.websocket.common.scopes.WebSocketContainerScope;
 import org.junit.jupiter.api.AfterEach;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.TestInfo;
 
 public class MessageWriterTest
 {
     private static final Logger LOG = Log.getLogger(MessageWriterTest.class);
-
-    @Rule
-    public TestName testname = new TestName();
 
     public ByteBufferPool bufferPool = new MappedByteBufferPool();
 
@@ -63,7 +58,7 @@ public class MessageWriterTest
     }
 
     @BeforeEach
-    public void setupSession() throws Exception
+    public void setupSession(TestInfo testInfo) throws Exception
     {
         policy = WebSocketPolicy.newServerPolicy();
         policy.setInputBufferSize(1024);
@@ -82,7 +77,8 @@ public class MessageWriterTest
         socket = new TrackingSocket("remote");
         OutgoingFrames socketPipe = FramePipes.to(factory.wrap(socket));
 
-        session = new LocalWebSocketSession(containerScope,testname,driver);
+        String id = testInfo.getDisplayName();
+        session = new LocalWebSocketSession(containerScope,id,driver);
 
         session.setPolicy(policy);
         // talk to our remote socket
