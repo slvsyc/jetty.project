@@ -34,22 +34,23 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * ReloadedSessionMissingClassTest
  */
+@ExtendWith(WorkDirExtension.class)
 public class ReloadedSessionMissingClassTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
     
     @Test
     public void testSessionReloadWithMissingClass() throws Exception

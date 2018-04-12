@@ -36,19 +36,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.servlet.ServletTester;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class IncludedGzipTest
 {
-
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     private static String __content =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In quis felis nunc. "+

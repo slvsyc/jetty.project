@@ -36,15 +36,15 @@ import org.eclipse.jetty.start.Props.Prop;
 import org.eclipse.jetty.start.TestEnv;
 import org.eclipse.jetty.start.UsageException;
 import org.eclipse.jetty.toolchain.test.FS;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class ConfigSourcesTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     private void assertIdOrder(ConfigSources sources, String... expectedOrder)
     {

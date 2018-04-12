@@ -18,10 +18,10 @@
 
 package org.eclipse.jetty.servlets;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,9 +44,10 @@ import org.eclipse.jetty.server.handler.gzip.GzipTester.ContentMetadata;
 import org.eclipse.jetty.server.handler.gzip.TestDirContentServlet;
 import org.eclipse.jetty.server.handler.gzip.TestServletLengthStreamTypeWrite;
 import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -56,6 +57,7 @@ import org.junit.runners.Parameterized.Parameters;
  * Test the GzipFilter support when under several layers of Filters.
  */
 @RunWith(Parameterized.class)
+@ExtendWith(WorkDirExtension.class)
 public class GzipFilterLayeredTest
 {
     private static final HttpConfiguration defaultHttp = new HttpConfiguration();
@@ -106,13 +108,12 @@ public class GzipFilterLayeredTest
     @Parameter(4)
     public Class<? extends TestDirContentServlet> contentServletClass;
 
-    @Rule
-    public TestingDir testingdir = new TestingDir();
+    public WorkDir testingdir;
     
     @Test
     public void testGzipDos() throws Exception
     {
-        GzipTester tester = new GzipTester(testingdir, GzipHandler.GZIP);
+        GzipTester tester = new GzipTester(testingdir.getEmptyPathDir(), GzipHandler.GZIP);
         
         // Add Gzip Filter first
         FilterHolder gzipHolder = new FilterHolder(gzipFilterClass);
@@ -159,7 +160,7 @@ public class GzipFilterLayeredTest
     @Test
     public void testDosGzip() throws Exception
     {
-        GzipTester tester = new GzipTester(testingdir, GzipHandler.GZIP);
+        GzipTester tester = new GzipTester(testingdir.getPath(), GzipHandler.GZIP);
         
         // Add (DoSFilter-like) manip filter
         FilterHolder manipHolder = new FilterHolder(AsyncManipFilter.class);

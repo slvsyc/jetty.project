@@ -37,15 +37,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jetty.toolchain.test.FS;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.hamcrest.Matchers;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class RolloverFileOutputStreamTest
 {
-    @Rule
-    public TestingDir testingDir = new TestingDir();
+    public WorkDir testingDir;
 
     private static ZoneId toZoneId(String timezoneId)
     {

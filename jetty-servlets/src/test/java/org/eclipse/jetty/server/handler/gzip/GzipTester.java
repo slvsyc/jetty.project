@@ -18,13 +18,13 @@
 
 package org.eclipse.jetty.server.handler.gzip;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Path;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.EnumSet;
@@ -59,9 +60,9 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletTester;
+import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.hamcrest.Matchers;
@@ -86,12 +87,12 @@ public class GzipTester
     private String encoding = "ISO8859_1";
     private String userAgent = null;
     private final ServletTester tester = new ServletTester("/context",ServletContextHandler.GZIP);
-    private TestingDir testdir;
+    private Path testdir;
     private String accept;
     private String compressionType;
     
 
-    public GzipTester(TestingDir testingdir, String compressionType, String accept)
+    public GzipTester(Path testingdir, String compressionType, String accept)
     {
         this.testdir = testingdir;
         this.compressionType = compressionType;
@@ -99,7 +100,7 @@ public class GzipTester
         
     }
 
-    public GzipTester(TestingDir testingdir, String compressionType)
+    public GzipTester(Path testingdir, String compressionType)
     {
         this.testdir = testingdir;
         this.compressionType = compressionType;
@@ -278,7 +279,7 @@ public class GzipTester
         assertThat(response.get("ETag"),Matchers.startsWith("W/"));
 
         // Assert that the decompressed contents are what we expect.
-        File serverFile = testdir.getPathFile(serverFilename).toFile();
+        File serverFile = testdir.resolve(FS.separators(serverFilename)).toFile();
         String expected = IO.readToString(serverFile);
         String actual = null;
 
@@ -543,7 +544,7 @@ public class GzipTester
      */
     public File prepareServerFile(String filename, int filesize) throws IOException
     {
-        File dir = testdir.getPath().toFile();
+        File dir = testdir.toFile();
         File testFile = new File(dir,filename);
         // Make sure we have a uniq filename (to work around windows File.delete bug)
         int i = 0;
@@ -578,7 +579,7 @@ public class GzipTester
     public void copyTestServerFile(String filename) throws IOException
     {
         File srcFile = MavenTestingUtils.getTestResourceFile(filename);
-        File testFile = testdir.getPathFile(filename).toFile();
+        File testFile = testdir.resolve(FS.separators(filename)).toFile();
 
         IO.copy(srcFile,testFile);
     }
@@ -592,7 +593,7 @@ public class GzipTester
      */
     public void setContentServlet(Class<? extends Servlet> servletClass) throws IOException
     {
-        String resourceBase = testdir.getPath().toString();
+        String resourceBase = testdir.toString();
         tester.setContextPath("/context");
         tester.setResourceBase(resourceBase);
         ServletHolder servletHolder = tester.addServlet(servletClass,"/");

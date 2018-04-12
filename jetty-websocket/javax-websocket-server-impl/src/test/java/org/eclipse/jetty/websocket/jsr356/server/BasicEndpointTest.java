@@ -27,25 +27,25 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.io.MappedByteBufferPool;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.BasicEchoEndpoint;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.BasicEchoEndpointConfigContextListener;
-
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Example of an {@link javax.websocket.Endpoint} extended echo server added programmatically via the
  * {@link ServerContainer#addEndpoint(javax.websocket.server.ServerEndpointConfig)}
  */
+@ExtendWith(WorkDirExtension.class)
 public class BasicEndpointTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     public ByteBufferPool bufferPool = new MappedByteBufferPool();
 

@@ -26,27 +26,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.jetty.deploy.AppProvider;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.test.XmlConfiguredJetty;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.resource.Resource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Similar in scope to {@link ScanningAppProviderStartupTest}, except is concerned with the modification of existing
  * deployed webapps due to incoming changes identified by the {@link ScanningAppProvider}.
  */
+@ExtendWith(WorkDirExtension.class)
 public class ScanningAppProviderRuntimeUpdatesTest
 {
     private static final Logger LOG = Log.getLogger(ScanningAppProviderRuntimeUpdatesTest.class);
 
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
     private static XmlConfiguredJetty jetty;
     private final AtomicInteger _scans = new AtomicInteger();
     private int _providers;
@@ -57,7 +58,7 @@ public class ScanningAppProviderRuntimeUpdatesTest
         testdir.ensureEmpty();
         Resource.setDefaultUseCaches(false);
         
-        jetty = new XmlConfiguredJetty(testdir);
+        jetty = new XmlConfiguredJetty(testdir.getEmptyPathDir());
         jetty.addConfiguration("jetty.xml");
         jetty.addConfiguration("jetty-http.xml");
         jetty.addConfiguration("jetty-deploymgr-contexts.xml");

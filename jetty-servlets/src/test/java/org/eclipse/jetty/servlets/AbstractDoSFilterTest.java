@@ -18,9 +18,9 @@
 
 package org.eclipse.jetty.servlets;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,14 +46,15 @@ import org.eclipse.jetty.server.session.FileSessionDataStore;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletTester;
 import org.eclipse.jetty.toolchain.test.FS;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
-
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public abstract class AbstractDoSFilterTest
 {
     protected ServletTester _tester;
@@ -61,8 +62,7 @@ public abstract class AbstractDoSFilterTest
     protected int _port;
     protected long _requestMaxTime = 200;
 
-    @Rule
-    public TestingDir _testDir = new TestingDir();
+    public WorkDir _testDir;
     
     public void startServer(Class<? extends Filter> filter) throws Exception
     {

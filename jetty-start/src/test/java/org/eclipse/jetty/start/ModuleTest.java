@@ -32,15 +32,15 @@ import org.eclipse.jetty.start.config.ConfigSources;
 import org.eclipse.jetty.start.config.JettyBaseConfigSource;
 import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class ModuleTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
     
     @Test
     public void testLoadMain() throws IOException

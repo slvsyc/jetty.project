@@ -21,10 +21,10 @@ package org.eclipse.jetty.util;
 import static org.eclipse.jetty.util.PathWatcher.PathWatchEventType.ADDED;
 import static org.eclipse.jetty.util.PathWatcher.PathWatchEventType.DELETED;
 import static org.eclipse.jetty.util.PathWatcher.PathWatchEventType.MODIFIED;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -42,16 +42,18 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.PathWatcher.PathWatchEvent;
 import org.eclipse.jetty.util.PathWatcher.PathWatchEventType;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.junit.jupiter.api.Disabled;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @Disabled
+@ExtendWith(WorkDirExtension.class)
 public class PathWatcherTest
 {
     public static final int QUIET_TIME;
@@ -314,9 +316,7 @@ public class PathWatcherTest
     private static final int KB = 1024;
     private static final int MB = KB * KB;
 
-    @Rule
-    public TestingDir testdir = new TestingDir();
-
+    public WorkDir testdir;
 
     @Test
     public void testSequence() throws Exception

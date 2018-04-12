@@ -47,12 +47,14 @@ import org.eclipse.jetty.annotations.AnnotationParser.MethodInfo;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.resource.PathResource;
 import org.eclipse.jetty.util.resource.Resource;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class TestAnnotationParser
 {
     public static class TrackingAnnotationHandler extends AnnotationParser.AbstractHandler
@@ -102,8 +104,7 @@ public class TestAnnotationParser
         
     }
 
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     @Test
     public void testSampleAnnotation() throws Exception

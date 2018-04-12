@@ -20,7 +20,6 @@ package org.eclipse.jetty.http.jmh;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -31,14 +30,9 @@ import java.util.Random;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.Part;
 
-import org.eclipse.jetty.http.MultiPartFormInputStream;
 import org.eclipse.jetty.http.MultiPartCaptureTest.MultipartExpectations;
+import org.eclipse.jetty.http.MultiPartFormInputStream;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.eclipse.jetty.util.BufferUtil;
-import org.junit.Rule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
@@ -48,7 +42,6 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
-import org.openjdk.jmh.profile.CompilerProfiler;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -57,7 +50,6 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @State(Scope.Benchmark)
 public class MultiPartBenchmark 
 {
-    
     public static final int MAX_FILE_SIZE = Integer.MAX_VALUE;
     public static final int MAX_REQUEST_SIZE = Integer.MAX_VALUE;
     public static final int FILE_SIZE_THRESHOLD = 50;

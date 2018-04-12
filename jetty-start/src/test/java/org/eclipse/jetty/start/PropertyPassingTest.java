@@ -36,11 +36,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class PropertyPassingTest
 {
     private static class ConsoleCapture implements Runnable
@@ -94,8 +95,7 @@ public class PropertyPassingTest
         }
     }
 
-    @Rule
-    public TestingDir testingdir = new TestingDir();
+    public WorkDir testingdir;
     
     @Test
     public void testAsJvmArg() throws IOException, InterruptedException

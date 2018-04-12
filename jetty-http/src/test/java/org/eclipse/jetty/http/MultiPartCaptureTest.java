@@ -19,10 +19,10 @@
 package org.eclipse.jetty.http;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,17 +44,19 @@ import javax.servlet.http.Part;
 
 import org.eclipse.jetty.toolchain.test.Hex;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.QuotedStringTokenizer;
 import org.eclipse.jetty.util.StringUtil;
 import org.hamcrest.Matchers;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
+@ExtendWith(WorkDirExtension.class)
 public class MultiPartCaptureTest
 {
 
@@ -154,8 +156,7 @@ public class MultiPartCaptureTest
         return ret;
     }
 
-    @Rule
-    public TestingDir testingDir = new TestingDir();
+    public WorkDir testingDir;
 
     private final Path multipartRawFile;
     private final MultipartExpectations multipartExpectations;

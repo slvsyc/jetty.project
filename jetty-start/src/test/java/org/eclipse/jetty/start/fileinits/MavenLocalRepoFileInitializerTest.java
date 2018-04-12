@@ -33,19 +33,21 @@ import org.eclipse.jetty.start.config.ConfigSources;
 import org.eclipse.jetty.start.config.JettyBaseConfigSource;
 import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.start.fileinits.MavenLocalRepoFileInitializer.Coordinates;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.rules.ExpectedException;
 
+@ExtendWith(WorkDirExtension.class)
 public class MavenLocalRepoFileInitializerTest
 {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
     
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
     
     private BaseHome baseHome;
     

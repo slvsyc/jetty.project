@@ -35,6 +35,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.PathAssert;
-import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.resource.Resource;
@@ -69,12 +69,12 @@ public class XmlConfiguredJetty
     private String _scheme = HttpScheme.HTTP.asString();
     private File _jettyHome;
 
-    public XmlConfiguredJetty(TestingDir testdir) throws IOException
+    public XmlConfiguredJetty(Path testdir) throws IOException
     {
         _xmlConfigurations = new ArrayList<>();
         Properties properties = new Properties();
 
-        String jettyHomeBase = testdir.getPath().toString();
+        String jettyHomeBase = testdir.toString();
         // Ensure we have a new (pristene) directory to work with.
         int idx = 0;
         _jettyHome = new File(jettyHomeBase + "#" + idx);

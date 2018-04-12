@@ -34,11 +34,12 @@ import org.eclipse.jetty.start.config.ConfigSource;
 import org.eclipse.jetty.start.config.ConfigSources;
 import org.eclipse.jetty.start.config.DirConfigSource;
 import org.eclipse.jetty.toolchain.test.FS;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class IncludeJettyDirTest
 {
     private static class MainResult
@@ -69,8 +70,7 @@ public class IncludeJettyDirTest
         }
     }
 
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     private MainResult runMain(Path baseDir, Path homeDir, String... cmdLineArgs) throws Exception
     {

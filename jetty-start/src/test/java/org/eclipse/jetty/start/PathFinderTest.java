@@ -28,14 +28,15 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class PathFinderTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     @Test
     public void testFindInis() throws IOException

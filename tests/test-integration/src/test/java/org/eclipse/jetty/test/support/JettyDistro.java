@@ -55,7 +55,7 @@ import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.JAR;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.PathAssert;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
 
 
 /**
@@ -155,7 +155,7 @@ import org.eclipse.jetty.toolchain.test.TestingDir;
  * <code>src/test/resources/</code> directory. <br>
  * Notes:
  * <ol>
- * <li>The {@link JettyDistro} sets up a unique test directory (based on the constructor {@link #JettyDistro(Class)} or {@link #JettyDistro(TestingDir)}), by
+ * <li>The {@link JettyDistro} sets up a unique test directory (based on the constructor {@link #JettyDistro(Class)} or {@link #JettyDistro(org.eclipse.jetty.toolchain.test.jupiter.WorkDir)}), by
  * ensuring the directory is empty, then copying the <code>target/test-dist</code> directory into this new testing directory prior to the test specific changes
  * to the configuration.<br>
  * Note: this testing directory is a complete jetty distribution, suitable for executing via the command line for additional testing needs.</li>
@@ -275,7 +275,7 @@ public class JettyDistro
      * @throws IOException
      *             if unable to copy unpacked distribution into place for the provided testing directory
      */
-    public JettyDistro(TestingDir testdir) throws IOException
+    public JettyDistro(WorkDir testdir) throws IOException
     {
         this.jettyHomeDir = testdir.getPath().toFile();
         copyBaseDistro();
@@ -291,7 +291,7 @@ public class JettyDistro
      * @throws IOException
      *             if unable to copy unpacked distribution into place for the provided testing directory
      */
-    public JettyDistro(TestingDir testdir, String artifact) throws IOException
+    public JettyDistro(WorkDir testdir, String artifact) throws IOException
     {
         this.jettyHomeDir = testdir.getPath().toFile();
         if (artifact != null)

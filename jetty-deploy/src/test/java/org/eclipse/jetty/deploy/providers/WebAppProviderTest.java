@@ -18,9 +18,9 @@
 
 package org.eclipse.jetty.deploy.providers;
 
+import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.nio.file.FileSystemException;
@@ -30,26 +30,26 @@ import java.util.Arrays;
 
 import org.eclipse.jetty.deploy.test.XmlConfiguredJetty;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.AfterEach;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @Disabled("See issue #1200")
+@ExtendWith(WorkDirExtension.class)
 public class WebAppProviderTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
     private static XmlConfiguredJetty jetty;
     private boolean symlinkSupported = false;
     
     @BeforeEach
     public void setupEnvironment() throws Exception
     {
-        jetty = new XmlConfiguredJetty(testdir);
+        jetty = new XmlConfiguredJetty(testdir.getEmptyPathDir());
         jetty.addConfiguration("jetty.xml");
         jetty.addConfiguration("jetty-http.xml");
         jetty.addConfiguration("jetty-deploy-wars.xml");

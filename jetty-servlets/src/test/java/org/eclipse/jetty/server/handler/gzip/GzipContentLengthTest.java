@@ -18,10 +18,10 @@
 
 package org.eclipse.jetty.server.handler.gzip;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,8 +32,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.handler.gzip.GzipTester.ContentMetadata;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -48,8 +47,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class GzipContentLengthTest
 {
-    @Rule
-    public TestingDir testingdir = new TestingDir();
+    public WorkDir testingdir;
     
     private static final HttpConfiguration defaultHttp = new HttpConfiguration();
     private static final int LARGE = defaultHttp.getOutputBufferSize() * 8;
@@ -84,7 +82,7 @@ public class GzipContentLengthTest
     
     private void testWithGzip(Class<? extends TestDirContentServlet> contentServlet) throws Exception
     {
-        GzipTester tester = new GzipTester(testingdir, GzipHandler.GZIP);
+        GzipTester tester = new GzipTester(testingdir.getPath(), GzipHandler.GZIP);
         
         // Add AsyncGzip Configuration
         tester.getGzipHandler().setIncludedMimeTypes("text/plain");

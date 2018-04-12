@@ -26,9 +26,10 @@ import java.util.List;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -38,6 +39,7 @@ import org.junit.runners.Parameterized.Parameters;
  * ignore recompress situations from upstream.
  */
 @RunWith(Parameterized.class)
+@ExtendWith(WorkDirExtension.class)
 public class GzipDefaultNoRecompressTest
 {
     @Parameters
@@ -69,8 +71,7 @@ public class GzipDefaultNoRecompressTest
         });
     }
 
-    @Rule
-    public TestingDir testingdir = new TestingDir();
+    public WorkDir testingdir;
 
     private String alreadyCompressedFilename;
     private String expectedContentType;
@@ -86,7 +87,7 @@ public class GzipDefaultNoRecompressTest
     @Test
     public void testNotGzipHandlered_Default_AlreadyCompressed() throws Exception
     {
-        GzipTester tester = new GzipTester(testingdir, compressionType);
+        GzipTester tester = new GzipTester(testingdir.getEmptyPathDir(), compressionType);
 
         copyTestFileToServer(alreadyCompressedFilename);
 

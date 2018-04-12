@@ -29,18 +29,18 @@ import java.util.List;
 import org.eclipse.jetty.deploy.graph.GraphOutputDot;
 import org.eclipse.jetty.deploy.graph.Node;
 import org.eclipse.jetty.deploy.graph.Path;
-import org.eclipse.jetty.toolchain.test.TestingDir;
-
-import org.junit.Rule;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Just an overly picky test case to validate the potential paths.
  */
+@ExtendWith(WorkDirExtension.class)
 public class AppLifeCycleTest
 {
-    @Rule
-    public TestingDir testdir = new TestingDir();
+    public WorkDir testdir;
 
     private void assertNoPath(String from, String to)
     {
