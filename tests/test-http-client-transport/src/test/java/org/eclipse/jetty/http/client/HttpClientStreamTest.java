@@ -19,11 +19,14 @@
 package org.eclipse.jetty.http.client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -73,8 +76,6 @@ import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.IO;
-import org.hamcrest.Matchers;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
@@ -252,31 +253,24 @@ public class HttpClientStreamTest extends AbstractTest
         InputStream input = listener.getInputStream();
         assertNotNull(input);
 
-        int length = 0;
-        try
-        {
-            length = 0;
+        AtomicInteger length = new AtomicInteger();
+
+        assertThrows(IOException.class, ()-> {
             while (input.read() == value)
             {
-                if (length % 100 == 0)
+                if (length.incrementAndGet() % 100 == 0)
                     Thread.sleep(1);
-                ++length;
             }
-            fail();
-        }
-        catch (IOException x)
-        {
-            // Expected.
-        }
+        });
 
-        assertThat(length, Matchers.lessThanOrEqualTo(data.length));
+        assertThat(length.get(), lessThanOrEqualTo(data.length));
 
         Result result = listener.await(5, TimeUnit.SECONDS);
         assertNotNull(result);
         assertTrue(result.isFailed());
     }
 
-    @Test(expected = AsynchronousCloseException.class)
+    @Test
     public void testInputStreamResponseListenerClosedBeforeReading() throws Exception
     {
         start(new AbstractHandler()
@@ -301,10 +295,10 @@ public class HttpClientStreamTest extends AbstractTest
         Response response = listener.get(5, TimeUnit.SECONDS);
         assertEquals(200, response.getStatus());
 
-        stream.read(); // Throws
+        assertThrows(AsynchronousCloseException.class, ()->stream.read());
     }
 
-    @Test(expected = AsynchronousCloseException.class)
+    @Test
     public void testInputStreamResponseListenerClosedBeforeContent() throws Exception
     {
         AtomicReference<AsyncContext> contextRef = new AtomicReference<>();
@@ -352,7 +346,7 @@ public class HttpClientStreamTest extends AbstractTest
 
         assertTrue(latch.await(5, TimeUnit.SECONDS));
 
-        input.read(); // Throws
+        assertThrows(AsynchronousCloseException.class, ()->input.read());
     }
 
     @Test
@@ -478,7 +472,7 @@ public class HttpClientStreamTest extends AbstractTest
         assertNotNull(result);
     }
 
-    @Test(expected = ExecutionException.class)
+    @Test
     public void testInputStreamContentProviderThrowingWhileReading() throws Exception
     {
         start(new AbstractHandler.ErrorDispatchHandler()
@@ -492,24 +486,27 @@ public class HttpClientStreamTest extends AbstractTest
         });
 
         final byte[] data = new byte[]{0, 1, 2, 3};
-        client.newRequest(newURI())
-                .scheme(getScheme())
-                .content(new InputStreamContentProvider(new InputStream()
-                {
-                    private int index = 0;
-
-                    @Override
-                    public int read() throws IOException
+        ExecutionException e = assertThrows(ExecutionException.class, ()-> {
+            client.newRequest(newURI())
+                    .scheme(getScheme())
+                    .content(new InputStreamContentProvider(new InputStream()
                     {
-                        // Will eventually throw ArrayIndexOutOfBounds
-                        return data[index++];
-                    }
-                }, data.length / 2))
-                .timeout(5, TimeUnit.SECONDS)
-                .send();
+                        private int index = 0;
+
+                        @Override
+                        public int read() throws IOException
+                        {
+                            // Will eventually throw ArrayIndexOutOfBounds
+                            return data[index++];
+                        }
+                    }, data.length / 2))
+                    .timeout(5, TimeUnit.SECONDS)
+                    .send();
+        });
+        assertThat(e.getCause(), instanceOf(ArrayIndexOutOfBoundsException.class));
     }
 
-    @Test(expected = AsynchronousCloseException.class)
+    @Test
     public void testDownloadWithCloseBeforeContent() throws Exception
     {
         final byte[] data = new byte[128 * 1024];
@@ -551,10 +548,10 @@ public class HttpClientStreamTest extends AbstractTest
 
         latch.countDown();
 
-        input.read(); // Throws
+        assertThrows(AsynchronousCloseException.class, ()-> input.read());
     }
 
-    @Test(expected = AsynchronousCloseException.class)
+    @Test
     public void testDownloadWithCloseMiddleOfContent() throws Exception
     {
         final byte[] data1 = new byte[1024];
@@ -600,7 +597,7 @@ public class HttpClientStreamTest extends AbstractTest
 
         latch.countDown();
 
-        input.read(); // Throws
+        assertThrows(AsynchronousCloseException.class, ()->input.read());
     }
 
     @Test
@@ -958,15 +955,12 @@ public class HttpClientStreamTest extends AbstractTest
                         latch.countDown();
                 });
 
-        try (OutputStream output = content.getOutputStream())
-        {
-            output.write(data);
-            fail();
-        }
-        catch (IOException x)
-        {
-            // Expected
-        }
+        assertThrows(IOException.class, ()-> {
+            try (OutputStream output = content.getOutputStream())
+            {
+                output.write(data);
+            }
+        });
 
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }

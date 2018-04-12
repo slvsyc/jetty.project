@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;

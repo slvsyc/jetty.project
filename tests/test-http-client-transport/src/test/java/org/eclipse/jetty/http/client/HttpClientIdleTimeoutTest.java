@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -31,9 +34,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-
 import org.junit.jupiter.api.Test;
 
 public class HttpClientIdleTimeoutTest extends AbstractTest

@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -45,7 +48,6 @@ import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.DeferredContentProvider;
 import org.eclipse.jetty.http.BadMessageException;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.http.client.AbstractTest.Transport;
 import org.eclipse.jetty.http2.FlowControlStrategy;
 import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
 import org.eclipse.jetty.http2.server.AbstractHTTP2ServerConnectionFactory;
@@ -58,7 +60,6 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-
 import org.junit.Assume;
 import org.junit.jupiter.api.Test;
 

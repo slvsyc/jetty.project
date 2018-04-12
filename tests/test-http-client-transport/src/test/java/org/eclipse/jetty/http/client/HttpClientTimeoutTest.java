@@ -63,7 +63,6 @@ import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.IO;
-
 import org.junit.Assume;
 import org.junit.jupiter.api.Test;
 
@@ -228,7 +227,7 @@ public class HttpClientTimeoutTest extends AbstractTest
         }
     }
 
-    @Test(expected = TimeoutException.class)
+    @Test
     public void testIdleTimeout() throws Throwable
     {
         long timeout = 1000;
@@ -261,17 +260,11 @@ public class HttpClientTimeoutTest extends AbstractTest
         client.setIdleTimeout(timeout);
         client.start();
 
-        try
-        {
+        assertThrows(TimeoutException.class, ()->{
             client.newRequest(newURI())
                     .send();
-            fail();
-        }
-        catch (Exception x)
-        {
-            assertFalse(sslIdle.get());
-            throw x;
-        }
+        });
+        assertFalse(sslIdle.get());
     }
 
     @Test
@@ -405,15 +398,11 @@ public class HttpClientTimeoutTest extends AbstractTest
         long timeout = 1000;
         Request request = client.newRequest("badscheme://localhost:" + network_connector.getLocalPort());
 
-        try
-        {
+        // TODO: assert a more specific Throwable
+        assertThrows(Exception.class, ()-> {
             request.timeout(timeout, TimeUnit.MILLISECONDS)
                     .send(result -> {});
-            fail();
-        }
-        catch (Exception ignored)
-        {
-        }
+        });
 
         Thread.sleep(2 * timeout);
 

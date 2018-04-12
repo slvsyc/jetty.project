@@ -18,6 +18,19 @@
 
 package org.eclipse.jetty.http.client;
 
+import static java.nio.ByteBuffer.wrap;
+import static org.eclipse.jetty.util.BufferUtil.toArray;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -68,9 +81,8 @@ import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.HttpInput;
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.HttpInput.Content;
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandler.Context;
@@ -78,19 +90,9 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-
 import org.junit.Assume;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
-
-import static java.nio.ByteBuffer.wrap;
-import static org.eclipse.jetty.util.BufferUtil.toArray;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AsyncIOServletTest extends AbstractTest
 {
@@ -1018,7 +1020,7 @@ public class AsyncIOServletTest extends AbstractTest
                             if (output.isReady())
                                 output.write(buffer, 0, read);
                             else
-                                fail();
+                                fail("output is not ready?");
                         }
                     }
 
@@ -1177,7 +1179,7 @@ public class AsyncIOServletTest extends AbstractTest
                 ((HTTP2Session)session).getEndPoint().shutdownOutput();
                 break;
             default:
-                fail();
+                fail("Unhandled transport: " + transport);
         }
 
         // Wait for the response to arrive before finishing the request.

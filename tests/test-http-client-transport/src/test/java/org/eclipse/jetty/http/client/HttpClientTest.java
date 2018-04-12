@@ -22,7 +22,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -295,7 +297,7 @@ public class HttpClientTest extends AbstractTest
             listener = new FutureResponseListener(request, length / 10);
             request.send(listener);
             listener.get(5, TimeUnit.SECONDS);
-            fail();
+            fail("Expected ExecutionException");
         }
         catch (ExecutionException x)
         {
@@ -310,7 +312,7 @@ public class HttpClientTest extends AbstractTest
         assertEquals(response.getStatus(), 200);
     }
 
-    @Test(expected = ExecutionException.class)
+    @Test
     public void testClientCannotValidateServerCertificate() throws Exception
     {
         // Only run this test for transports over TLS.
@@ -325,9 +327,11 @@ public class HttpClientTest extends AbstractTest
         client.setExecutor(clientThreads);
         client.start();
 
-        client.newRequest(newURI())
-                .timeout(5, TimeUnit.SECONDS)
-                .send();
+        assertThrows(ExecutionException.class, ()-> {
+            client.newRequest(newURI())
+                    .timeout(5, TimeUnit.SECONDS)
+                    .send();
+        });
     }
 
     @Test
