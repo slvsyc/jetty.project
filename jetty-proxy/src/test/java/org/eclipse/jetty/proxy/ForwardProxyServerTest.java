@@ -21,6 +21,7 @@ package org.eclipse.jetty.proxy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -47,29 +48,38 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
-
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
-@RunWith(Parameterized.class)
 public class ForwardProxyServerTest
 {
-    @Parameterized.Parameters
-    public static Object[] parameters()
-    {
-        return new Object[]{null, newSslContextFactory()};
+    public enum Mode{
+        NO_SSL,
+        WITH_SSL
     }
 
-    private final SslContextFactory serverSslContextFactory;
+    private static SslContextFactory serverSslContextFactory;
     private Server server;
     private ServerConnector serverConnector;
     private Server proxy;
     private ServerConnector proxyConnector;
 
-    public ForwardProxyServerTest(SslContextFactory serverSslContextFactory)
+    @BeforeAll
+    @ParameterizedTest
+    @EnumSource(Mode.class)
+    public static void init(Mode mode)
     {
-        this.serverSslContextFactory = serverSslContextFactory;
+        switch(mode)
+        {
+            case NO_SSL:
+                break;
+            case WITH_SSL:
+                serverSslContextFactory = newSslContextFactory();
+            default:
+                fail("Unhandled Mode: " + mode);
+        }
     }
 
     protected void startServer(ConnectionFactory connectionFactory) throws Exception

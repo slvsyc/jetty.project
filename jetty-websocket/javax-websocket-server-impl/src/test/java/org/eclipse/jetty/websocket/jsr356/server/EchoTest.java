@@ -24,10 +24,10 @@ import static org.hamcrest.Matchers.containsString;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.websocket.ContainerProvider;
 import javax.websocket.WebSocketContainer;
@@ -63,17 +63,14 @@ import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.ReaderParamSo
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.ReaderSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.StringReturnReaderParamSocket;
 import org.junit.jupiter.api.AfterAll;
-
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class EchoTest
 {
-    private static final List<EchoCase[]> TESTCASES = new ArrayList<>();
+    private static final List<EchoCase> TESTCASES = new ArrayList<>();
 
     private static WSServer server;
     private static URI serverUri;
@@ -205,6 +202,11 @@ public class EchoTest
           .expect("('Built',false)(' for',false)(' the',false)(' future',true)");
     }
 
+    public static Stream<Arguments> echoCases()
+    {
+        return Stream.of(TESTCASES.toArray(new EchoCase[0])).map(Arguments::of);
+    }
+
     @BeforeAll
     public static void startServer() throws Exception
     {
@@ -212,12 +214,9 @@ public class EchoTest
         server = new WSServer(testdir,"app");
         server.copyWebInf("empty-web.xml");
 
-        for (EchoCase cases[] : TESTCASES)
+        for (EchoCase ecase : TESTCASES)
         {
-            for (EchoCase ecase : cases)
-            {
-                server.copyClass(ecase.serverPojo);
-            }
+            server.copyClass(ecase.serverPojo);
         }
 
         server.start();
@@ -239,21 +238,9 @@ public class EchoTest
         server.stop();
     }
 
-    @Parameters
-    public static Collection<EchoCase[]> data() throws Exception
-    {
-        return TESTCASES;
-    }
-
-    private EchoCase testcase;
-
-    public EchoTest(EchoCase testcase)
-    {
-        this.testcase = testcase;
-    }
-
-    @Test
-    public void testEcho() throws Exception
+    @ParameterizedTest
+    @MethodSource("echoCases")
+    public void testEcho(EchoCase testcase) throws Exception
     {
         int messageCount = testcase.getMessageCount();
         EchoClientSocket socket = new EchoClientSocket();
