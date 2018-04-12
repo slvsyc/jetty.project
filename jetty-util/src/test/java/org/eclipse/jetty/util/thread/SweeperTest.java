@@ -25,23 +25,23 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SweeperTest
 {
     private Scheduler scheduler;
 
-    @Before
+    @BeforeEach
     public void prepare() throws Exception
     {
         scheduler = new ScheduledExecutorScheduler();
         scheduler.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         scheduler.stop();

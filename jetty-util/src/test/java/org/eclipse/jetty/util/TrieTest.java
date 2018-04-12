@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -55,7 +55,7 @@ public class TrieTest
         trie=t;
     }
     
-    @Before
+    @BeforeEach
     public void before()
     {
         trie.put("hello",1);

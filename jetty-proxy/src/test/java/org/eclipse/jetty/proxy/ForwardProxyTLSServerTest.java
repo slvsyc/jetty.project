@@ -63,10 +63,10 @@ import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.Assume;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -136,7 +136,7 @@ public class ForwardProxyTLSServerTest
         return sslContextFactory;
     }
 
-    @After
+    @AfterEach
     public void stop() throws Exception
     {
         stopProxy();
@@ -570,7 +570,7 @@ public class ForwardProxyTLSServerTest
     }
 
     @Test
-    @Ignore("External Proxy Server no longer stable enough for testing")
+    @Disabled("External Proxy Server no longer stable enough for testing")
     public void testExternalProxy() throws Exception
     {
         // Free proxy server obtained from http://hidemyass.com/proxy-list/

@@ -73,9 +73,9 @@ import org.eclipse.jetty.util.FutureCallback;
 import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public abstract class FlowControlStrategyTest
@@ -127,7 +127,7 @@ public abstract class FlowControlStrategyTest
         return new MetaData.Request(method, HttpScheme.HTTP, new HostPortHttpField(authority), "/", HttpVersion.HTTP_2, fields);
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         // Allow WINDOW_UPDATE frames to be sent/received to avoid exception stack traces.
@@ -661,7 +661,7 @@ public abstract class FlowControlStrategyTest
     // Since we changed the API to disallow consecutive data() calls without waiting
     // for the callback, it is now not possible to have DATA1, DATA2 in the queue for
     // the same stream. Perhaps this test should just be deleted.
-    @Ignore
+    @Disabled
     @Test
     public void testServerTwoDataFramesWithStalledStream() throws Exception
     {

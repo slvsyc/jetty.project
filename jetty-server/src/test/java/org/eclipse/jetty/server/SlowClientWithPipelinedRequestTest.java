@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.jupiter.api.Test;
 
@@ -74,7 +74,7 @@ public class SlowClientWithPipelinedRequestTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         if (server != null)

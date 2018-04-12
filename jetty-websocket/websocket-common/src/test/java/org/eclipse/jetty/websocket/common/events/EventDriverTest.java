@@ -38,7 +38,7 @@ import org.eclipse.jetty.websocket.common.io.CloseableLocalWebSocketSession;
 import org.eclipse.jetty.websocket.common.io.LocalWebSocketSession;
 import org.eclipse.jetty.websocket.common.scopes.SimpleContainerScope;
 import org.eclipse.jetty.websocket.common.scopes.WebSocketContainerScope;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TestName;
@@ -60,7 +60,7 @@ public class EventDriverTest
     
     private WebSocketContainerScope container;
     
-    @Before
+    @BeforeEach
     public void initContainer()
     {
         this.container = new SimpleContainerScope(WebSocketPolicy.newClientPolicy());

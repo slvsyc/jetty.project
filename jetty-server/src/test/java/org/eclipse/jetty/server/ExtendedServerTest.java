@@ -44,7 +44,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.hamcrest.Matchers;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,7 +52,7 @@ import org.junit.jupiter.api.Test;
  */
 public class ExtendedServerTest extends HttpServerTestBase
 {
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         startServer(new ServerConnector(_server,new HttpConnectionFactory()

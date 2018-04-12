@@ -47,7 +47,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -115,7 +115,7 @@ public class FastCGIProxyServletTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         server.stop();

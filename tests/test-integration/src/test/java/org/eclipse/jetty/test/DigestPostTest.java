@@ -62,8 +62,8 @@ import org.eclipse.jetty.util.TypeUtil;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Credential;
 import org.eclipse.jetty.util.security.Password;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class DigestPostTest
@@ -122,7 +122,7 @@ public class DigestPostTest
     }
     
     
-    @BeforeClass
+    @BeforeAll
     public static void setUpServer()
     {
         try
@@ -163,7 +163,7 @@ public class DigestPostTest
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownServer() throws Exception
     {
         _server.stop();

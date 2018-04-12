@@ -38,7 +38,7 @@ import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.eclipse.jetty.websocket.common.util.Sha1Sum;
 import org.eclipse.jetty.websocket.server.helper.CaptureSocket;
 import org.eclipse.jetty.websocket.server.helper.EchoServlet;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.Assume;
 import org.junit.jupiter.api.Test;
@@ -98,7 +98,7 @@ public class PerMessageDeflateExtensionTest
         this.inputBufferSize = bufferSize;
     }
 
-    @After
+    @AfterEach
     public void stopServer()
     {
         server.stop();

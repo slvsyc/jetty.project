@@ -31,14 +31,14 @@ import java.util.Arrays;
 import org.eclipse.jetty.deploy.test.XmlConfiguredJetty;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 
-@Ignore("See issue #1200")
+@Disabled("See issue #1200")
 public class WebAppProviderTest
 {
     @Rule
@@ -46,7 +46,7 @@ public class WebAppProviderTest
     private static XmlConfiguredJetty jetty;
     private boolean symlinkSupported = false;
     
-    @Before
+    @BeforeEach
     public void setupEnvironment() throws Exception
     {
         jetty = new XmlConfiguredJetty(testdir);
@@ -78,7 +78,7 @@ public class WebAppProviderTest
         jetty.start();
     }
 
-    @After
+    @AfterEach
     public void teardownEnvironment() throws Exception
     {
         // Stop jetty.

@@ -51,12 +51,12 @@ import org.eclipse.jetty.util.B64Code;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Promise;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ConnectHandlerTest extends AbstractConnectHandlerTest
 {
-    @Before
+    @BeforeEach
     public void prepare() throws Exception
     {
         server = new Server();

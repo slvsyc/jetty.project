@@ -20,8 +20,8 @@ package org.eclipse.jetty.deploy.providers;
 
 import org.eclipse.jetty.deploy.test.XmlConfiguredJetty;
 import org.eclipse.jetty.toolchain.test.TestingDir;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ public class ScanningAppProviderStartupTest
         public TestingDir testdir = new TestingDir();
     private static XmlConfiguredJetty jetty;
 
-    @Before
+    @BeforeEach
     public void setupEnvironment() throws Exception
     {
         jetty = new XmlConfiguredJetty(testdir);
@@ -53,7 +53,7 @@ public class ScanningAppProviderStartupTest
         jetty.start();
     }
 
-    @After
+    @AfterEach
     public void teardownEnvironment() throws Exception
     {
         // Stop jetty.

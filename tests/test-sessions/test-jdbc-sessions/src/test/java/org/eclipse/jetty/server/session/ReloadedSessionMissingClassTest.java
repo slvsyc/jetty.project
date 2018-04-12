@@ -39,7 +39,7 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 
@@ -145,7 +145,7 @@ public class ReloadedSessionMissingClassTest
         }
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws Exception 
     {
         JdbcTestHelper.shutdown(null);

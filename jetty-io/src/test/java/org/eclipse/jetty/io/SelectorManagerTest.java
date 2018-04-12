@@ -35,9 +35,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.TimerScheduler;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
@@ -46,14 +46,14 @@ public class SelectorManagerTest
     private QueuedThreadPool executor = new QueuedThreadPool();
     private TimerScheduler scheduler = new TimerScheduler();
 
-    @Before
+    @BeforeEach
     public void prepare() throws Exception
     {
         executor.start();
         scheduler.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         scheduler.stop();

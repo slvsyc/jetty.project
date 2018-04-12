@@ -21,7 +21,7 @@ package org.eclipse.jetty.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  */
 public class ProcessorUtilsTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass()
     {
         System.setProperty("JETTY_AVAILABLE_PROCESSORS","42");

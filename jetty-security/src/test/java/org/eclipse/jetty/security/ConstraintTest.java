@@ -67,9 +67,9 @@ import org.eclipse.jetty.util.TypeUtil;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Password;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ConstraintTest
@@ -80,7 +80,7 @@ public class ConstraintTest
     private ConstraintSecurityHandler _security;
     private HttpConfiguration _config;
 
-    @Before
+    @BeforeEach
     public void startServer()
     {
         _server = new Server();
@@ -114,7 +114,7 @@ public class ConstraintTest
         _security.setConstraintMappings(getConstraintMappings(), getKnownRoles());
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         _server.stop();

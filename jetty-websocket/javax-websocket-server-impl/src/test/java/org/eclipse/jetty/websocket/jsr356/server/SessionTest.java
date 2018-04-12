@@ -38,9 +38,9 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -110,7 +110,7 @@ public class SessionTest
         this.testcase = testcase;
     }
 
-    @Before
+    @BeforeEach
     public void startServer() throws Exception
     {
         server = new WSServer(MavenTestingUtils.getTargetTestingDir(SessionTest.class.getSimpleName() + "-" + ID.incrementAndGet()),"app");
@@ -125,7 +125,7 @@ public class SessionTest
         server.deployWebapp(webapp);
     }
 
-    @After
+    @AfterEach
     public void stopServer()
     {
         server.stop();

@@ -37,7 +37,7 @@ import org.eclipse.jetty.annotations.AnnotationParser.AbstractHandler;
 import org.eclipse.jetty.annotations.AnnotationParser.ClassInfo;
 import org.eclipse.jetty.annotations.AnnotationParser.FieldInfo;
 import org.eclipse.jetty.annotations.AnnotationParser.MethodInfo;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -86,7 +86,7 @@ public class TestAnnotationInheritance
         }
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         classNames.clear();

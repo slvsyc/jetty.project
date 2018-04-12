@@ -27,9 +27,9 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class JavaUtilLogTest
@@ -37,7 +37,7 @@ public class JavaUtilLogTest
     private static Handler[] originalHandlers;
     private static CapturingJULHandler jul;
 
-    @BeforeClass
+    @BeforeAll
     public static void setJUL()
     {
         LogManager lmgr = LogManager.getLogManager();
@@ -54,7 +54,7 @@ public class JavaUtilLogTest
         root.addHandler(jul);
     }
 
-    @AfterClass
+    @AfterAll
     public static void restoreJUL()
     {
         LogManager lmgr = LogManager.getLogManager();

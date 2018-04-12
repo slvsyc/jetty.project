@@ -31,13 +31,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import org.eclipse.jetty.util.thread.ShutdownThread;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.jupiter.api.Test;
 
 public class ShutdownMonitorTest
 {
-    @After
+    @AfterEach
     public void dispose()
     {
         ShutdownMonitor.reset();

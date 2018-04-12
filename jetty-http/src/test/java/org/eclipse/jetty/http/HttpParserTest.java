@@ -36,7 +36,7 @@ import org.eclipse.jetty.http.HttpParser.State;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class HttpParserTest
@@ -2106,7 +2106,7 @@ public class HttpParserTest
         assertEquals(null, _bad);
     }
 
-    @Before
+    @BeforeEach
     public void init()
     {
         _bad = null;

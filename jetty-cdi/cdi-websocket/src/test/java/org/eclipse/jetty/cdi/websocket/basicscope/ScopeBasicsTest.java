@@ -32,8 +32,8 @@ import org.eclipse.jetty.cdi.core.ScopedInstance;
 import org.eclipse.jetty.cdi.core.logging.Logging;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class ScopeBasicsTest
@@ -41,7 +41,7 @@ public class ScopeBasicsTest
     private static Weld weld;
     private static WeldContainer container;
 
-    @BeforeClass
+    @BeforeAll
     public static void startWeld()
     {
         Logging.config();
@@ -49,7 +49,7 @@ public class ScopeBasicsTest
         container = weld.initialize();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopWeld()
     {
         weld.shutdown();

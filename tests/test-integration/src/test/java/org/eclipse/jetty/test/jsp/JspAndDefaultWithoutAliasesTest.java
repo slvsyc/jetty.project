@@ -42,9 +42,9 @@ import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -88,7 +88,7 @@ public class JspAndDefaultWithoutAliasesTest
         return data;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         server = new Server(0);
@@ -125,7 +125,7 @@ public class JspAndDefaultWithoutAliasesTest
         serverURI = new URI("http://localhost:" + port + "/");
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer() throws Exception
     {
         server.stop();

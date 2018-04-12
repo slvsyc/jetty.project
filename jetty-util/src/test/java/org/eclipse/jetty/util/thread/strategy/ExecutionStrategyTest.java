@@ -36,8 +36,8 @@ import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.thread.ExecutionStrategy;
 import org.eclipse.jetty.util.thread.ExecutionStrategy.Producer;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -70,14 +70,14 @@ public class ExecutionStrategyTest
         LifeCycle.start(_strategy);
     }
     
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         _threads.setDetailedDump(true);
         _threads.start();
     }
     
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         LifeCycle.stop(_strategy);

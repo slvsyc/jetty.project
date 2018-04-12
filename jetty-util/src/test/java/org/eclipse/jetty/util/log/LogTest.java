@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -39,7 +39,7 @@ public class LogTest
     private static Logger originalLogger;
     private static Map<String,Logger> originalLoggers;
 
-    @BeforeClass
+    @BeforeAll
     public static void rememberOriginalLogger()
     {
         originalLogger = Log.getLog();
@@ -47,7 +47,7 @@ public class LogTest
         Log.getMutableLoggers().clear();
     }
 
-    @AfterClass
+    @AfterAll
     public static void restoreOriginalLogger()
     {
         Log.setLog(originalLogger);

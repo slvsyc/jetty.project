@@ -41,8 +41,8 @@ import org.eclipse.jetty.servlet.ServletTester;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.StringUtil;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PutFilterTest
@@ -50,7 +50,7 @@ public class PutFilterTest
     private File _dir;
     private ServletTester tester;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         _dir = File.createTempFile("testPutFilter",null);
@@ -70,7 +70,7 @@ public class PutFilterTest
         tester.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         tester.stop();

@@ -54,7 +54,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class HttpClientTLSTest
@@ -94,7 +94,7 @@ public class HttpClientTLSTest
         return sslContextFactory;
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         if (client != null)

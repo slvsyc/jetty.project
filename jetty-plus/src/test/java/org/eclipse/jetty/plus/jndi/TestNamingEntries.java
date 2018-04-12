@@ -41,8 +41,8 @@ import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
 import javax.naming.spi.ObjectFactory;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TestNamingEntries
@@ -133,7 +133,7 @@ public class TestNamingEntries
 
     private SomeObject someObject;
 
-    @Before
+    @BeforeEach
     public void init()
     {
         this.someObject = new SomeObject(4);
@@ -149,7 +149,7 @@ public class TestNamingEntries
      *
      * @throws Exception on test failure
      */
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         InitialContext icontext = new InitialContext();

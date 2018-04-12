@@ -35,10 +35,10 @@ import org.eclipse.jetty.test.support.TestableJettyServer;
 import org.eclipse.jetty.test.support.rawhttp.HttpSocketImpl;
 import org.eclipse.jetty.test.support.rawhttp.HttpTesting;
 import org.eclipse.jetty.util.IO;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -51,7 +51,7 @@ public class DefaultHandlerTest
     private static TestableJettyServer server;
     private int serverPort;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpServer() throws Exception
     {
         server = new TestableJettyServer();
@@ -63,12 +63,12 @@ public class DefaultHandlerTest
         server.start();
     }
     
-    @Before
+    @BeforeEach
     public void testInit() {
         serverPort = server.getServerPort();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownServer() throws Exception
     {
         server.stop();

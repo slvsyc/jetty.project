@@ -27,7 +27,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,7 +41,7 @@ public class TestQuickStart
     File webInf;
     
     
-    @Before
+    @BeforeEach
     public void setUp()
     {
         testDir = MavenTestingUtils.getTargetTestingDir("foo");

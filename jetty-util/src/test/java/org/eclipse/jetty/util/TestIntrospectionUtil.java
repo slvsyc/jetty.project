@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 
@@ -83,7 +83,7 @@ public class TestIntrospectionUtil
         void setDefaultD(Integer d) {}
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp()
     throws Exception
     {

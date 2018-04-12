@@ -27,7 +27,7 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.http.pathmap.MappedResource;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ServletHandlerTest
@@ -58,7 +58,7 @@ public class ServletHandlerTest
     ServletMapping sm3 = new ServletMapping();
     
 
-    @Before
+    @BeforeEach
     public void initMappings()
     {
         fh1.setName("fh1");

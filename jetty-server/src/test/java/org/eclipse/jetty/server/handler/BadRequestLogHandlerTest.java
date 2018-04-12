@@ -52,7 +52,7 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -64,7 +64,7 @@ import org.junit.runners.Parameterized.Parameters;
  * be logged 
  */
 @RunWith(Parameterized.class)
-@Ignore
+@Disabled
 public class BadRequestLogHandlerTest
 {
     private static final Logger LOG = Log.getLogger(BadRequestLogHandlerTest.class);

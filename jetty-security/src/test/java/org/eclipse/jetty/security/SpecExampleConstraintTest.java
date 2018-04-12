@@ -43,9 +43,9 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.B64Code;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Password;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -59,7 +59,7 @@ public class SpecExampleConstraintTest
     private static SessionHandler _session;
     private ConstraintSecurityHandler _security;
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer()
     {
         _server = new Server();
@@ -84,7 +84,7 @@ public class SpecExampleConstraintTest
         _server.addBean(_loginService);
     }
 
-    @Before
+    @BeforeEach
     public void setupSecurity()
     {
         _security = new ConstraintSecurityHandler();
@@ -224,7 +224,7 @@ public class SpecExampleConstraintTest
                 }), knownRoles);
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         if (_server.isRunning())

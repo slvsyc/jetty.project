@@ -49,9 +49,9 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.ByteArrayEndPoint;
 import org.eclipse.jetty.util.Promise;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -77,7 +77,7 @@ public class HttpReceiverOverHTTPTest
         );
     }
     
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         client = new HttpClient();
@@ -90,7 +90,7 @@ public class HttpReceiverOverHTTPTest
         endPoint.setConnection(connection);
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         client.stop();

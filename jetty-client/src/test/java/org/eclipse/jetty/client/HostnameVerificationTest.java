@@ -39,17 +39,17 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * This test class runs tests to make sure that hostname verification (http://www.ietf.org/rfc/rfc2818.txt
  * section 3.1) is configurable in SslContextFactory and works as expected.
  */
-@Ignore
+@Disabled
 public class HostnameVerificationTest
 {
     private SslContextFactory clientSslContextFactory = new SslContextFactory();
@@ -57,7 +57,7 @@ public class HostnameVerificationTest
     private HttpClient client;
     private NetworkConnector connector;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         QueuedThreadPool serverThreads = new QueuedThreadPool();
@@ -91,7 +91,7 @@ public class HostnameVerificationTest
         client.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         client.stop();

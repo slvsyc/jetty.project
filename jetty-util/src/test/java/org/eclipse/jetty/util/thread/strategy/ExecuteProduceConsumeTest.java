@@ -30,9 +30,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.eclipse.jetty.util.thread.ExecutionStrategy.Producer;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ExecuteProduceConsumeTest
@@ -44,7 +44,7 @@ public class ExecuteProduceConsumeTest
     private ExecuteProduceConsume _ewyk;
     private volatile Thread _producer;
 
-    @Before
+    @BeforeEach
     public void before()
     {
         _executions.clear();
@@ -75,7 +75,7 @@ public class ExecuteProduceConsumeTest
         _ewyk = new ExecuteProduceConsume(producer,executor);
     }
 
-    @After
+    @AfterEach
     public void after()
     {
         // All done and checked

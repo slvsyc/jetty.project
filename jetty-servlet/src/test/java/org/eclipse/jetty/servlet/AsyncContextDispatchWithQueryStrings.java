@@ -36,8 +36,8 @@ import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -50,7 +50,7 @@ public class AsyncContextDispatchWithQueryStrings
     private ServletContextHandler _contextHandler = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
     private LocalConnector _connector = new LocalConnector(_server);
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception 
     {
         _connector.setIdleTimeout(30000);
@@ -80,7 +80,7 @@ public class AsyncContextDispatchWithQueryStrings
         assertThat(responseString,startsWith("HTTP/1.1 200"));
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception 
     {
         _server.stop();

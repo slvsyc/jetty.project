@@ -61,8 +61,8 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.DecoratedObjectFactory;
 import org.eclipse.jetty.util.Decorator;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ServletContextHandlerTest
@@ -123,7 +123,7 @@ public class ServletContextHandlerTest
         
     }
     
-    @Before
+    @BeforeEach
     public void createServer()
     {
         _server = new Server();
@@ -133,7 +133,7 @@ public class ServletContextHandlerTest
         __testServlets.set(0);
     }
 
-    @After
+    @AfterEach
     public void destroyServer() throws Exception
     {
         _server.stop();

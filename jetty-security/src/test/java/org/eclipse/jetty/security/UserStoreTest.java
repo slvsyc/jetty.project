@@ -28,14 +28,14 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jetty.server.UserIdentity;
 import org.eclipse.jetty.util.security.Credential;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class UserStoreTest
 {
     UserStore userStore;
 
-    @Before
+    @BeforeEach
     public void setup() {
         userStore = new UserStore();
     }

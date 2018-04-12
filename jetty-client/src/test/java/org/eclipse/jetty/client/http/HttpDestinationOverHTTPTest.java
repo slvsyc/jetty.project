@@ -45,7 +45,7 @@ import org.eclipse.jetty.http.HttpHeaderValue;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
@@ -55,7 +55,7 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         super(sslContextFactory);
     }
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         start(new EmptyServerHandler());

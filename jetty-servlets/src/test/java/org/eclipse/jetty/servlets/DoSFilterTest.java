@@ -39,7 +39,7 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlets.DoSFilter.RateTracker;
 import org.hamcrest.Matchers;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DoSFilterTest extends AbstractDoSFilterTest
@@ -80,7 +80,7 @@ public class DoSFilterTest extends AbstractDoSFilterTest
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         startServer(DoSFilter.class);

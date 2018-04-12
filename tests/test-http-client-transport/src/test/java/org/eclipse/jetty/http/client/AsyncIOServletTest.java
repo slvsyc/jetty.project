@@ -91,7 +91,7 @@ import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
 import org.junit.Assume;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class AsyncIOServletTest extends AbstractTest
@@ -428,7 +428,7 @@ public class AsyncIOServletTest extends AbstractTest
     }
 
     @Test
-    @Ignore // TODO fix this test! #2243
+    @Disabled // TODO fix this test! #2243
     public void testAsyncWriteClosed() throws Exception
     {
         // TODO work out why this test fails for UNIX_SOCKET

@@ -38,7 +38,7 @@ import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -64,7 +64,7 @@ public class DispatcherForwardTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Throwable
     {
         for (Throwable failure : failures)

@@ -37,7 +37,7 @@ import javax.naming.StringRefAddr;
 import javax.naming.spi.ObjectFactory;
 
 import org.eclipse.jetty.jndi.NamingUtil;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -108,7 +108,7 @@ public class TestLocalJNDI
 
 
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         InitialContext ic = new InitialContext();

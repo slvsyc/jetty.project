@@ -38,8 +38,8 @@ import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 
@@ -49,7 +49,7 @@ public class StatisticsServletTest
 
     private LocalConnector _connector;
 
-    @Before
+    @BeforeEach
     public void createServer()
     {
         _server = new Server();
@@ -58,7 +58,7 @@ public class StatisticsServletTest
     }
 
 
-    @After
+    @AfterEach
     public void destroyServer()
         throws Exception
     {

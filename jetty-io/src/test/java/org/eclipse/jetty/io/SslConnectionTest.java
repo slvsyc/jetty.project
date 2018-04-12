@@ -50,10 +50,10 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -136,7 +136,7 @@ public class SslConnectionTest
     }
     
 
-    @BeforeClass
+    @BeforeAll
     public static void initSslEngine() throws Exception
     {
         File keystore = MavenTestingUtils.getTestResourceFile("keystore");
@@ -146,7 +146,7 @@ public class SslConnectionTest
         __sslCtxFactory.start();
     }
 
-    @Before
+    @BeforeEach
     public void startManager() throws Exception
     {
         _testFill=true;
@@ -162,7 +162,7 @@ public class SslConnectionTest
 
     }
 
-    @After
+    @AfterEach
     public void stopManager() throws Exception
     {
         if (_lastEndp.isOpen())

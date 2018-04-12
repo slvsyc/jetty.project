@@ -82,7 +82,7 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class HttpClientTransportOverHTTP2Test extends AbstractTest
@@ -547,7 +547,7 @@ public class HttpClientTransportOverHTTP2Test extends AbstractTest
         assertArrayEquals(bytes, response.getContent());
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void testExternalServer() throws Exception
     {

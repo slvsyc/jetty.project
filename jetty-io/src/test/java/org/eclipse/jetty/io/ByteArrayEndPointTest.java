@@ -38,22 +38,22 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.FutureCallback;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ByteArrayEndPointTest
 {
     private Scheduler _scheduler;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         _scheduler = new TimerScheduler();
         _scheduler.start();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         _scheduler.stop();

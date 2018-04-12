@@ -42,8 +42,8 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class CdiAppTest
@@ -52,7 +52,7 @@ public class CdiAppTest
     private static Server server;
     private static URI serverWebsocketURI;
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         JettyLogHandler.config();
@@ -87,7 +87,7 @@ public class CdiAppTest
         serverWebsocketURI = new URI(String.format("ws://%s:%d/",host,port));
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer()
     {
         try

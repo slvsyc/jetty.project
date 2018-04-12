@@ -38,7 +38,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -53,7 +53,7 @@ public class SameContextForwardedSessionTest
     protected CountDownLatch _synchronizer;
     protected Servlet1 _one;
     
-    @Before
+    @BeforeEach
     public void setUp ()
     {
         _synchronizer = new CountDownLatch(1);

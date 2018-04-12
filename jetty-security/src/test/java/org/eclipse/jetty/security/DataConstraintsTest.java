@@ -43,9 +43,9 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.security.Constraint;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DataConstraintsTest
@@ -56,7 +56,7 @@ public class DataConstraintsTest
     private SessionHandler _session;
     private ConstraintSecurityHandler _security;
 
-    @Before
+    @BeforeEach
     public  void startServer()
     {
         _server = new Server();
@@ -103,7 +103,7 @@ public class DataConstraintsTest
 
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         if (_server.isRunning())

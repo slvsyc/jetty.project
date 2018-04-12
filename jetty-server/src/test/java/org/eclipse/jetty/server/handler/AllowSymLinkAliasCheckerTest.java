@@ -42,8 +42,8 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.resource.PathResource;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -74,14 +74,14 @@ public class AllowSymLinkAliasCheckerTest
     private LocalConnector localConnector;
     private Path rootPath;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception
     {
         setupRoot();
         setupServer();
     }
 
-    @After
+    @AfterEach
     public void teardown() throws Exception
     {
         if( server != null )

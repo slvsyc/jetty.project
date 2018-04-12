@@ -29,21 +29,21 @@ import java.net.MalformedURLException;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ResourceAliasTest
 {
     static File __dir;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass()
     {
         __dir=MavenTestingUtils.getTargetTestingDir("RAT");
     }
     
-    @Before
+    @BeforeEach
     public void before()
     {
         FS.ensureDirExists(__dir);

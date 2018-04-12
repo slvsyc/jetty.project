@@ -58,8 +58,8 @@ import org.eclipse.jetty.servlet.ServletTester;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ReadLineInputStream;
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class MultipartFilterTest
@@ -160,7 +160,7 @@ public class MultipartFilterTest
 
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         _dir = File.createTempFile("testmultupart",null);
@@ -179,7 +179,7 @@ public class MultipartFilterTest
         tester.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         tester.stop();

@@ -34,16 +34,16 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletTester;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class HeaderFilterTest
 {
     private ServletTester _tester;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         _tester = new ServletTester();
@@ -53,7 +53,7 @@ public class HeaderFilterTest
         _tester.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         _tester.stop();

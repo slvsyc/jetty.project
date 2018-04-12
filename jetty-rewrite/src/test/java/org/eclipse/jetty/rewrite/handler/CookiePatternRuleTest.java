@@ -25,12 +25,12 @@ import java.util.Enumeration;
 
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class CookiePatternRuleTest extends AbstractRuleTestCase
 {
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         start(false);

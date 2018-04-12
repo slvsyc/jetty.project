@@ -57,7 +57,7 @@ import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -69,7 +69,7 @@ import org.junit.runners.Parameterized.Parameters;
  * Servlet equivalent of the jetty-server's RequestLogHandlerTest, but with more ErrorHandler twists. 
  */
 @RunWith(Parameterized.class)
-@Ignore
+@Disabled
 public class ServletRequestLogTest
 {
     private static final Logger LOG = Log.getLogger(ServletRequestLogTest.class);

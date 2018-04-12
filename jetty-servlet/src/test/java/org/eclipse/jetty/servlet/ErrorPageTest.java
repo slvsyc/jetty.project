@@ -37,8 +37,8 @@ import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ErrorPageTest
@@ -47,7 +47,7 @@ public class ErrorPageTest
     private LocalConnector _connector;
     private StacklessLogging _stackless;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         _server = new Server();
@@ -74,7 +74,7 @@ public class ErrorPageTest
         _stackless=new StacklessLogging(ServletHandler.class);
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         _stackless.close();

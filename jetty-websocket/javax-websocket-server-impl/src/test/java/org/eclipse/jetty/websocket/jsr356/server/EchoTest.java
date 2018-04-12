@@ -62,9 +62,9 @@ import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.InputStreamSo
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.ReaderParamSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.ReaderSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.streaming.StringReturnReaderParamSocket;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -205,7 +205,7 @@ public class EchoTest
           .expect("('Built',false)(' for',false)(' the',false)(' future',true)");
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         File testdir = MavenTestingUtils.getTargetTestingDir(EchoTest.class.getName());
@@ -227,13 +227,13 @@ public class EchoTest
         server.deployWebapp(webapp);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void startClient() throws Exception
     {
         client = ContainerProvider.getWebSocketContainer();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer()
     {
         server.stop();

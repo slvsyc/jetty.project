@@ -39,9 +39,9 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -85,7 +85,7 @@ public class StressTest
         "/path/f",
     };
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception
     {
         _threads = new QueuedThreadPool();
@@ -104,14 +104,14 @@ public class StressTest
         _server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void destroy() throws Exception
     {
         _server.stop();
         _server.join();
     }
 
-    @Before
+    @BeforeEach
     public void reset()
     {
         _handled.set(0);

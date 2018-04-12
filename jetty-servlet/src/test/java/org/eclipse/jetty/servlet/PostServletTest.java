@@ -40,8 +40,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PostServletTest
@@ -93,7 +93,7 @@ public class PostServletTest
     private Server server;
     private LocalConnector connector;
 
-    @Before
+    @BeforeEach
     public void startServer() throws Exception
     {
         complete=new CountDownLatch(1);
@@ -113,7 +113,7 @@ public class PostServletTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         this.server.stop();

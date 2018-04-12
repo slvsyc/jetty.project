@@ -31,9 +31,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -62,14 +62,14 @@ public class SchedulerTest
         _scheduler=scheduler;
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         System.gc();
         _scheduler.start();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         _scheduler.stop();

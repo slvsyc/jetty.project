@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class CyclicTimeoutTest
@@ -38,7 +38,7 @@ public class CyclicTimeoutTest
     private ScheduledExecutorScheduler _timer = new ScheduledExecutorScheduler();
     private CyclicTimeout _timeout;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         _expired=false;
@@ -56,7 +56,7 @@ public class CyclicTimeoutTest
         _timeout.schedule(1000,TimeUnit.MILLISECONDS);
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         _timeout.destroy();
@@ -141,7 +141,7 @@ public class CyclicTimeoutTest
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testBusy() throws Exception
     {
         QueuedThreadPool pool = new QueuedThreadPool(200);

@@ -26,14 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * Testing for LifeCycleListener events on nested components
  * during runtime.
  */
-@Ignore
+@Disabled
 public class LifeCycleListenerNestedTest
 {
     // Set this true to use test-specific workaround.

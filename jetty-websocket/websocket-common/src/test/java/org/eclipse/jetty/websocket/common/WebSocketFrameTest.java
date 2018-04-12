@@ -34,7 +34,7 @@ import org.eclipse.jetty.websocket.common.frames.PingFrame;
 import org.eclipse.jetty.websocket.common.frames.TextFrame;
 import org.eclipse.jetty.websocket.common.util.Hex;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class WebSocketFrameTest
@@ -52,7 +52,7 @@ public class WebSocketFrameTest
         return buf;
     }
 
-    @Before
+    @BeforeEach
     public void initGenerator()
     {
         WebSocketPolicy policy = WebSocketPolicy.newServerPolicy();

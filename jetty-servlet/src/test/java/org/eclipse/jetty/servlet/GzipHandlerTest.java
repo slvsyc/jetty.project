@@ -49,8 +49,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("serial")
@@ -79,7 +79,7 @@ public class GzipHandlerTest
     private Server _server;
     private LocalConnector _connector;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         _server = new Server();
@@ -199,7 +199,7 @@ public class GzipHandlerTest
         }
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         _server.stop();

@@ -77,11 +77,11 @@ import org.eclipse.jetty.websocket.common.test.BlockheadServer;
 import org.eclipse.jetty.websocket.common.test.RawFrameBuilder;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.hamcrest.Matcher;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class ClientCloseTest
@@ -278,7 +278,7 @@ public class ClientCloseTest
         }
     }
 
-    @Before
+    @BeforeEach
     public void startClient() throws Exception
     {
         HttpClient httpClient = new HttpClient(new TestClientTransportOverHTTP(), null);
@@ -287,20 +287,20 @@ public class ClientCloseTest
         client.start();
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         server = new BlockheadServer();
         server.start();
     }
 
-    @After
+    @AfterEach
     public void stopClient() throws Exception
     {
         client.stop();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer() throws Exception
     {
         server.stop();
@@ -355,7 +355,7 @@ public class ClientCloseTest
         }
     }
 
-    @Ignore("Need sbordet's help here")
+    @Disabled("Need sbordet's help here")
     @Test
     public void testNetworkCongestion() throws Exception
     {

@@ -39,8 +39,8 @@ import org.eclipse.jetty.servlet.ServletTester;
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 
@@ -72,7 +72,7 @@ public class IncludedGzipTest
         this.compressionType = GzipHandler.GZIP;
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         testdir.ensureEmpty();
@@ -93,7 +93,7 @@ public class IncludedGzipTest
         tester.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         tester.stop();

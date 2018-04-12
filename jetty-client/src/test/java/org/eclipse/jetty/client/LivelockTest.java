@@ -37,9 +37,9 @@ import org.eclipse.jetty.util.SocketAddressResolver;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -69,7 +69,7 @@ public class LivelockTest
     private ServerConnector connector;
     private HttpClient client;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         Handler handler = new EmptyServerHandler();
@@ -82,7 +82,7 @@ public class LivelockTest
         server.start();
     }
     
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         if (client != null)

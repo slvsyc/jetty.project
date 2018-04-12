@@ -35,7 +35,7 @@ import org.eclipse.jetty.server.HttpOutput;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
 public class SpnegoAuthenticatorTest {
     private SpnegoAuthenticator _authenticator;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception
     {
         _authenticator = new SpnegoAuthenticator();

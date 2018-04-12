@@ -35,9 +35,9 @@ import org.eclipse.jetty.websocket.common.WebSocketFrame;
 import org.eclipse.jetty.websocket.common.test.Fuzzed;
 import org.eclipse.jetty.websocket.common.test.RawFrameBuilder;
 import org.eclipse.jetty.websocket.server.SimpleServletServer;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
@@ -82,7 +82,7 @@ public abstract class AbstractABCase implements Fuzzed
 
     public ByteBufferPool bufferPool = new MappedByteBufferPool();
 
-    @Before
+    @BeforeEach
     public void initGenerators()
     {
         WebSocketPolicy policy = WebSocketPolicy.newClientPolicy();
@@ -90,14 +90,14 @@ public abstract class AbstractABCase implements Fuzzed
         laxGenerator = new Generator(policy,bufferPool,false);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         server = new SimpleServletServer(new ABServlet());
         server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer()
     {
         server.stop();

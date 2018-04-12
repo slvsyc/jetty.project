@@ -51,8 +51,8 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class SecuredRedirectHandlerTest
@@ -63,7 +63,7 @@ public class SecuredRedirectHandlerTest
     private static URI serverHttpUri;
     private static URI serverHttpsUri;
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         // Setup SSL
@@ -154,7 +154,7 @@ public class SecuredRedirectHandlerTest
         HttpsURLConnection.setDefaultSSLSocketFactory(sslContextFactory.getSslContext().getSocketFactory());
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer() throws Exception
     {
         HttpsURLConnection.setDefaultSSLSocketFactory(origSsf);

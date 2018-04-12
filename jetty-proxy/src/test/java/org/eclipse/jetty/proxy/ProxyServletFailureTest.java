@@ -58,7 +58,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -140,14 +140,14 @@ public class ProxyServletFailureTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void disposeProxy() throws Exception
     {
         client.stop();
         proxy.stop();
     }
 
-    @After
+    @AfterEach
     public void disposeServer() throws Exception
     {
         server.stop();

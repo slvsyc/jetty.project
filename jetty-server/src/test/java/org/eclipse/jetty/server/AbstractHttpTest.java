@@ -38,8 +38,8 @@ import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractHttpTest
 {
@@ -56,7 +56,7 @@ public abstract class AbstractHttpTest
         this.httpVersion = httpVersion;
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         server = new Server();
@@ -67,7 +67,7 @@ public abstract class AbstractHttpTest
         stacklessChannelLogging =new StacklessLogging(HttpChannel.class);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         server.stop();

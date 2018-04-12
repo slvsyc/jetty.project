@@ -41,9 +41,9 @@ import org.eclipse.jetty.websocket.jsr356.ClientContainer;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import org.eclipse.jetty.websocket.server.WebSocketServerFactory;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SessionTrackingTest
@@ -53,7 +53,7 @@ public class SessionTrackingTest
     private WebSocketServerFactory wsServerFactory;
     private URI serverURI;
 
-    @Before
+    @BeforeEach
     public void startServer() throws Exception
     {
         QueuedThreadPool serverThreads = new QueuedThreadPool();
@@ -76,7 +76,7 @@ public class SessionTrackingTest
         serverURI = new URI("ws://localhost:" + serverConnector.getLocalPort());
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         if (server != null)

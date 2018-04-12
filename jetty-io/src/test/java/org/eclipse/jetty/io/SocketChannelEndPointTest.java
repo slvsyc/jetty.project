@@ -67,9 +67,9 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -129,7 +129,7 @@ public class SocketChannelEndPointTest
         _manager.start();
     }
 
-    @After
+    @AfterEach
     public void stopManager() throws Exception
     {
         _scheduler.stop();
@@ -448,7 +448,7 @@ public class SocketChannelEndPointTest
 
     // TODO make this test reliable
     @Test
-    @Ignore
+    @Disabled
     public void testRejectedExecution() throws Exception
     {
         _manager.stop();

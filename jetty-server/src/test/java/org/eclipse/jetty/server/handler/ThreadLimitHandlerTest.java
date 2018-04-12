@@ -40,9 +40,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ThreadLimitHandlerTest
@@ -52,7 +52,7 @@ public class ThreadLimitHandlerTest
     private LocalConnector _local;
 
 
-    @Before
+    @BeforeEach
     public void before()
         throws Exception
     {
@@ -63,7 +63,7 @@ public class ThreadLimitHandlerTest
 
     }
 
-    @After
+    @AfterEach
     public void after()
         throws Exception
     {

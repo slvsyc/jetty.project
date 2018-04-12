@@ -58,9 +58,9 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SslConnectionFactoryTest
@@ -69,7 +69,7 @@ public class SslConnectionFactoryTest
     private ServerConnector _connector;
     private int _port;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         String keystorePath = "src/test/resources/keystore";
@@ -115,7 +115,7 @@ public class SslConnectionFactoryTest
         _port = https.getLocalPort();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         _server.stop();

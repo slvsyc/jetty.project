@@ -31,8 +31,8 @@ import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.resource.Resource;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -51,7 +51,7 @@ public class ScanningAppProviderRuntimeUpdatesTest
     private final AtomicInteger _scans = new AtomicInteger();
     private int _providers;
 
-    @Before
+    @BeforeEach
     public void setupEnvironment() throws Exception
     {
         testdir.ensureEmpty();
@@ -88,7 +88,7 @@ public class ScanningAppProviderRuntimeUpdatesTest
 
     }
 
-    @After
+    @AfterEach
     public void teardownEnvironment() throws Exception
     {
         // Stop jetty.

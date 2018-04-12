@@ -18,11 +18,11 @@
 
 package org.eclipse.jetty.servlets;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 public class CloseableDoSFilterTest extends AbstractDoSFilterTest
 {
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         startServer(CloseableDoSFilter.class);

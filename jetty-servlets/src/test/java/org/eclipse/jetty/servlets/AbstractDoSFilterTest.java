@@ -49,7 +49,7 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.TestingDir;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
@@ -106,7 +106,7 @@ public abstract class AbstractDoSFilterTest
         _tester.start();
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         _tester.stop();

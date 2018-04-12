@@ -34,10 +34,10 @@ import java.util.concurrent.CountDownLatch;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.TimerScheduler;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class LowResourcesMonitorTest
@@ -47,7 +47,7 @@ public class LowResourcesMonitorTest
     ServerConnector _connector;
     LowResourceMonitor _lowResourcesMonitor;
     
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         _threadPool = new QueuedThreadPool();
@@ -74,7 +74,7 @@ public class LowResourcesMonitorTest
         _server.start();
     }
     
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         _server.stop();
@@ -164,7 +164,7 @@ public class LowResourcesMonitorTest
     }
     
 
-    @Ignore ("not reliable")
+    @Disabled("not reliable")
     @Test
     public void testLowOnMemory() throws Exception
     {

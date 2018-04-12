@@ -35,9 +35,9 @@ import org.eclipse.jetty.websocket.common.io.FramePipes;
 import org.eclipse.jetty.websocket.common.io.LocalWebSocketSession;
 import org.eclipse.jetty.websocket.common.scopes.SimpleContainerScope;
 import org.eclipse.jetty.websocket.common.scopes.WebSocketContainerScope;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TestName;
@@ -55,14 +55,14 @@ public class MessageWriterTest
     private TrackingSocket socket;
     private LocalWebSocketSession session;
 
-    @After
+    @AfterEach
     public void closeSession() throws Exception
     {
         session.close();
         session.stop();
     }
 
-    @Before
+    @BeforeEach
     public void setupSession() throws Exception
     {
         policy = WebSocketPolicy.newServerPolicy();

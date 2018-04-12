@@ -23,7 +23,7 @@ import java.net.Socket;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 public abstract class AbstractConnectHandlerTest
 {
@@ -43,7 +43,7 @@ public abstract class AbstractConnectHandlerTest
         proxy.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         disposeServer();

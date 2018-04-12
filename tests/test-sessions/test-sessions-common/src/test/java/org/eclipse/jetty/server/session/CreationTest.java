@@ -45,7 +45,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -63,7 +63,7 @@ public class CreationTest
     protected TestServer _server1 = null;
     protected CountDownLatch _synchronizer;
     
-    @Before
+    @BeforeEach
     public void setUp ()
     {
         _synchronizer = new CountDownLatch(1);

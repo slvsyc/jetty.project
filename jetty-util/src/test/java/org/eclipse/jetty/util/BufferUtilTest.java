@@ -40,7 +40,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class BufferUtilTest
@@ -239,7 +239,7 @@ public class BufferUtilTest
     private static final Logger LOG = Log.getLogger(BufferUtilTest.class);
 
     @Test
-    @Ignore("Very simple microbenchmark to compare different writeTo implementations. Only for development thus " +
+    @Disabled("Very simple microbenchmark to compare different writeTo implementations. Only for development thus " +
             "ignored.")
     public void testWriteToMicrobenchmark() throws IOException
     {

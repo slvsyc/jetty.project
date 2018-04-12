@@ -33,7 +33,7 @@ import java.util.Map;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.resource.Resource;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -131,7 +131,7 @@ public class AttributeNormalizerTest
         this.normalizer = new AttributeNormalizer(webresource);
     }
     
-    @After
+    @AfterEach
     public void restoreEnv()
     {
         // Restore old values

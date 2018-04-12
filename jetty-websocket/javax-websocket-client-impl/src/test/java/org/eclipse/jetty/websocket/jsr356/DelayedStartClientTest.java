@@ -37,14 +37,14 @@ import javax.websocket.WebSocketContainer;
 import org.eclipse.jetty.util.component.ContainerLifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class DelayedStartClientTest
 {
     WebSocketContainer container;
     
-    @After
+    @AfterEach
     public void stopContainer() throws Exception
     {
         ((LifeCycle)container).stop();

@@ -51,10 +51,10 @@ import org.eclipse.jetty.websocket.jsr356.JsrSession;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.BasicEchoEndpoint;
 import org.eclipse.jetty.websocket.server.NativeWebSocketConfiguration;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ExtensionStackProcessingTest
@@ -64,7 +64,7 @@ public class ExtensionStackProcessingTest
     private WebSocketContainer client;
     private ServletContextHandler servletContextHandler;
     
-    @Before
+    @BeforeEach
     public void prepare() throws Exception
     {
         server = new Server();
@@ -82,7 +82,7 @@ public class ExtensionStackProcessingTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         server.stop();

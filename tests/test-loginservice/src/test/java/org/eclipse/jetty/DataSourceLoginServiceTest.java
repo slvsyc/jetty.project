@@ -44,8 +44,8 @@ import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.Loader;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -67,7 +67,7 @@ public class DataSourceLoginServiceTest
 
     
     
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception
     {
        
@@ -97,7 +97,7 @@ public class DataSourceLoginServiceTest
         _baseUri = _testServer.getBaseUri();
      }
 
-     @AfterClass
+     @AfterAll
      public static void tearDown()
          throws Exception
      {

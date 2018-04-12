@@ -36,7 +36,7 @@ import javax.net.ssl.SSLEngine;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.resource.Resource;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
@@ -48,7 +48,7 @@ public class SslContextFactoryTest
 
     private SslContextFactory cf;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         cf = new SslContextFactory();

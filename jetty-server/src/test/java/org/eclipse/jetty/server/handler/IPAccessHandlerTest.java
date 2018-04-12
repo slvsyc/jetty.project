@@ -46,8 +46,8 @@ import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -67,7 +67,7 @@ public class IPAccessHandlerTest
     private String _code;
     private boolean _byPath;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp()
         throws Exception
     {
@@ -90,7 +90,7 @@ public class IPAccessHandlerTest
     }
 
     /* ------------------------------------------------------------ */
-    @AfterClass
+    @AfterAll
     public static void tearDown()
         throws Exception
     {

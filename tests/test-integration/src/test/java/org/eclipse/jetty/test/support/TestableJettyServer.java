@@ -40,12 +40,12 @@ import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.xml.XmlConfiguration;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Allows for setting up a Jetty server for testing based on XML configuration files.
  */
-@Ignore
+@Disabled
 public class TestableJettyServer
 {
     private List<URL> _xmlConfigurations;

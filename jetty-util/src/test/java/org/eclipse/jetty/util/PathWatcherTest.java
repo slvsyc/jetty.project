@@ -47,11 +47,11 @@ import org.eclipse.jetty.util.PathWatcher.PathWatchEvent;
 import org.eclipse.jetty.util.PathWatcher.PathWatchEventType;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 
-@Ignore
+@Disabled
 public class PathWatcherTest
 {
     public static final int QUIET_TIME;

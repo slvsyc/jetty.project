@@ -36,8 +36,8 @@ import org.eclipse.jetty.webapp.Origin;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebDescriptor;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,7 +52,7 @@ public class PlusDescriptorProcessorTest
     protected FragmentDescriptor fragDescriptor4;
     protected WebAppContext context;
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         context = new WebAppContext();
@@ -84,7 +84,7 @@ public class PlusDescriptorProcessorTest
         fragDescriptor4.parse();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();

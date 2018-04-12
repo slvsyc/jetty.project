@@ -31,8 +31,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.eclipse.jetty.io.ArrayByteBufferPool;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -41,7 +41,7 @@ public class GZIPContentDecoderTest
     ArrayByteBufferPool pool;
     AtomicInteger buffers = new AtomicInteger(0);
     
-    @Before
+    @BeforeEach
     public void beforeClass() throws Exception
     {
         buffers.set(0);
@@ -65,7 +65,7 @@ public class GZIPContentDecoderTest
             };
     }
     
-    @After
+    @AfterEach
     public void afterClass() throws Exception
     {
         assertEquals(0,buffers.get());

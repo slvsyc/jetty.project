@@ -30,21 +30,21 @@ import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MetaData;
 import org.eclipse.jetty.server.Request;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PatternRuleTest
 {
     private PatternRule _rule;
 
-    @Before
+    @BeforeEach
     public void init()
     {
         _rule = new TestPatternRule();
     }
 
-    @After
+    @AfterEach
     public void destroy()
     {
         _rule = null;

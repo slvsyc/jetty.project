@@ -38,9 +38,9 @@ import org.eclipse.jetty.client.util.ByteBufferContentProvider;
 import org.eclipse.jetty.io.ByteArrayEndPoint;
 import org.eclipse.jetty.util.Promise;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
@@ -48,14 +48,14 @@ public class HttpSenderOverHTTPTest
 {
     private HttpClient client;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         client = new HttpClient();
         client.start();
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         client.stop();

@@ -36,8 +36,8 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class ErrorHandlerTest
@@ -45,7 +45,7 @@ public class ErrorHandlerTest
     static Server server;
     static LocalConnector connector;
     
-    @BeforeClass
+    @BeforeAll
     public static void before() throws Exception
     {
         server = new Server();
@@ -104,7 +104,7 @@ public class ErrorHandlerTest
         server.start();
     }
     
-    @AfterClass
+    @AfterAll
     public static void after() throws Exception
     {
         server.stop();

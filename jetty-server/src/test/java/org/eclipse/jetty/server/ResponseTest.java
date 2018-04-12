@@ -81,8 +81,8 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ResponseTest
@@ -111,7 +111,7 @@ public class ResponseTest
     private HttpChannel _channel;
     private ByteBuffer _content = BufferUtil.allocate(16*1024);
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         BufferUtil.clear(_content);
@@ -182,7 +182,7 @@ public class ResponseTest
         });
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         _server.stop();

@@ -29,8 +29,8 @@ import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.SessionContext;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.servlet.ServletException;
@@ -101,7 +101,7 @@ public class TestHazelcastSessions
 
     String contextPath = "/";
 
-    @Before
+    @BeforeEach
     public void initialize()
         throws Exception
     {
@@ -131,7 +131,7 @@ public class TestHazelcastSessions
         server.start();
     }
 
-    @After
+    @AfterEach
     public void shutdown()
         throws Exception
     {

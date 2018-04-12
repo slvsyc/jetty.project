@@ -23,7 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class RewritePatternRuleTest extends AbstractRuleTestCase
@@ -40,7 +40,7 @@ public class RewritePatternRuleTest extends AbstractRuleTestCase
             };
     private RewritePatternRule _rule;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         start(false);

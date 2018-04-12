@@ -65,9 +65,9 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -86,7 +86,7 @@ public class HttpInputIntegrationTest
     private static HttpConfiguration __sslConfig;
     private static SslContextFactory __sslContextFactory;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception
     {
         __config = new HttpConfiguration();
@@ -142,7 +142,7 @@ public class HttpInputIntegrationTest
         __server.start();
     }
     
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception
     {
         __server.stop();

@@ -28,9 +28,9 @@ import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.util.ReadLineInputStream.Termination;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ReadLineInputStreamTest
@@ -41,7 +41,7 @@ public class ReadLineInputStreamTest
     ReadLineInputStream _in;
     volatile Thread _writer;
     
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         _queue.clear();
@@ -86,7 +86,7 @@ public class ReadLineInputStreamTest
         _writer.start();
     }
     
-    @After
+    @AfterEach
     public void after()  throws Exception
     {
         _pout=null;

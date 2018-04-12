@@ -36,7 +36,7 @@ import org.eclipse.jetty.websocket.jsr356.samples.Fruit;
 import org.eclipse.jetty.websocket.jsr356.samples.FruitBinaryEncoder;
 import org.eclipse.jetty.websocket.jsr356.samples.FruitTextEncoder;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -55,7 +55,7 @@ public class EncoderFactoryTest
         assertEquals(metadata.getObjectType(), type, "metadata.objectType");
     }
 
-    @Before
+    @BeforeEach
     public void initEncoderFactory()
     {
         WebSocketContainerScope containerScope = new SimpleContainerScope(WebSocketPolicy.newClientPolicy());

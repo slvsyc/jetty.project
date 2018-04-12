@@ -39,9 +39,9 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.session.DefaultSessionIdManager;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class BalancerServletTest
@@ -55,14 +55,14 @@ public class BalancerServletTest
     private Server balancer;
     private HttpClient client;
 
-    @Before
+    @BeforeEach
     public void prepare() throws Exception
     {
         client = new HttpClient();
         client.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         server1.stop();

@@ -56,7 +56,7 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.Scheduler;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -163,7 +163,7 @@ public class ThreadStarvationTest
         return _server;
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         _server.stop();

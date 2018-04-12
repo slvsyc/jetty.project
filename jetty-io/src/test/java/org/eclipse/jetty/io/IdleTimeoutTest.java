@@ -26,9 +26,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.util.thread.TimerScheduler;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class IdleTimeoutTest
@@ -39,7 +39,7 @@ public class IdleTimeoutTest
     TimerScheduler _timer;
     IdleTimeout _timeout;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         _open=true;
@@ -63,7 +63,7 @@ public class IdleTimeoutTest
         _timeout.setIdleTimeout(1000);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         _open=false;

@@ -39,9 +39,9 @@ import org.eclipse.jetty.websocket.jsr356.server.samples.beans.DateDecoder;
 import org.eclipse.jetty.websocket.jsr356.server.samples.beans.TimeEncoder;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.ConfiguredEchoSocket;
 import org.eclipse.jetty.websocket.jsr356.server.samples.echo.EchoSocketConfigurator;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -53,7 +53,7 @@ public class AnnotatedServerEndpointTest
 
     private static WSServer server;
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         File testdir = MavenTestingUtils.getTargetTestingDir(AnnotatedServerEndpointTest.class.getName());
@@ -70,7 +70,7 @@ public class AnnotatedServerEndpointTest
         server.deployWebapp(webapp);
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer()
     {
         server.stop();

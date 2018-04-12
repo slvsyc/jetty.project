@@ -65,8 +65,8 @@ import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class AsyncServletTest
@@ -90,7 +90,7 @@ public class AsyncServletTest
         __history.add(item);
     }
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         _connector = new ServerConnector(_server);
@@ -131,7 +131,7 @@ public class AsyncServletTest
         __latch=new CountDownLatch(1);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         _server.stop();

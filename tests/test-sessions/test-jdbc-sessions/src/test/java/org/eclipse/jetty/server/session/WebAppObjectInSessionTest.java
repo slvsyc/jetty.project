@@ -19,7 +19,7 @@
 package org.eclipse.jetty.server.session;
 
 import org.eclipse.jetty.util.resource.Resource;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -48,7 +48,7 @@ public class WebAppObjectInSessionTest extends AbstractWebAppObjectInSessionTest
     }
     
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception 
     {
         JdbcTestHelper.shutdown(null);

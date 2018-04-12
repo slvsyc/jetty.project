@@ -40,9 +40,9 @@ import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class EventSourceServletTest
@@ -51,7 +51,7 @@ public class EventSourceServletTest
     private NetworkConnector connector;
     private ServletContextHandler context;
 
-    @Before
+    @BeforeEach
     public void startServer() throws Exception
     {
         server = new Server(0);
@@ -62,7 +62,7 @@ public class EventSourceServletTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         if (server != null)

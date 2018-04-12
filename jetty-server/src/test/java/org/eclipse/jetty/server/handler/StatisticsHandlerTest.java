@@ -35,8 +35,8 @@ import org.eclipse.jetty.io.ConnectionStatistics;
 import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -53,7 +53,7 @@ public class StatisticsHandlerTest
     private LatchHandler _latchHandler;
     private StatisticsHandler _statsHandler;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         _server = new Server();
@@ -70,7 +70,7 @@ public class StatisticsHandlerTest
         _latchHandler.setHandler(_statsHandler);
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         _server.stop();

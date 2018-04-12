@@ -62,7 +62,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
@@ -71,7 +71,7 @@ public class ThreadStarvationTest
 {
     private Server _server;
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         if (_server != null)

@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.eclipse.jetty.start.util.RebuildTestResources;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
@@ -71,7 +71,7 @@ public class TestBadUseCases
 
     // TODO unsure how this failure should be handled
     @Test
-    @Ignore
+    @Disabled
     public void testBadConfig() throws Exception
     {
         File homeDir = MavenTestingUtils.getTestResourceDir("dist-home");

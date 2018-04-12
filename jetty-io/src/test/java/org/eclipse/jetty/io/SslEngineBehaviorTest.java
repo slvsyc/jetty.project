@@ -31,9 +31,9 @@ import javax.net.ssl.SSLEngineResult;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
@@ -42,7 +42,7 @@ public class SslEngineBehaviorTest
 {
     private static SslContextFactory sslCtxFactory;
 
-    @BeforeClass
+    @BeforeAll
     public static void startSsl() throws Exception
     {
         sslCtxFactory = new SslContextFactory();
@@ -54,7 +54,7 @@ public class SslEngineBehaviorTest
         sslCtxFactory.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopSsl() throws Exception
     {
         sslCtxFactory.stop();

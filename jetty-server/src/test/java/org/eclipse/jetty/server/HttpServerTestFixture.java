@@ -37,8 +37,8 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HotSwapHandler;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public class HttpServerTestFixture
 {    // Useful constants
@@ -61,7 +61,7 @@ public class HttpServerTestFixture
         return socket;
     }
 
-    @Before
+    @BeforeEach
     public void before()
     {
         _threadPool = new QueuedThreadPool();
@@ -85,7 +85,7 @@ public class HttpServerTestFixture
         _serverURI = _server.getURI();
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         _server.stop();

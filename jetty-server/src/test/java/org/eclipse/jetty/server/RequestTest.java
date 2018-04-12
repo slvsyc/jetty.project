@@ -75,9 +75,9 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.log.StacklessLogging;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class RequestTest
@@ -87,7 +87,7 @@ public class RequestTest
     private LocalConnector _connector;
     private RequestHandler _handler;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         _server = new Server();
@@ -110,7 +110,7 @@ public class RequestTest
         _server.start();
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         _server.stop();
@@ -1029,7 +1029,7 @@ public class RequestTest
     
     
     @Test
-    @Ignore("See issue #1175")
+    @Disabled("See issue #1175")
     public void testMultiPartFormDataReadInputThenParams() throws Exception
     {
         final File tmpdir = MavenTestingUtils.getTargetTestingDir("multipart");
@@ -1542,7 +1542,7 @@ public class RequestTest
         
     }
 
-    @Ignore("No longer relevant")
+    @Disabled("No longer relevant")
     @Test
     public void testCookieLeak() throws Exception
     {

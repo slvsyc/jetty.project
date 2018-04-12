@@ -48,9 +48,9 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.hamcrest.Matchers;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class QoSFilterTest
@@ -63,7 +63,7 @@ public class QoSFilterTest
     private final int NUM_LOOPS = 6;
     private final int MAX_QOS = 4;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         _tester = new ServletTester();
@@ -79,7 +79,7 @@ public class QoSFilterTest
         _tester.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         _tester.stop();

@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class AsyncContextListenersTest
@@ -59,7 +59,7 @@ public class AsyncContextListenersTest
         _server.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         _server.stop();

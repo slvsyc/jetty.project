@@ -42,7 +42,7 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.jupiter.api.Test;
 
@@ -107,7 +107,7 @@ public class SocketChannelEndPointInterestsTest
         selectorManager.start();
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         if (scheduler!=null)

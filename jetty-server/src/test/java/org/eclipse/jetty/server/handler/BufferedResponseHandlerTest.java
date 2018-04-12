@@ -34,9 +34,9 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -51,7 +51,7 @@ public class BufferedResponseHandlerTest
     private static BufferedResponseHandler _bufferedHandler;
     private static TestHandler _test;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception
     {
         _server = new Server();
@@ -76,13 +76,13 @@ public class BufferedResponseHandlerTest
         // BufferedResponseHandler.LOG.setDebugEnabled(true);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception
     {
         _server.stop();
     }
 
-    @Before
+    @BeforeEach
     public void before()
     {
         _test._bufferSize=-1;

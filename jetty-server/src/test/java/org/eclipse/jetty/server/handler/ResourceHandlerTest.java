@@ -52,10 +52,10 @@ import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
@@ -74,7 +74,7 @@ public class ResourceHandlerTest
     private static ContextHandler _contextHandler;
     private static ResourceHandler _resourceHandler;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception
     {
         File dir = MavenTestingUtils.getTargetFile("test-classes/simple");
@@ -139,13 +139,13 @@ public class ResourceHandlerTest
         _server.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception
     {
         _server.stop();
     }
 
-    @Before
+    @BeforeEach
     public void before()
     {
         _config.setOutputBufferSize(4096);

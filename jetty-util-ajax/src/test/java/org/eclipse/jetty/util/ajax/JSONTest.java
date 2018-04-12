@@ -37,7 +37,7 @@ import java.util.TimeZone;
 
 import org.eclipse.jetty.util.DateCache;
 import org.eclipse.jetty.util.ajax.JSON.Output;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
@@ -60,7 +60,7 @@ public class JSONTest
     "\"undefined\": undefined," +
     "}";
 
-    @Before
+    @BeforeEach
     public void resetJSON()
     {
         // Reset JSON configuration to default with each testcase

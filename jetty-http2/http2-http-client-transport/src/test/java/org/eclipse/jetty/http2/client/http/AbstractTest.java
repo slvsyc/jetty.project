@@ -29,7 +29,7 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 public class AbstractTest
 {
@@ -71,7 +71,7 @@ public class AbstractTest
         client.setExecutor(clientExecutor);
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         if (client != null)

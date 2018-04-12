@@ -43,8 +43,8 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
@@ -69,7 +69,7 @@ public class AsyncStressTest
         {"/path?suspend=60000&complete=<PERIOD>","COMPLETED"},
     };
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         _server.manage(_threads);
@@ -83,7 +83,7 @@ public class AsyncStressTest
         _addr=InetAddress.getLocalHost();
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         _server.stop();

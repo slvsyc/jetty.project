@@ -23,14 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class MsieSslRuleTest extends AbstractRuleTestCase
 {
     private MsieSslRule _rule;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         // enable SSL

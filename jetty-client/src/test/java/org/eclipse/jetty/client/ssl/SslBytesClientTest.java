@@ -48,9 +48,9 @@ import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SslBytesClientTest extends SslBytesTest
@@ -61,7 +61,7 @@ public class SslBytesClientTest extends SslBytesTest
     private SSLServerSocket acceptor;
     private SimpleProxy proxy;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         threadPool = Executors.newCachedThreadPool();
@@ -84,7 +84,7 @@ public class SslBytesClientTest extends SslBytesTest
         logger.info(":{} <==> :{}", proxy.getPort(), serverPort);
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         if (acceptor != null)

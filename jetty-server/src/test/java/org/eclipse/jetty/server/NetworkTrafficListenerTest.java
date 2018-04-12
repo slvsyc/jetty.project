@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.io.NetworkTrafficListener;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.BufferUtil;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class NetworkTrafficListenerTest
@@ -62,7 +62,7 @@ public class NetworkTrafficListenerTest
         server.start();
     }
 
-    @After
+    @AfterEach
     public void destroyConnector() throws Exception
     {
         if (server != null)

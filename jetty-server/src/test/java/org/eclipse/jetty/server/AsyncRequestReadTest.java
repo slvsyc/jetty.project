@@ -43,8 +43,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.IO;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class AsyncRequestReadTest
@@ -53,7 +53,7 @@ public class AsyncRequestReadTest
     private static ServerConnector connector;
     private final static BlockingQueue<Long> __total=new BlockingArrayQueue<>();
 
-    @Before
+    @BeforeEach
     public void startServer() throws Exception
     {
         server = new Server();
@@ -63,7 +63,7 @@ public class AsyncRequestReadTest
         server.addConnector(connector);
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         server.stop();

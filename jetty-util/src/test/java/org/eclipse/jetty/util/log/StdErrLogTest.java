@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -48,7 +48,7 @@ public class StdErrLogTest
         StdErrLog.setTagPad(0);
     }
     
-    @Before
+    @BeforeEach
     public void before()
     {
         Thread.currentThread().setName("tname");

@@ -60,7 +60,7 @@ import org.eclipse.jetty.util.resource.PathResource;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
@@ -137,7 +137,7 @@ public class DeploymentErrorTest
         return docroots;
     }
 
-    @After
+    @AfterEach
     public void tearDownServer() throws Exception
     {
         if (stacklessLogging != null)

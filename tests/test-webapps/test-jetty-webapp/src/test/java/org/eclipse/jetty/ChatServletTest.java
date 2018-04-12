@@ -23,8 +23,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletTester;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -37,7 +37,7 @@ public class ChatServletTest
 
     private final ServletTester tester = new ServletTester();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         tester.setContextPath("/");
@@ -47,7 +47,7 @@ public class ChatServletTest
         tester.start();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         tester.stop();

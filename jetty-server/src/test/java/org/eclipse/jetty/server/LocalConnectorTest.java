@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.server.LocalConnector.LocalEndPoint;
 import org.eclipse.jetty.util.BufferUtil;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class LocalConnectorTest
@@ -40,7 +40,7 @@ public class LocalConnectorTest
     private Server _server;
     private LocalConnector _connector;
 
-    @Before
+    @BeforeEach
     public void prepare() throws Exception
     {
         _server = new Server();
@@ -51,7 +51,7 @@ public class LocalConnectorTest
         _server.start();
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         _server.stop();

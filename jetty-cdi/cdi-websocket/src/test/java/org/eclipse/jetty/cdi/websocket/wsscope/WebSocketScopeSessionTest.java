@@ -40,8 +40,8 @@ import org.eclipse.jetty.cdi.websocket.WebSocketScopeContext;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class WebSocketScopeSessionTest
@@ -49,7 +49,7 @@ public class WebSocketScopeSessionTest
     private static Weld weld;
     private static WeldContainer container;
 
-    @BeforeClass
+    @BeforeAll
     public static void startWeld()
     {
         Logging.config();
@@ -57,7 +57,7 @@ public class WebSocketScopeSessionTest
         container = weld.initialize();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopWeld()
     {
         weld.shutdown();

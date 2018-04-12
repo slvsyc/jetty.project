@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("unused")
@@ -31,7 +31,7 @@ public class ValidUrlRuleTest extends AbstractRuleTestCase
 {
     private ValidUrlRule _rule;
     
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         start(true);
@@ -86,7 +86,7 @@ public class ValidUrlRuleTest extends AbstractRuleTestCase
         assertEquals("foo",_response.getReason());
     }
     
-    @Ignore("Not working in jetty-9")
+    @Disabled("Not working in jetty-9")
     @Test
     public void testInvalidShamrock() throws Exception
     {
@@ -100,7 +100,7 @@ public class ValidUrlRuleTest extends AbstractRuleTestCase
         assertEquals("foo",_response.getReason());
     }
 
-    @Ignore("Not working in jetty-9")
+    @Disabled("Not working in jetty-9")
     @Test
     public void testValidShamrock() throws Exception
     {

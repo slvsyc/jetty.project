@@ -44,9 +44,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ConcatServletTest
@@ -54,7 +54,7 @@ public class ConcatServletTest
     private Server server;
     private LocalConnector connector;
 
-    @Before
+    @BeforeEach
     public void prepareServer() throws Exception
     {
         server = new Server();
@@ -62,7 +62,7 @@ public class ConcatServletTest
         server.addConnector(connector);
     }
 
-    @After
+    @AfterEach
     public void destroy() throws Exception
     {
         if (server != null)

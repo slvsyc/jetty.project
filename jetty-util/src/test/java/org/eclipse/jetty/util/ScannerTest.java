@@ -35,9 +35,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.toolchain.test.FS;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.Scanner.Notification;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -49,7 +49,7 @@ public class ScannerTest
     static BlockingQueue<Event> _queue = new LinkedBlockingQueue<Event>();
     static BlockingQueue<List<String>> _bulk = new LinkedBlockingQueue<List<String>>();
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() throws Exception
     {
         File testDir = MavenTestingUtils.getTargetTestingDir(ScannerTest.class.getSimpleName());
@@ -98,7 +98,7 @@ public class ScannerTest
         assertTrue(_bulk.isEmpty());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownAfterClass() throws Exception
     {
         _scanner.stop();

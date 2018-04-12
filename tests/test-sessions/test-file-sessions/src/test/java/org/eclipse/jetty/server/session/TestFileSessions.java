@@ -25,12 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -40,13 +39,13 @@ import org.junit.jupiter.api.Test;
  */
 public class TestFileSessions extends AbstractTestBase
 {
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
        FileTestHelper.setup();
     }
     
-    @After 
+    @AfterEach
     public void after()
     {
        FileTestHelper.teardown();

@@ -58,8 +58,8 @@ import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -104,7 +104,7 @@ public class SSLEngineTest
     private ServerConnector connector;
 
 
-    @Before
+    @BeforeEach
     public void startServer() throws Exception
     {
         String keystore = MavenTestingUtils.getTestResourceFile("keystore").getAbsolutePath();
@@ -124,7 +124,7 @@ public class SSLEngineTest
         server.addConnector(connector);
     }
 
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         server.stop();

@@ -49,8 +49,8 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -64,7 +64,7 @@ public class AsyncContextTest
     private ServletContextHandler _contextHandler;
     private LocalConnector _connector;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         _server = new Server();
@@ -106,7 +106,7 @@ public class AsyncContextTest
         _server.start();
     }
 
-    @After
+    @AfterEach
     public void after() throws Exception
     {
         _server.stop();
@@ -502,7 +502,7 @@ public class AsyncContextTest
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         _server.stop();

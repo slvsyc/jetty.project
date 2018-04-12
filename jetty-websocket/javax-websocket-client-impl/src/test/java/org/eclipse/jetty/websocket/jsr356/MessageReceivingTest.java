@@ -43,10 +43,10 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +67,7 @@ public class MessageReceivingTest {
         VERY_LONG_STRING = new String(raw, StandardCharsets.UTF_8);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception {
         server = new Server();
         ServerConnector connector = new ServerConnector(server);
@@ -92,7 +92,7 @@ public class MessageReceivingTest {
         serverUri = new URI(String.format("ws://%s:%d/", host, port));
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer() {
         try {
             server.stop();
@@ -101,12 +101,12 @@ public class MessageReceivingTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void initClient() {
         container = ContainerProvider.getWebSocketContainer();
     }
     
-    @After
+    @AfterEach
     public void stopClient() throws Exception
     {
         ((LifeCycle)container).stop();

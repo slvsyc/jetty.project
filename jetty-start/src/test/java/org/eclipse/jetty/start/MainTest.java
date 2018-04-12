@@ -30,13 +30,13 @@ import java.util.List;
 
 import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class MainTest
 {
-    @Before
+    @BeforeEach
     public void clearSystemProperties()
     {
         System.setProperty("jetty.home","");
@@ -90,7 +90,7 @@ public class MainTest
     }
 
     @Test
-    @Ignore("Too noisy for general testing")
+    @Disabled("Too noisy for general testing")
     public void testListConfig() throws Exception
     {
         List<String> cmdLineArgs = new ArrayList<>();
@@ -106,7 +106,7 @@ public class MainTest
     }
 
     @Test
-    @Ignore("Just a bit noisy for general testing")
+    @Disabled("Just a bit noisy for general testing")
     public void testHelp() throws Exception
     {
         Main main = new Main();

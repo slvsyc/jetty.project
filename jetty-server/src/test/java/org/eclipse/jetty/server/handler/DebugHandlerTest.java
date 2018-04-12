@@ -54,8 +54,8 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.Scheduler;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DebugHandlerTest
@@ -79,7 +79,7 @@ public class DebugHandlerTest
     private ByteArrayOutputStream capturedLog;
     
     @SuppressWarnings("deprecation")
-    @Before
+    @BeforeEach
     public void startServer() throws Exception
     {
         server = new Server();
@@ -148,7 +148,7 @@ public class DebugHandlerTest
         }
     }
     
-    @After
+    @AfterEach
     public void stopServer() throws Exception
     {
         server.stop();

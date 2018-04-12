@@ -42,7 +42,7 @@ import org.eclipse.jetty.websocket.jsr356.metadata.DecoderMetadataSet;
 import org.eclipse.jetty.websocket.jsr356.samples.Fruit;
 import org.eclipse.jetty.websocket.jsr356.samples.FruitDecoder;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DecoderFactoryTest
@@ -58,7 +58,7 @@ public class DecoderFactoryTest
         assertEquals(metadata.getObjectType(), type, "metadata.objectType");
     }
 
-    @Before
+    @BeforeEach
     public void initDecoderFactory()
     {
         WebSocketContainerScope containerScope = new SimpleContainerScope(WebSocketPolicy.newClientPolicy());

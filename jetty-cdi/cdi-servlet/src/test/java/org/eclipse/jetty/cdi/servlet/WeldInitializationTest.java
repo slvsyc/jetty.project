@@ -36,8 +36,8 @@ import org.eclipse.jetty.util.log.JettyLogHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.resource.Resource;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class WeldInitializationTest
@@ -46,7 +46,7 @@ public class WeldInitializationTest
     private static Server server;
     private static URI serverHttpURI;
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception
     {
         JettyLogHandler.config();
@@ -79,7 +79,7 @@ public class WeldInitializationTest
         serverHttpURI = new URI(String.format("http://%s:%d/",host,port));
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer()
     {
         try

@@ -53,7 +53,7 @@ import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class HttpClientRedirectTest extends AbstractHttpClientServerTest
@@ -287,7 +287,7 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testRedirectFailed() throws Exception
     {
         // TODO this test is failing with timout after an ISP upgrade??  DNS dependent?

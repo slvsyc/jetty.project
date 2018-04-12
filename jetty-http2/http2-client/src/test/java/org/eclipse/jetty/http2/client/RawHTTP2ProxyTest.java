@@ -59,7 +59,7 @@ import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 
 import org.junit.jupiter.api.Test;
 
@@ -95,7 +95,7 @@ public class RawHTTP2ProxyTest
         return client;
     }
 
-    @After
+    @AfterEach
     public void dispose() throws Exception
     {
         for (int i = clients.size() - 1; i >= 0; i--)

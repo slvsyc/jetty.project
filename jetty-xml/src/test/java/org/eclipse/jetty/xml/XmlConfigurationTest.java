@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class XmlConfigurationTest
@@ -760,7 +760,7 @@ public class XmlConfigurationTest
     }
     
     @Test
-    @Ignore
+    @Disabled
     public void testSetBadBoolean() throws Exception
     {
         XmlConfiguration xmlConfiguration = new XmlConfiguration("" +

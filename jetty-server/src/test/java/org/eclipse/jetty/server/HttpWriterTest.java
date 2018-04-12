@@ -30,7 +30,7 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.TypeUtil;
 import org.eclipse.jetty.util.Utf8StringBuilder;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class HttpWriterTest
@@ -38,7 +38,7 @@ public class HttpWriterTest
     private HttpOutput _httpOut;
     private ByteBuffer _bytes;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         _bytes = BufferUtil.allocate(2048);

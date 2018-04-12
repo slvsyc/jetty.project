@@ -58,9 +58,9 @@ import org.eclipse.jetty.util.SocketAddressResolver;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.Assume;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -113,7 +113,7 @@ public abstract class AbstractTest
         startClient();
     }
 
-    @Before
+    @BeforeEach
     public void before() throws Exception
     {
         if(sockFile == null || !Files.exists( sockFile ))
@@ -123,7 +123,7 @@ public abstract class AbstractTest
         }
     }
 
-    @After
+    @AfterEach
     public void stop() throws Exception
     {
         stopClient();
