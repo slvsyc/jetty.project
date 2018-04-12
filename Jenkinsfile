@@ -43,7 +43,7 @@ def getFullBuild(jdk, os) {
                       publisherStrategy: 'EXPLICIT',
                       globalMavenSettingsConfig: 'oss-settings.xml',
                       mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}") {
-                sh "mvn -V -B clean install -DskipTests -T6"
+                sh "mvn -U -V -B clean install -DskipTests -T6"
               }
 
             }
@@ -65,7 +65,7 @@ def getFullBuild(jdk, os) {
                       publisherStrategy: 'EXPLICIT',
                       globalMavenSettingsConfig: 'oss-settings.xml',
                       mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}") {
-                sh "mvn -V -B javadoc:javadoc -T5"
+                sh "mvn -U -V -B javadoc:javadoc -T5"
               }
             }
           }
@@ -89,7 +89,7 @@ def getFullBuild(jdk, os) {
                       globalMavenSettingsConfig: 'oss-settings.xml',
                       mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}") {
                 //
-                sh "mvn -V -B install -Denv=ci -Dmaven.test.failure.ignore=true -Prun-its -T3 -e -Dmaven.repo.local=${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER} -Pmongodb"
+                sh "mvn -U -V -B install -Denv=ci -Dmaven.test.failure.ignore=true -Prun-its -T3 -e -Dmaven.repo.local=${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER} -Pmongodb"
               }
               // withMaven doesn't label..
               // Report failures in the jenkins UI
