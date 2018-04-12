@@ -43,15 +43,10 @@ import org.eclipse.jetty.websocket.common.test.IncomingFramesCapture;
 import org.eclipse.jetty.websocket.common.test.UnitGenerator;
 import org.eclipse.jetty.websocket.common.test.UnitParser;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class TestABCase2
 {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     private WebSocketPolicy policy = new WebSocketPolicy(WebSocketBehavior.CLIENT);
 
     @Test
@@ -323,9 +318,8 @@ public class TestABCase2
         IncomingFramesCapture capture = new IncomingFramesCapture();
         parser.setIncomingFramesHandler(capture);
 
-        expectedException.expect(ProtocolException.class);
-        expectedException.expectMessage(containsString("Invalid control frame payload length"));
-        parser.parseQuietly(expected);
+        ProtocolException x = assertThrows(ProtocolException.class, () -> parser.parseQuietly(expected));
+        assertThat(x.getMessage(), containsString("Invalid control frame payload length"));
     }
 
 }

@@ -18,8 +18,10 @@
 
 package org.eclipse.jetty.websocket.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -32,17 +34,12 @@ import org.eclipse.jetty.websocket.common.test.BlockheadClientRequest;
 import org.eclipse.jetty.websocket.common.test.BlockheadConnection;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
 import org.eclipse.jetty.websocket.server.examples.MyEchoServlet;
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class WebSocketInvalidVersionTest
 {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     private static BlockheadClient client;
     private static SimpleServletServer server;
 
@@ -87,12 +84,11 @@ public class WebSocketInvalidVersionTest
 
         Future<BlockheadConnection> connFut = request.sendAsync();
 
-        expectedException.expect(ExecutionException.class);
-        expectedException.expectCause(instanceOf(UpgradeException.class));
-        expectedException.expectMessage(containsString("400 Unsupported websocket version specification"));
+        ExecutionException x = assertThrows(ExecutionException.class, ()-> {
+            connFut.get(Timeouts.CONNECT, Timeouts.CONNECT_UNIT);
+        });
+        assertThat(x.getCause(), instanceOf(UpgradeException.class));
+        assertThat(x.getMessage(), containsString("400 Unsupported websocket version specification"));
 
-        try (BlockheadConnection clientConn = connFut.get(Timeouts.CONNECT, Timeouts.CONNECT_UNIT))
-        {
-        }
     }
 }

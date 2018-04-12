@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,18 +36,13 @@ import org.eclipse.jetty.start.config.JettyHomeConfigSource;
 import org.eclipse.jetty.start.fileinits.MavenLocalRepoFileInitializer.Coordinates;
 import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
 import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
 
 @ExtendWith(WorkDirExtension.class)
 public class MavenLocalRepoFileInitializerTest
 {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-    
     public WorkDir testdir;
     
     private BaseHome baseHome;
@@ -77,9 +73,8 @@ public class MavenLocalRepoFileInitializerTest
     {
         MavenLocalRepoFileInitializer repo = new MavenLocalRepoFileInitializer(baseHome);
         String ref = "maven://www.eclipse.org/jetty";
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage(containsString("Not a valid maven:// uri"));
-        repo.getCoordinates(URI.create(ref));
+        RuntimeException x = assertThrows(RuntimeException.class, () -> repo.getCoordinates(URI.create(ref)));
+        assertThat(x.getMessage(), containsString("Not a valid maven:// uri"));
     }
 
     @Test

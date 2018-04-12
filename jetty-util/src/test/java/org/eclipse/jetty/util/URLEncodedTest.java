@@ -27,11 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
-
 
 /**
  * URL Encoding / Decoding Tests
@@ -44,13 +40,12 @@ public class URLEncodedTest
          * Uncomment to set setting the System property to something other than the default of UTF-8.
          * Beware however that you will have to @Ignore all the other tests other than testUrlEncodedStream!
 
+            // TODO: Investigate usage of special test method with annotation instead
+            // @EnabledIfSystemProperty(named = "org.eclipse.jetty.util.UrlEncoding.charset", matches = "\\p{Alnum}")
             System.setProperty("org.eclipse.jetty.util.UrlEncoding.charset", StringUtil.__ISO_8859_1);
          */
     }
     
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Test
     public void testUrlEncoded()
     {

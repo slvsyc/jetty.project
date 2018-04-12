@@ -18,10 +18,11 @@
 
 package org.eclipse.jetty.test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,17 +61,13 @@ import org.eclipse.jetty.util.resource.PathResource;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 
 public class DeploymentErrorTest
 {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Rule
     public TestName testname = new TestName();
 
@@ -168,10 +165,11 @@ public class DeploymentErrorTest
      * The webapp is a WebAppContext with {@code throwUnavailableOnStartupException=true;}.
      */
     @Test
-    public void testInitial_BadApp_UnavailableTrue() throws Exception
+    public void testInitial_BadApp_UnavailableTrue()
     {
-        expectedException.expect(NoClassDefFoundError.class);
-        startServer(docroots -> copyBadApp("badapp.xml", docroots));
+        assertThrows(NoClassDefFoundError.class, ()-> {
+            startServer(docroots -> copyBadApp("badapp.xml", docroots));
+        });
 
         // The above should have prevented the server from starting.
         assertThat("server.isRunning", server.isRunning(), is(false));

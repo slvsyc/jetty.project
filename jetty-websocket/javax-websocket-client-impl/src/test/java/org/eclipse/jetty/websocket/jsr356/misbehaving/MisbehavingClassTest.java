@@ -21,6 +21,7 @@ package org.eclipse.jetty.websocket.jsr356.misbehaving;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,15 +38,10 @@ import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.eclipse.jetty.websocket.jsr356.EchoHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class MisbehavingClassTest
 {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-    
     private static Server server;
     private static EchoHandler handler;
     private static URI serverUri;
@@ -98,13 +94,12 @@ public class MisbehavingClassTest
         server.addBean(container); // allow to shutdown with server
         EndpointRuntimeOnOpen socket = new EndpointRuntimeOnOpen();
 
-        try (StacklessLogging logging = new StacklessLogging(EndpointRuntimeOnOpen.class, WebSocketSession.class))
+        try (StacklessLogging ignore = new StacklessLogging(EndpointRuntimeOnOpen.class, WebSocketSession.class))
         {
-            // expecting IOException during onOpen
-            expectedException.expect(IOException.class);
-            expectedException.expectCause(instanceOf(RuntimeException.class));
-            container.connectToServer(socket, serverUri);
-            expectedException.reportMissingExceptionWithMessage("Should have failed .connectToServer()");
+            // expecting IOException during onOpen - Should have failed .connectToServer()
+            IOException e = assertThrows(IOException.class,
+                    () -> container.connectToServer(socket, serverUri));
+            assertThat(e.getCause(), instanceOf(RuntimeException.class));
             
             assertThat("Close should have occurred",socket.closeLatch.await(1,TimeUnit.SECONDS),is(true));
 
@@ -123,11 +118,10 @@ public class MisbehavingClassTest
 
         try (StacklessLogging logging = new StacklessLogging(AnnotatedRuntimeOnOpen.class, WebSocketSession.class))
         {
-            // expecting IOException during onOpen
-            expectedException.expect(IOException.class);
-            expectedException.expectCause(instanceOf(RuntimeException.class));
-            container.connectToServer(socket, serverUri);
-            expectedException.reportMissingExceptionWithMessage("Should have failed .connectToServer()");
+            // expecting IOException during onOpen - Should have failed .connectToServer()
+            IOException e = assertThrows(IOException.class,
+                    () -> container.connectToServer(socket, serverUri));
+            assertThat(e.getCause(), instanceOf(RuntimeException.class));
             
             assertThat("Close should have occurred",socket.closeLatch.await(1,TimeUnit.SECONDS),is(true));
 

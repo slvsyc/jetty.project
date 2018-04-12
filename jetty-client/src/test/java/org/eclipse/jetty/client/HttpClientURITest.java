@@ -18,9 +18,11 @@
 
 package org.eclipse.jetty.client;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
@@ -51,16 +53,10 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class HttpClientURITest extends AbstractHttpClientServerTest
 {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-    
     public HttpClientURITest(SslContextFactory sslContextFactory)
     {
         super(sslContextFactory);
@@ -88,8 +84,9 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
     public void testIDNHost() throws Exception
     {
         startClient();
-        expectedException.expect(IllegalArgumentException.class);
-        client.newRequest(scheme + "://пример.рф"); // example.com-like host in IDN domain
+        assertThrows(IllegalArgumentException.class, ()-> {
+            client.newRequest(scheme + "://пример.рф"); // example.com-like host in IDN domain
+        });
     }
 
     @Test
@@ -116,12 +113,13 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             HttpField location = response.getHeaders().getField(HttpHeader.LOCATION);
             assertEquals(incorrectlyDecoded, location.getValue());
 
-            expectedException.expect(ExecutionException.class);
-            expectedException.expectCause(instanceOf(IllegalArgumentException.class));
-            client.newRequest("localhost", server.getLocalPort())
-                    .timeout(5, TimeUnit.SECONDS)
-                    .followRedirects(true)
-                    .send();
+            ExecutionException x = assertThrows(ExecutionException.class, ()-> {
+                client.newRequest("localhost", server.getLocalPort())
+                        .timeout(5, TimeUnit.SECONDS)
+                        .followRedirects(true)
+                        .send();
+            });
+            assertThat(x.getCause(), instanceOf(IllegalArgumentException.class));
         }
         finally
         {

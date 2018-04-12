@@ -18,7 +18,9 @@
 
 package org.eclipse.jetty.start;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,9 +29,7 @@ import java.util.List;
 import org.eclipse.jetty.start.util.RebuildTestResources;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.junit.jupiter.api.Disabled;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -56,9 +56,6 @@ public class TestBadUseCases
 
         return ret;
     }
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Parameter(0)
     public String caseName;
@@ -91,8 +88,7 @@ public class TestBadUseCases
             }
         }
 
-        expectedException.expect(UsageException.class);
-        expectedException.expectMessage(containsString(expectedErrorMessage));
-        main.processCommandLine(cmdLine);
+        UsageException x = assertThrows(UsageException.class, ()->main.processCommandLine(cmdLine));
+        assertThat(x.getMessage(), containsString(expectedErrorMessage));
     }
 }

@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -35,15 +36,10 @@ import org.eclipse.jetty.websocket.common.test.IncomingFramesCapture;
 import org.eclipse.jetty.websocket.common.test.UnitParser;
 import org.eclipse.jetty.websocket.common.util.MaskedByteBuffer;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class TextPayloadParserTest
 {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Test
     public void testFrameTooLargeDueToPolicy() throws Exception
     {
@@ -69,8 +65,7 @@ public class TextPayloadParserTest
         IncomingFramesCapture capture = new IncomingFramesCapture();
         parser.setIncomingFramesHandler(capture);
 
-        expectedException.expect(MessageTooLargeException.class);
-        parser.parseQuietly(buf);
+        assertThrows(MessageTooLargeException.class, ()->parser.parseQuietly(buf));
     }
 
     @Test

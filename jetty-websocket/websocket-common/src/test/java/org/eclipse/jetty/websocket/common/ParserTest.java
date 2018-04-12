@@ -21,6 +21,7 @@ package org.eclipse.jetty.websocket.common;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -42,15 +43,10 @@ import org.eclipse.jetty.websocket.common.test.UnitGenerator;
 import org.eclipse.jetty.websocket.common.test.UnitParser;
 import org.eclipse.jetty.websocket.common.util.Hex;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
 public class ParserTest
 {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     /**
      * Similar to the server side 5.15 testcase. A normal 2 fragment text text message, followed by another continuation.
      */
@@ -69,9 +65,8 @@ public class ParserTest
         IncomingFramesCapture capture = new IncomingFramesCapture();
         parser.setIncomingFramesHandler(capture);
 
-        expectedException.expect(ProtocolException.class);
-        expectedException.expectMessage(containsString("CONTINUATION frame without prior !FIN"));
-        parser.parseQuietly(completeBuf);
+        ProtocolException x = assertThrows(ProtocolException.class, () -> parser.parseQuietly(completeBuf));
+        assertThat(x.getMessage(), containsString("CONTINUATION frame without prior !FIN"));
     }
 
     /**
@@ -90,9 +85,8 @@ public class ParserTest
         IncomingFramesCapture capture = new IncomingFramesCapture();
         parser.setIncomingFramesHandler(capture);
 
-        expectedException.expect(ProtocolException.class);
-        expectedException.expectMessage(containsString("Unexpected TEXT frame"));
-        parser.parseQuietly(completeBuf);
+        ProtocolException x = assertThrows(ProtocolException.class, () -> parser.parseQuietly(completeBuf));
+        assertThat(x.getMessage(), containsString("Unexpected TEXT frame"));
     }
 
     /**
