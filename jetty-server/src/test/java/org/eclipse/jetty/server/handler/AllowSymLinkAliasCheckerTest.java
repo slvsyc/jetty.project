@@ -22,7 +22,6 @@ import static java.time.Duration.ofSeconds;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assume.assumeNoException;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 import java.io.File;
@@ -34,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.server.LocalConnector;
@@ -44,30 +44,29 @@ import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.resource.PathResource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.opentest4j.TestAbortedException;
 
-@RunWith(Parameterized.class)
 public class AllowSymLinkAliasCheckerTest
 {
-    @Parameterized.Parameters(name = "{0}")
-    public static List<Object[]> params()
+    public static Stream<Arguments> params()
     {
-        List<Object[]> data = new ArrayList<>();
+        List<Arguments> data = new ArrayList<>();
 
         String dirs[] = {"/workDir/", "/testdirlnk/", "/testdirprefixlnk/", "/testdirsuffixlnk/",
                 "/testdirwraplnk/"};
 
         for (String dirname : dirs)
         {
-            data.add(new Object[]{dirname, 200, "text/html", "Directory: " + dirname});
-            data.add(new Object[]{dirname + "testfile.txt", 200, "text/plain", "Hello TestFile"});
-            data.add(new Object[]{dirname + "testfilelnk.txt", 200, "text/plain", "Hello TestFile"});
-            data.add(new Object[]{dirname + "testfileprefixlnk.txt", 200, "text/plain", "Hello TestFile"});
+            data.add(Arguments.of(dirname, 200, "text/html", "Directory: " + dirname));
+            data.add(Arguments.of(dirname + "testfile.txt", 200, "text/plain", "Hello TestFile"));
+            data.add(Arguments.of(dirname + "testfilelnk.txt", 200, "text/plain", "Hello TestFile"));
+            data.add(Arguments.of(dirname + "testfileprefixlnk.txt", 200, "text/plain", "Hello TestFile"));
         }
 
-        return data;
+        return data.stream();
     }
 
     private Server server;
@@ -116,7 +115,7 @@ public class AllowSymLinkAliasCheckerTest
         {
             // If unable to create symlink, no point testing the rest.
             // This is the path that Microsoft Windows takes.
-            assumeNoException(e);
+            abortNotSupported(e);
         }
 
         Path testfileTxt = testdir.resolve("testfile.txt");
@@ -138,7 +137,7 @@ public class AllowSymLinkAliasCheckerTest
         {
             // If unable to create symlink, no point testing the rest.
             // This is the path that Microsoft Windows takes.
-            assumeNoException(e);
+            abortNotSupported(e);
         }
 
         try
@@ -153,8 +152,15 @@ public class AllowSymLinkAliasCheckerTest
         {
             // If unable to create symlink, no point testing the rest.
             // This is the path that Microsoft Windows takes.
-            assumeNoException(e);
+            abortNotSupported(e);
         }
+    }
+
+    private void abortNotSupported(Throwable t)
+    {
+        if (t == null)
+            return;
+        throw new TestAbortedException("Unsupported Behavior", t);
     }
 
     private void setupServer() throws Exception
@@ -182,21 +188,9 @@ public class AllowSymLinkAliasCheckerTest
         server.start();
     }
 
-    @Parameterized.Parameter(0)
-    public String requestURI;
-    @Parameterized.Parameter(1)
-    public int expectedResponseStatus;
-    @Parameterized.Parameter(2)
-    public String expectedResponseContentType;
-    @Parameterized.Parameter(3)
-    public String expectedResponseContentContains;
-
-    public AllowSymLinkAliasCheckerTest()
-    {
-    }
-
-    @Test
-    public void testAccess() throws Exception
+    @ParameterizedTest
+    @MethodSource("params")
+    public void testAccess(String requestURI, int expectedResponseStatus, String expectedResponseContentType, String expectedResponseContentContains) throws Exception
     {
         HttpTester.Request request = HttpTester.newRequest();
 

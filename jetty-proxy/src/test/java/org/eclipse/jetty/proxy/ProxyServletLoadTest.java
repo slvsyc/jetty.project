@@ -26,6 +26,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -49,22 +50,19 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-@RunWith(Parameterized.class)
 public class ProxyServletLoadTest
 {
-    @Parameterized.Parameters(name = "{0}")
-    public static Iterable<Object[]> data()
+    public static Stream<Arguments> data()
     {
-        return Arrays.asList(new Object[][]{
-                {ProxyServlet.class},
-                {AsyncProxyServlet.class},
-                {AsyncMiddleManServlet.class}
-        });
+        return Arrays.asList(
+                ProxyServlet.class,
+                AsyncProxyServlet.class,
+                AsyncMiddleManServlet.class)
+                .stream().map(Arguments::of);
     }
 
     private static final Logger LOG = Log.getLogger(ProxyServletLoadTest.class);
@@ -77,13 +75,10 @@ public class ProxyServletLoadTest
     private Server server;
     private ServerConnector serverConnector;
 
-    public ProxyServletLoadTest(Class<?> proxyServletClass) throws Exception
+    private void startServer(Class<? extends AbstractProxyServlet> proxyServletClass, HttpServlet servlet) throws Exception
     {
-        proxyServlet = (AbstractProxyServlet)proxyServletClass.newInstance();
-    }
+        proxyServlet = proxyServletClass.getDeclaredConstructor().newInstance();
 
-    private void startServer(HttpServlet servlet) throws Exception
-    {
         QueuedThreadPool serverPool = new QueuedThreadPool();
         serverPool.setName("server");
         server = new Server(serverPool);
@@ -135,10 +130,11 @@ public class ProxyServletLoadTest
         server.stop();
     }
 
-    @Test
-    public void test() throws Exception
+    @ParameterizedTest
+    @MethodSource("data")
+    public void test(Class<? extends AbstractProxyServlet> proxyServletClass) throws Exception
     {
-        startServer(new HttpServlet()
+        startServer(proxyServletClass, new HttpServlet()
         {
             @Override
             protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException

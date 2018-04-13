@@ -31,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -57,18 +58,15 @@ import org.eclipse.jetty.toolchain.test.IO;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Servlet equivalent of the jetty-server's RequestLogHandlerTest, but with more ErrorHandler twists. 
  */
-@RunWith(Parameterized.class)
 @Disabled
 public class ServletRequestLogTest
 {
@@ -270,8 +268,7 @@ public class ServletRequestLogTest
         }
     }
     
-    @Parameters(name="{0}")
-    public static List<Object[]> data()
+    public static Stream<Arguments> data()
     {
         List<Object[]> data = new ArrayList<>();
 
@@ -285,17 +282,8 @@ public class ServletRequestLogTest
         data.add(new Object[] { new IOExceptionServlet(), "/test/", "GET /test/ HTTP/1.1 500" });
         data.add(new Object[] { new RuntimeExceptionServlet(), "/test/", "GET /test/ HTTP/1.1 500" });
 
-        return data;
+        return data.stream().map(Arguments::of);
     }
-
-    @Parameter(0)
-    public Servlet testServlet;
-    
-    @Parameter(1)
-    public String requestPath;
-
-    @Parameter(2)
-    public String expectedLogEntry;
 
     /**
      * Test a RequestLogHandler at the end of a HandlerCollection.
@@ -303,8 +291,9 @@ public class ServletRequestLogTest
      * Default configuration.
      * @throws Exception on test failure
      */
-    @Test
-    public void testLogHandlerCollection() throws Exception
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testLogHandlerCollection(Servlet testServlet, String requestPath, String expectedLogEntry) throws Exception
     {
         Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
@@ -376,7 +365,7 @@ public class ServletRequestLogTest
                     connection.disconnect();
                 }
 
-                assertRequestLog(captureLog);
+                assertRequestLog(expectedLogEntry, captureLog);
             });
         }
         finally
@@ -390,8 +379,9 @@ public class ServletRequestLogTest
      * and also with the default ErrorHandler as server bean in place.
      * @throws Exception on test failure
      */
-    @Test
-    public void testLogHandlerCollection_ErrorHandler_ServerBean() throws Exception
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testLogHandlerCollection_ErrorHandler_ServerBean(Servlet testServlet, String requestPath, String expectedLogEntry) throws Exception
     {
         Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
@@ -467,7 +457,7 @@ public class ServletRequestLogTest
                     connection.disconnect();
                 }
 
-                assertRequestLog(captureLog);
+                assertRequestLog(expectedLogEntry,captureLog);
             });
         }
         finally
@@ -481,8 +471,9 @@ public class ServletRequestLogTest
      * using servlet specific error page mapping.
      * @throws Exception on test failure
      */
-    @Test
-    public void testLogHandlerCollection_SimpleErrorPageMapping() throws Exception
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testLogHandlerCollection_SimpleErrorPageMapping(Servlet testServlet, String requestPath, String expectedLogEntry) throws Exception
     {
         Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
@@ -561,7 +552,7 @@ public class ServletRequestLogTest
                     connection.disconnect();
                 }
 
-                assertRequestLog(captureLog);
+                assertRequestLog(expectedLogEntry,captureLog);
             });
         }
         finally
@@ -574,8 +565,9 @@ public class ServletRequestLogTest
      * Test an alternate (proposed) setup for using RequestLogHandler in a wrapped style
      * @throws Exception on test failure
      */
-    @Test
-    public void testLogHandlerWrapped() throws Exception
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testLogHandlerWrapped(Servlet testServlet, String requestPath, String expectedLogEntry) throws Exception
     {
         Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
@@ -655,7 +647,7 @@ public class ServletRequestLogTest
                     connection.disconnect();
                 }
 
-                assertRequestLog(captureLog);
+                assertRequestLog(expectedLogEntry,captureLog);
             });
         }
         finally
@@ -664,7 +656,7 @@ public class ServletRequestLogTest
         }
     }
 
-    private void assertRequestLog(CaptureLog captureLog)
+    private void assertRequestLog(final String expectedLogEntry, CaptureLog captureLog)
     {
         int captureCount = captureLog.captured.size();
 

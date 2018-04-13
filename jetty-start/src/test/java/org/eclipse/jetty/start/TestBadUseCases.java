@@ -25,24 +25,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.start.util.RebuildTestResources;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Test bad configuration scenarios.
  */
-@RunWith(Parameterized.class)
 public class TestBadUseCases
 {
-    @Parameters(name = "{0}")
-    public static List<Object[]> getCases()
+    public static Stream<Arguments> getCases()
     {
         List<Object[]> ret = new ArrayList<>();
 
@@ -54,22 +51,14 @@ public class TestBadUseCases
                 "Module [http3] specifies jetty version [10.0] which is newer than this version of jetty [" + RebuildTestResources.JETTY_VERSION + "]",
                 null});
 
-        return ret;
+        return ret.stream().map(Arguments::of);
     }
 
-    @Parameter(0)
-    public String caseName;
-
-    @Parameter(1)
-    public String expectedErrorMessage;
-
-    @Parameter(2)
-    public String[] commandLineArgs;
-
     // TODO unsure how this failure should be handled
-    @Test
     @Disabled
-    public void testBadConfig() throws Exception
+    @ParameterizedTest
+    @MethodSource("getCases")
+    public void testBadConfig(String caseName, String expectedErrorMessage, String[] commandLineArgs) throws Exception
     {
         File homeDir = MavenTestingUtils.getTestResourceDir("dist-home");
         File baseDir = MavenTestingUtils.getTestResourceDir("usecases/" + caseName);

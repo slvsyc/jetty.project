@@ -415,7 +415,7 @@ public class GzipTester
 
             String actualSha1Sum = Hex.asHex(digest.digest());
             String expectedSha1Sum = loadExpectedSha1Sum(testResourceSha1Sum);
-            assertEquals(requestedFilename + " / SHA1Sum of content",expectedSha1Sum,actualSha1Sum);
+            assertEquals(expectedSha1Sum,actualSha1Sum,requestedFilename + " / SHA1Sum of content");
         }
         finally
         {
