@@ -22,25 +22,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class WebSocketClientBadUriTest
 {
-    @Parameters
-    public static Collection<String[]> data()
+    public static Stream<Arguments> data()
     {
         List<String[]> data = new ArrayList<>();
-        // @formatter:off
+
         // - not using right scheme
         data.add(new String[] { "http://localhost" });
         data.add(new String[] { "https://localhost" });
@@ -52,19 +48,11 @@ public class WebSocketClientBadUriTest
         data.add(new String[] { "/sockets/echo" });
         data.add(new String[] { "#echo" });
         data.add(new String[] { "localhost:8080/echo" });
-        // @formatter:on
-        return data;
+
+        return data.stream().map(Arguments::of);
     }
 
     private WebSocketClient client;
-    private final String uriStr;
-    private final URI uri;
-
-    public WebSocketClientBadUriTest(String rawUri)
-    {
-        this.uriStr = rawUri;
-        this.uri = URI.create(uriStr);
-    }
 
     @BeforeEach
     public void startClient() throws Exception
@@ -79,10 +67,12 @@ public class WebSocketClientBadUriTest
         client.stop();
     }
 
-    @Test
-    public void testBadURI() throws Exception
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testBadURI(String uriStr) throws Exception
     {
         JettyTrackingSocket wsocket = new JettyTrackingSocket();
+        URI uri = URI.create(uriStr);
 
         assertThrows(IllegalArgumentException.class, ()-> client.connect(wsocket, uri));
         wsocket.assertNotOpened();
