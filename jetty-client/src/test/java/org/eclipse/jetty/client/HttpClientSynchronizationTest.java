@@ -29,25 +29,20 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
  * Verifies that synchronization performed from outside HttpClient does not cause deadlocks
  */
 public class HttpClientSynchronizationTest extends AbstractHttpClientServerTest
 {
-    public HttpClientSynchronizationTest(SslContextFactory sslContextFactory)
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testSynchronizationOnException(Scenario scenario) throws Exception
     {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void testSynchronizationOnException() throws Exception
-    {
-        start(new EmptyServerHandler());
+        start(scenario, new EmptyServerHandler());
         int port = connector.getLocalPort();
         server.stop();
 
@@ -56,7 +51,7 @@ public class HttpClientSynchronizationTest extends AbstractHttpClientServerTest
         for (int i = 0; i < count; ++i)
         {
             Request request = client.newRequest("localhost", port)
-                    .scheme(scheme);
+                    .scheme(scenario.getScheme());
 
             synchronized (this)
             {
@@ -78,17 +73,18 @@ public class HttpClientSynchronizationTest extends AbstractHttpClientServerTest
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testSynchronizationOnComplete() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testSynchronizationOnComplete(Scenario scenario) throws Exception
     {
-        start(new EmptyServerHandler());
+        start(scenario, new EmptyServerHandler());
 
         int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
         for (int i = 0; i < count; ++i)
         {
             Request request = client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme);
+                    .scheme(scenario.getScheme());
 
             synchronized (this)
             {

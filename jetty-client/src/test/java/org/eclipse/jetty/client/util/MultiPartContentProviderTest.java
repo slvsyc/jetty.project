@@ -18,11 +18,11 @@
 
 package org.eclipse.jetty.client.util;
 
+import static org.eclipse.jetty.toolchain.test.StackUtils.supply;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.eclipse.jetty.toolchain.test.StackUtils.supply;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -57,21 +57,16 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.IO;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
 {
-    public MultiPartContentProviderTest(SslContextFactory sslContextFactory)
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testEmptyMultiPart(Scenario scenario) throws Exception
     {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void testEmptyMultiPart() throws Exception
-    {
-        start(new AbstractMultiPartHandler()
+        start(scenario, new AbstractMultiPartHandler()
         {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -84,7 +79,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         MultiPartContentProvider multiPart = new MultiPartContentProvider();
         multiPart.close();
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(multiPart)
                 .send();
@@ -92,12 +87,13 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void testSimpleField() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testSimpleField(Scenario scenario) throws Exception
     {
         String name = "field";
         String value = "value";
-        start(new AbstractMultiPartHandler()
+        start(scenario, new AbstractMultiPartHandler()
         {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -114,7 +110,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         multiPart.addFieldPart(name, new StringContentProvider(value), null);
         multiPart.close();
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(multiPart)
                 .send();
@@ -122,13 +118,14 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void testFieldWithOverridenContentType() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testFieldWithOverridenContentType(Scenario scenario) throws Exception
     {
         String name = "field";
         String value = "\u00e8";
         Charset encoding = StandardCharsets.ISO_8859_1;
-        start(new AbstractMultiPartHandler()
+        start(scenario, new AbstractMultiPartHandler()
         {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -153,7 +150,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         multiPart.addFieldPart(name, content, fields);
         multiPart.close();
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(multiPart)
                 .send();
@@ -161,12 +158,13 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void testFieldDeferred() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testFieldDeferred(Scenario scenario) throws Exception
     {
         String name = "field";
         byte[] data = "Hello, World".getBytes(StandardCharsets.US_ASCII);
-        start(new AbstractMultiPartHandler()
+        start(scenario, new AbstractMultiPartHandler()
         {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -186,7 +184,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         multiPart.close();
         CountDownLatch responseLatch = new CountDownLatch(1);
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(multiPart)
                 .send(result ->
@@ -206,15 +204,16 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         assertTrue(responseLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testFileFromInputStream() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testFileFromInputStream(Scenario scenario) throws Exception
     {
         String name = "file";
         String fileName = "upload.png";
         String contentType = "image/png";
         byte[] data = new byte[512];
         new Random().nextBytes(data);
-        start(new AbstractMultiPartHandler()
+        start(scenario, new AbstractMultiPartHandler()
         {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -246,7 +245,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         multiPart.addFilePart(name, fileName, content, fields);
         multiPart.close();
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(multiPart)
                 .send();
@@ -255,8 +254,9 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void testFileFromPath() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testFileFromPath(Scenario scenario) throws Exception
     {
         // Prepare a file to upload.
         String data = "multipart_test_\u20ac";
@@ -270,7 +270,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
 
         String name = "file";
         String contentType = "text/plain; charset=" + encoding.name();
-        start(new AbstractMultiPartHandler()
+        start(scenario, new AbstractMultiPartHandler()
         {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -292,7 +292,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         multiPart.addFilePart(name, tmpPath.getFileName().toString(), content, null);
         multiPart.close();
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(multiPart)
                 .send();
@@ -302,8 +302,9 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         Files.delete(tmpPath);
     }
 
-    @Test
-    public void testFieldWithFile() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testFieldWithFile(Scenario scenario) throws Exception
     {
         // Prepare a file to upload.
         byte[] data = new byte[1024];
@@ -322,7 +323,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         String contentType = "text/plain;charset=" + encoding.name();
         String headerName = "foo";
         String headerValue = "bar";
-        start(new AbstractMultiPartHandler()
+        start(scenario, new AbstractMultiPartHandler()
         {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -358,7 +359,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         multiPart.addFilePart(fileField, tmpPath.getFileName().toString(), new PathContentProvider(tmpPath), null);
         multiPart.close();
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(multiPart)
                 .send();
@@ -368,14 +369,15 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         Files.delete(tmpPath);
     }
 
-    @Test
-    public void testFieldDeferredAndFileDeferred() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testFieldDeferredAndFileDeferred(Scenario scenario) throws Exception
     {
         String value = "text";
         Charset encoding = StandardCharsets.US_ASCII;
         byte[] fileData = new byte[1024];
         new Random().nextBytes(fileData);
-        start(new AbstractMultiPartHandler()
+        start(scenario, new AbstractMultiPartHandler()
         {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -407,7 +409,7 @@ public class MultiPartContentProviderTest extends AbstractHttpClientServerTest
         multiPart.addFilePart("file", "fileName", fileContent, null);
         CountDownLatch responseLatch = new CountDownLatch(1);
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(multiPart)
                 .send(result ->

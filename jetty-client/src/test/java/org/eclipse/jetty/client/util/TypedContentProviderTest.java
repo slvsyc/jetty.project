@@ -38,20 +38,15 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.IO;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class TypedContentProviderTest extends AbstractHttpClientServerTest
 {
-    public TypedContentProviderTest(SslContextFactory sslContextFactory)
-    {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void testFormContentProvider() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testFormContentProvider(Scenario scenario) throws Exception
     {
         final String name1 = "a";
         final String value1 = "1";
@@ -59,7 +54,7 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
         final String value2 = "2";
         final String value3 = "\u20AC";
 
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -79,13 +74,14 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
         fields.put(name1, value1);
         fields.add(name2, value2);
         fields.add(name2, value3);
-        ContentResponse response = client.FORM(scheme + "://localhost:" + connector.getLocalPort(), fields);
+        ContentResponse response = client.FORM(scenario.getScheme() + "://localhost:" + connector.getLocalPort(), fields);
 
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void testFormContentProviderWithDifferentContentType() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testFormContentProviderWithDifferentContentType(Scenario scenario) throws Exception
     {
         final String name1 = "a";
         final String value1 = "1";
@@ -97,7 +93,7 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
         final String content = FormContentProvider.convert(fields);
         final String contentType = "text/plain;charset=UTF-8";
 
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -110,7 +106,7 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .content(new FormContentProvider(fields))
                 .header(HttpHeader.CONTENT_TYPE, contentType)
@@ -119,12 +115,13 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void testTypedContentProviderWithNoContentType() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testTypedContentProviderWithNoContentType(Scenario scenario) throws Exception
     {
         final String content = "data";
 
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -137,7 +134,7 @@ public class TypedContentProviderTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .content(new StringContentProvider(null, content, StandardCharsets.UTF_8))
                 .send();
 

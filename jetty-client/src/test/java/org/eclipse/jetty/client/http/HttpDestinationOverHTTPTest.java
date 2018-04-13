@@ -42,28 +42,18 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Destination;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpHeaderValue;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
 {
-    public HttpDestinationOverHTTPTest(SslContextFactory sslContextFactory)
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_FirstAcquire_WithEmptyQueue(Scenario scenario) throws Exception
     {
-        super(sslContextFactory);
-    }
+        start(scenario, new EmptyServerHandler());
 
-    @BeforeEach
-    public void init() throws Exception
-    {
-        start(new EmptyServerHandler());
-    }
-
-    @Test
-    public void test_FirstAcquire_WithEmptyQueue() throws Exception
-    {
         try(HttpDestinationOverHTTP destination = new HttpDestinationOverHTTP(client, new Origin("http", "localhost", connector.getLocalPort())))
         {
             destination.start();
@@ -78,9 +68,12 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         }
     }
 
-    @Test
-    public void test_SecondAcquire_AfterFirstAcquire_WithEmptyQueue_ReturnsSameConnection() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_SecondAcquire_AfterFirstAcquire_WithEmptyQueue_ReturnsSameConnection(Scenario scenario) throws Exception
     {
+        start(scenario, new EmptyServerHandler());
+
         try(HttpDestinationOverHTTP destination = new HttpDestinationOverHTTP(client, new Origin("http", "localhost", connector.getLocalPort())))
         {
             destination.start();
@@ -104,9 +97,12 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         }
     }
 
-    @Test
-    public void test_SecondAcquire_ConcurrentWithFirstAcquire_WithEmptyQueue_CreatesTwoConnections() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_SecondAcquire_ConcurrentWithFirstAcquire_WithEmptyQueue_CreatesTwoConnections(Scenario scenario) throws Exception
     {
+        start(scenario, new EmptyServerHandler());
+
         final CountDownLatch idleLatch = new CountDownLatch(1);
         final CountDownLatch latch = new CountDownLatch(1);
         HttpDestinationOverHTTP destination = new HttpDestinationOverHTTP(client, new Origin("http", "localhost", connector.getLocalPort()))
@@ -166,9 +162,12 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         }
     }
 
-    @Test
-    public void test_Acquire_Process_Release_Acquire_ReturnsSameConnection() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_Acquire_Process_Release_Acquire_ReturnsSameConnection(Scenario scenario) throws Exception
     {
+        start(scenario, new EmptyServerHandler());
+
         try(HttpDestinationOverHTTP destination = new HttpDestinationOverHTTP(client, new Origin("http", "localhost", connector.getLocalPort())))
         {
             destination.start();
@@ -196,9 +195,12 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         }
     }
 
-    @Test
-    public void test_IdleConnection_IdleTimeout() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_IdleConnection_IdleTimeout(Scenario scenario) throws Exception
     {
+        start(scenario, new EmptyServerHandler());
+
         long idleTimeout = 1000;
         client.setIdleTimeout(idleTimeout);
 
@@ -226,16 +228,19 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         }
     }
 
-    @Test
-    public void test_Request_Failed_If_MaxRequestsQueuedPerDestination_Exceeded() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_Request_Failed_If_MaxRequestsQueuedPerDestination_Exceeded(Scenario scenario) throws Exception
     {
+        start(scenario, new EmptyServerHandler());
+
         int maxQueued = 1;
         client.setMaxRequestsQueuedPerDestination(maxQueued);
         client.setMaxConnectionsPerDestination(1);
 
         // Make one request to open the connection and be sure everything is setup properly
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .send();
         assertEquals(200, response.getStatus());
 
@@ -243,13 +248,13 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         final CountDownLatch successLatch = new CountDownLatch(1);
         final CountDownLatch failureLatch = new CountDownLatch(1);
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/one")
                 .onRequestQueued(request ->
                 {
                     // This request exceeds the maximum queued, should fail
                     client.newRequest("localhost", connector.getLocalPort())
-                            .scheme(scheme)
+                            .scheme(scenario.getScheme())
                             .path("/two")
                             .send(result ->
                             {
@@ -268,33 +273,36 @@ public class HttpDestinationOverHTTPTest extends AbstractHttpClientServerTest
         assertTrue(successLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testDestinationIsRemoved() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testDestinationIsRemoved(Scenario scenario) throws Exception
     {
+        start(scenario, new EmptyServerHandler());
+
         String host = "localhost";
         int port = connector.getLocalPort();
-        Destination destinationBefore = client.getDestination(scheme, host, port);
+        Destination destinationBefore = client.getDestination(scenario.getScheme(), host, port);
 
         ContentResponse response = client.newRequest(host, port)
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .header(HttpHeader.CONNECTION, HttpHeaderValue.CLOSE.asString())
                 .send();
 
         assertEquals(200, response.getStatus());
 
-        Destination destinationAfter = client.getDestination(scheme, host, port);
+        Destination destinationAfter = client.getDestination(scenario.getScheme(), host, port);
         assertSame(destinationBefore, destinationAfter);
 
         client.setRemoveIdleDestinations(true);
 
         response = client.newRequest(host, port)
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .header(HttpHeader.CONNECTION, HttpHeaderValue.CLOSE.asString())
                 .send();
 
         assertEquals(200, response.getStatus());
 
-        destinationAfter = client.getDestination(scheme, host, port);
+        destinationAfter = client.getDestination(scenario.getScheme(), host, port);
         assertNotSame(destinationBefore, destinationAfter);
     }
 

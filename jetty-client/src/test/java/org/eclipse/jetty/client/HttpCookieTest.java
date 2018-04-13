@@ -44,24 +44,20 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class HttpCookieTest extends AbstractHttpClientServerTest
 {
     private static final Cookie[] EMPTY_COOKIES = new Cookie[0];
 
-    public HttpCookieTest(SslContextFactory sslContextFactory)
-    {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void test_CookieIsStored() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_CookieIsStored(Scenario scenario) throws Exception
     {
         final String name = "foo";
         final String value = "bar";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -73,7 +69,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         String host = "localhost";
         int port = connector.getLocalPort();
         String path = "/path";
-        String uri = scheme + "://" + host + ":" + port + path;
+        String uri = scenario.getScheme() + "://" + host + ":" + port + path;
         Response response = client.GET(uri);
         assertEquals(200, response.getStatus());
 
@@ -85,12 +81,13 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         assertEquals(value, cookie.getValue());
     }
 
-    @Test
-    public void test_CookieIsSent() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_CookieIsSent(Scenario scenario) throws Exception
     {
         final String name = "foo";
         final String value = "bar";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -107,18 +104,19 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         String host = "localhost";
         int port = connector.getLocalPort();
         String path = "/path";
-        String uri = scheme + "://" + host + ":" + port;
+        String uri = scenario.getScheme() + "://" + host + ":" + port;
         HttpCookie cookie = new HttpCookie(name, value);
         client.getCookieStore().add(URI.create(uri), cookie);
 
-        Response response = client.GET(scheme + "://" + host + ":" + port + path);
+        Response response = client.GET(scenario.getScheme() + "://" + host + ":" + port + path);
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void test_CookieWithoutValue() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_CookieWithoutValue(Scenario scenario) throws Exception
     {
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -128,18 +126,19 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .send();
         assertEquals(200, response.getStatus());
         assertTrue(client.getCookieStore().getCookies().isEmpty());
     }
 
-    @Test
-    public void test_PerRequestCookieIsSent() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_PerRequestCookieIsSent(Scenario scenario) throws Exception
     {
         final String name = "foo";
         final String value = "bar";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -154,20 +153,21 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .cookie(new HttpCookie(name, value))
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
         assertEquals(200, response.getStatus());
     }
 
-    @Test
-    public void test_SetCookieWithoutPath_RequestURIWithOneSegment() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_SetCookieWithoutPath_RequestURIWithOneSegment(Scenario scenario) throws Exception
     {
         String headerName = "X-Request";
         String cookieName = "a";
         String cookieValue = "1";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -199,7 +199,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = send(client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
@@ -208,7 +208,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         Arrays.asList("/", "/foo", "/foo/bar").forEach(path ->
         {
             ContentResponse r = send(client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
@@ -216,13 +216,14 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
     }
 
-    @Test
-    public void test_SetCookieWithoutPath_RequestURIWithTwoSegments() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_SetCookieWithoutPath_RequestURIWithTwoSegments(Scenario scenario) throws Exception
     {
         String headerName = "X-Request";
         String cookieName = "a";
         String cookieValue = "1";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -259,7 +260,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = send(client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/foo/bar")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
@@ -268,7 +269,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         Arrays.asList("/", "/foo", "/foo/", "/foobar", "/foo/bar", "/foo/bar/baz").forEach(path ->
         {
             ContentResponse r = send(client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
@@ -276,13 +277,14 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
     }
 
-    @Test
-    public void test_SetCookieWithLongerPath() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_SetCookieWithLongerPath(Scenario scenario) throws Exception
     {
         String headerName = "X-Request";
         String cookieName = "a";
         String cookieValue = "1";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -319,7 +321,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = send(client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
@@ -328,7 +330,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         Arrays.asList("/", "/foo", "/foo/bar", "/foo/bar/", "/foo/barbaz").forEach(path ->
         {
             ContentResponse r = send(client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
@@ -336,13 +338,14 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
     }
 
-    @Test
-    public void test_SetCookieWithShorterPath() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_SetCookieWithShorterPath(Scenario scenario) throws Exception
     {
         String headerName = "X-Request";
         String cookieName = "a";
         String cookieValue = "1";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -379,7 +382,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = send(client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/foo/bar")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
@@ -388,7 +391,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         Arrays.asList("/", "/foo", "/foo/", "/foobar", "/foo/bar").forEach(path ->
         {
             ContentResponse r = send(client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
@@ -396,14 +399,15 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
     }
 
-    @Test
-    public void test_TwoSetCookieWithSameNameSamePath() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_TwoSetCookieWithSameNameSamePath(Scenario scenario) throws Exception
     {
         String headerName = "X-Request";
         String cookieName = "a";
         String cookieValue1 = "1";
         String cookieValue2 = "2";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -441,7 +445,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = send(client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
@@ -450,7 +454,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         Arrays.asList("/", "/foo", "/foo/bar").forEach(path ->
         {
             ContentResponse r = send(client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
@@ -458,14 +462,15 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
     }
 
-    @Test
-    public void test_TwoSetCookieWithSameNameDifferentPath() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_TwoSetCookieWithSameNameDifferentPath(Scenario scenario) throws Exception
     {
         String headerName = "X-Request";
         String cookieName = "a";
         String cookieValue1 = "1";
         String cookieValue2 = "2";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -510,7 +515,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = send(client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
@@ -519,7 +524,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         Arrays.asList("/", "/foo", "/foo/bar", "/bar", "/bar/foo").forEach(path ->
         {
             ContentResponse r = send(client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
@@ -527,14 +532,15 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
     }
 
-    @Test
-    public void test_TwoSetCookieWithSameNamePath1PrefixOfPath2() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_TwoSetCookieWithSameNamePath1PrefixOfPath2(Scenario scenario) throws Exception
     {
         String headerName = "X-Request";
         String cookieName = "a";
         String cookieValue1 = "1";
         String cookieValue2 = "2";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -582,7 +588,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = send(client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/foo")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
@@ -591,7 +597,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         Arrays.asList("/", "/foo", "/foo/bar").forEach(path ->
         {
             ContentResponse r = send(client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));
@@ -599,13 +605,14 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
     }
 
-    @Test
-    public void test_CookiePathWithTrailingSlash() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_CookiePathWithTrailingSlash(Scenario scenario) throws Exception
     {
         String headerName = "X-Request";
         String cookieName = "a";
         String cookieValue = "1";
-        start(new EmptyServerHandler()
+        start(scenario, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -642,7 +649,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = send(client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/foo/bar")
                 .header(headerName, "0")
                 .timeout(5, TimeUnit.SECONDS));
@@ -651,7 +658,7 @@ public class HttpCookieTest extends AbstractHttpClientServerTest
         Arrays.asList("/", "/foo", "/foo/", "/foobar", "/foo/bar").forEach(path ->
         {
             ContentResponse r = send(client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path(path)
                     .header(headerName, "1")
                     .timeout(5, TimeUnit.SECONDS));

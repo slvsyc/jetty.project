@@ -34,23 +34,18 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class ContentResponseTest extends AbstractHttpClientServerTest
 {
-    public ContentResponseTest(SslContextFactory sslContextFactory)
-    {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void testResponseWithoutContentType() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testResponseWithoutContentType(Scenario scenario) throws Exception
     {
         final byte[] content = new byte[1024];
         new Random().nextBytes(content);
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -61,7 +56,7 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
@@ -71,12 +66,13 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
         assertNull(response.getEncoding());
     }
 
-    @Test
-    public void testResponseWithMediaType() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testResponseWithMediaType(Scenario scenario) throws Exception
     {
         final String content = "The quick brown fox jumped over the lazy dog";
         final String mediaType = "text/plain";
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -88,7 +84,7 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
@@ -98,14 +94,15 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
         assertNull(response.getEncoding());
     }
 
-    @Test
-    public void testResponseWithContentType() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testResponseWithContentType(Scenario scenario) throws Exception
     {
         final String content = "The quick brown fox jumped over the lazy dog";
         final String mediaType = "text/plain";
         final String encoding = "UTF-8";
         final String contentType = mediaType + "; charset=" + encoding;
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -117,7 +114,7 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
@@ -127,14 +124,15 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
         assertEquals(encoding, response.getEncoding());
     }
 
-    @Test
-    public void testResponseWithContentTypeWithQuotedCharset() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testResponseWithContentTypeWithQuotedCharset(Scenario scenario) throws Exception
     {
         final String content = "The quick brown fox jumped over the lazy dog";
         final String mediaType = "text/plain";
         final String encoding = "UTF-8";
         final String contentType = mediaType + "; charset=\"" + encoding + "\"";
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -146,7 +144,7 @@ public class ContentResponseTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 

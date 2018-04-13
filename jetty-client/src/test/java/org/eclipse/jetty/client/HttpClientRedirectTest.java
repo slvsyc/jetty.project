@@ -50,26 +50,21 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.toolchain.test.IO;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class HttpClientRedirectTest extends AbstractHttpClientServerTest
 {
-    public HttpClientRedirectTest(SslContextFactory sslContextFactory)
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_303(Scenario scenario) throws Exception
     {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void test_303() throws Exception
-    {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/303/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
@@ -78,13 +73,14 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void test_303_302() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_303_302(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/303/localhost/302/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
@@ -93,13 +89,14 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void test_303_302_OnDifferentDestinations() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_303_302_OnDifferentDestinations(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/303/127.0.0.1/302/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
@@ -108,13 +105,14 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void test_301() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_301(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.HEAD)
                 .path("/301/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
@@ -124,14 +122,15 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void test_301_WithWrongMethod() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_301_WithWrongMethod(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         ExecutionException x = assertThrows(ExecutionException.class, ()->{
             client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .method(HttpMethod.DELETE)
                     .path("/301/localhost/done")
                     .timeout(5, TimeUnit.SECONDS)
@@ -144,14 +143,15 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void test_307_WithRequestContent() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_307_WithRequestContent(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         byte[] data = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(HttpMethod.POST)
                 .path("/307/localhost/done")
                 .content(new ByteBufferContentProvider(ByteBuffer.wrap(data)))
@@ -163,15 +163,16 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertArrayEquals(data, response.getContent());
     }
 
-    @Test
-    public void testMaxRedirections() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testMaxRedirections(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
         client.setMaxRedirects(1);
 
         ExecutionException x = assertThrows(ExecutionException.class, ()->{
             client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path("/303/localhost/302/localhost/done")
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
@@ -183,13 +184,14 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void test_303_WithConnectionClose_WithBigRequest() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_303_WithConnectionClose_WithBigRequest(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/303/localhost/done?close=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
@@ -198,13 +200,14 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void testDontFollowRedirects() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testDontFollowRedirects(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .followRedirects(false)
                 .path("/303/localhost/done?close=true")
                 .timeout(5, TimeUnit.SECONDS)
@@ -214,13 +217,14 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertTrue(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void testRelativeLocation() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testRelativeLocation(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/303/localhost/done?relative=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
@@ -229,13 +233,14 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void testAbsoluteURIPathWithSpaces() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testAbsoluteURIPathWithSpaces(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/303/localhost/a+space?decode=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
@@ -244,13 +249,14 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void testRelativeURIPathWithSpaces() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testRelativeURIPathWithSpaces(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         Response response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/303/localhost/a+space?relative=true&decode=true")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
@@ -259,10 +265,11 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertFalse(response.getHeaders().containsKey(HttpHeader.LOCATION.asString()));
     }
 
-    @Test
-    public void testRedirectWithWrongScheme() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testRedirectWithWrongScheme(Scenario scenario) throws Exception
     {
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -275,7 +282,7 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
 
         final CountDownLatch latch = new CountDownLatch(1);
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/path")
                 .timeout(5, TimeUnit.SECONDS)
                 .send(result ->
@@ -286,17 +293,18 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
     @Disabled
-    public void testRedirectFailed() throws Exception
+    public void testRedirectFailed(Scenario scenario) throws Exception
     {
         // TODO this test is failing with timout after an ISP upgrade??  DNS dependent?
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         try
         {
             client.newRequest("localhost", connector.getLocalPort())
-                    .scheme(scheme)
+                    .scheme(scenario.getScheme())
                     .path("/303/doesNotExist/done")
                     .timeout(5, TimeUnit.SECONDS)
                     .send();
@@ -307,86 +315,99 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         }
     }
 
-    @Test
-    public void test_HEAD_301() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_HEAD_301(Scenario scenario) throws Exception
     {
-        testSameMethodRedirect(HttpMethod.HEAD, HttpStatus.MOVED_PERMANENTLY_301);
+        testSameMethodRedirect(scenario, HttpMethod.HEAD, HttpStatus.MOVED_PERMANENTLY_301);
     }
 
-    @Test
-    public void test_POST_301() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_POST_301(Scenario scenario) throws Exception
     {
-        testGETRedirect(HttpMethod.POST, HttpStatus.MOVED_PERMANENTLY_301);
+        testGETRedirect(scenario, HttpMethod.POST, HttpStatus.MOVED_PERMANENTLY_301);
     }
 
-    @Test
-    public void test_PUT_301() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_PUT_301(Scenario scenario) throws Exception
     {
-        testSameMethodRedirect(HttpMethod.PUT, HttpStatus.MOVED_PERMANENTLY_301);
+        testSameMethodRedirect(scenario, HttpMethod.PUT, HttpStatus.MOVED_PERMANENTLY_301);
     }
 
-    @Test
-    public void test_HEAD_302() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_HEAD_302(Scenario scenario) throws Exception
     {
-        testSameMethodRedirect(HttpMethod.HEAD, HttpStatus.FOUND_302);
+        testSameMethodRedirect(scenario, HttpMethod.HEAD, HttpStatus.FOUND_302);
     }
 
-    @Test
-    public void test_POST_302() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_POST_302(Scenario scenario) throws Exception
     {
-        testGETRedirect(HttpMethod.POST, HttpStatus.FOUND_302);
+        testGETRedirect(scenario, HttpMethod.POST, HttpStatus.FOUND_302);
     }
 
-    @Test
-    public void test_PUT_302() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_PUT_302(Scenario scenario) throws Exception
     {
-        testSameMethodRedirect(HttpMethod.PUT, HttpStatus.FOUND_302);
+        testSameMethodRedirect(scenario, HttpMethod.PUT, HttpStatus.FOUND_302);
     }
 
-    @Test
-    public void test_HEAD_303() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_HEAD_303(Scenario scenario) throws Exception
     {
-        testSameMethodRedirect(HttpMethod.HEAD, HttpStatus.SEE_OTHER_303);
+        testSameMethodRedirect(scenario, HttpMethod.HEAD, HttpStatus.SEE_OTHER_303);
     }
 
-    @Test
-    public void test_POST_303() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_POST_303(Scenario scenario) throws Exception
     {
-        testGETRedirect(HttpMethod.POST, HttpStatus.SEE_OTHER_303);
+        testGETRedirect(scenario, HttpMethod.POST, HttpStatus.SEE_OTHER_303);
     }
 
-    @Test
-    public void test_PUT_303() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_PUT_303(Scenario scenario) throws Exception
     {
-        testGETRedirect(HttpMethod.PUT, HttpStatus.SEE_OTHER_303);
+        testGETRedirect(scenario, HttpMethod.PUT, HttpStatus.SEE_OTHER_303);
     }
 
-    @Test
-    public void test_HEAD_307() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_HEAD_307(Scenario scenario) throws Exception
     {
-        testSameMethodRedirect(HttpMethod.HEAD, HttpStatus.TEMPORARY_REDIRECT_307);
+        testSameMethodRedirect(scenario, HttpMethod.HEAD, HttpStatus.TEMPORARY_REDIRECT_307);
     }
 
-    @Test
-    public void test_POST_307() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_POST_307(Scenario scenario) throws Exception
     {
-        testSameMethodRedirect(HttpMethod.POST, HttpStatus.TEMPORARY_REDIRECT_307);
+        testSameMethodRedirect(scenario, HttpMethod.POST, HttpStatus.TEMPORARY_REDIRECT_307);
     }
 
-    @Test
-    public void test_PUT_307() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void test_PUT_307(Scenario scenario) throws Exception
     {
-        testSameMethodRedirect(HttpMethod.PUT, HttpStatus.TEMPORARY_REDIRECT_307);
+        testSameMethodRedirect(scenario, HttpMethod.PUT, HttpStatus.TEMPORARY_REDIRECT_307);
     }
 
-    @Test
-    public void testHttpRedirector() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testHttpRedirector(Scenario scenario) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
         final HttpRedirector redirector = new HttpRedirector(client);
 
         org.eclipse.jetty.client.api.Request request1 = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/303/localhost/302/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)
                 .followRedirects(false);
@@ -413,11 +434,12 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testRedirectWithCorruptedBody() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testRedirectWithCorruptedBody(Scenario scenario) throws Exception
     {
         byte[] bytes = "ok".getBytes(StandardCharsets.UTF_8);
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -426,7 +448,7 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
                 if (target.startsWith("/redirect"))
                 {
                     response.setStatus(HttpStatus.SEE_OTHER_303);
-                    response.setHeader(HttpHeader.LOCATION.asString(), scheme + "://localhost:" + connector.getLocalPort() + "/ok");
+                    response.setHeader(HttpHeader.LOCATION.asString(), scenario.getScheme() + "://localhost:" + connector.getLocalPort() + "/ok");
                     // Say that we send gzipped content, but actually don't.
                     response.setHeader(HttpHeader.CONTENT_ENCODING.asString(), "gzip");
                     response.getOutputStream().write("redirect".getBytes(StandardCharsets.UTF_8));
@@ -440,7 +462,7 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/redirect")
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
@@ -449,19 +471,19 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         assertArrayEquals(bytes, response.getContent());
     }
 
-    private void testSameMethodRedirect(final HttpMethod method, int redirectCode) throws Exception
+    private void testSameMethodRedirect(final Scenario scenario, final HttpMethod method, int redirectCode) throws Exception
     {
-        testMethodRedirect(method, method, redirectCode);
+        testMethodRedirect(scenario, method, method, redirectCode);
     }
 
-    private void testGETRedirect(final HttpMethod method, int redirectCode) throws Exception
+    private void testGETRedirect(final Scenario scenario, final HttpMethod method, int redirectCode) throws Exception
     {
-        testMethodRedirect(method, HttpMethod.GET, redirectCode);
+        testMethodRedirect(scenario, method, HttpMethod.GET, redirectCode);
     }
 
-    private void testMethodRedirect(final HttpMethod requestMethod, final HttpMethod redirectMethod, int redirectCode) throws Exception
+    private void testMethodRedirect(final Scenario scenario, final HttpMethod requestMethod, final HttpMethod redirectMethod, int redirectCode) throws Exception
     {
-        start(new RedirectHandler());
+        start(scenario, new RedirectHandler());
 
         final AtomicInteger passes = new AtomicInteger();
         client.getRequestListeners().add(new org.eclipse.jetty.client.api.Request.Listener.Adapter()
@@ -488,7 +510,7 @@ public class HttpClientRedirectTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .method(requestMethod)
                 .path("/" + redirectCode + "/localhost/done")
                 .timeout(5, TimeUnit.SECONDS)

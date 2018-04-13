@@ -18,79 +18,59 @@
 
 package org.eclipse.jetty.client;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
 import org.eclipse.jetty.util.SocketAddressResolver;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 
-@RunWith(Parameterized.class)
 public abstract class AbstractHttpClientServerTest
 {
-    @Parameterized.Parameters(name = "ssl={0}")
-    public static Collection<SslContextFactory[]> parameters()
-    {
-        return Arrays.asList(new SslContextFactory[]{null}, new SslContextFactory[]{new SslContextFactory()});
-    }
-
-    protected SslContextFactory sslContextFactory;
-    protected String scheme;
     protected Server server;
     protected HttpClient client;
     protected ServerConnector connector;
 
-    public AbstractHttpClientServerTest(SslContextFactory sslContextFactory)
+    public void start(final Scenario scenario, Handler handler) throws Exception
     {
-        this.sslContextFactory = sslContextFactory;
-        this.scheme = (sslContextFactory == null ? HttpScheme.HTTP : HttpScheme.HTTPS).asString();
+        startServer(scenario, handler);
+        startClient(scenario);
     }
 
-    public void start(Handler handler) throws Exception
+    protected void startServer(final Scenario scenario, Handler handler) throws Exception
     {
-        startServer(handler);
-        startClient();
-    }
-
-    protected void startServer(Handler handler) throws Exception
-    {
-        if (sslContextFactory != null)
-        {
-            sslContextFactory.setEndpointIdentificationAlgorithm("");
-            sslContextFactory.setKeyStorePath("src/test/resources/keystore.jks");
-            sslContextFactory.setKeyStorePassword("storepwd");
-        }
-
         if (server == null)
         {
             QueuedThreadPool serverThreads = new QueuedThreadPool();
             serverThreads.setName("server");
             server = new Server(serverThreads);
         }
-        connector = new ServerConnector(server, sslContextFactory);
+        connector = new ServerConnector(server, scenario.newServerSslContextFactory());
         server.addConnector(connector);
         server.setHandler(handler);
         server.start();
     }
 
-    protected void startClient() throws Exception
+    protected void startClient(final Scenario scenario) throws Exception
     {
-        startClient(new HttpClientTransportOverHTTP(1));
+        startClient(scenario, new HttpClientTransportOverHTTP(1));
     }
 
-    protected void startClient(HttpClientTransport transport) throws Exception
+    protected void startClient(final Scenario scenario, HttpClientTransport transport) throws Exception
     {
         QueuedThreadPool clientThreads = new QueuedThreadPool();
         clientThreads.setName("client");
-        client = new HttpClient(transport, sslContextFactory);
+        client = new HttpClient(transport, scenario.newClientSslContextFactory());
         client.setExecutor(clientThreads);
         client.setSocketAddressResolver(new SocketAddressResolver.Sync());
         client.start();
@@ -104,5 +84,71 @@ public abstract class AbstractHttpClientServerTest
         if (server != null)
             server.stop();
         server = null;
+    }
+
+    public static class ScenarioProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception
+        {
+            return Stream.of(
+                    new NormalScenario(),
+                    new SslScenario()
+                    // TODO: add more ssl / non-ssl scenarios here
+            ).map(Arguments::of);
+        }
+    }
+
+    public static class NonSslScenarioProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception
+        {
+            return Stream.of(
+                    new NormalScenario()
+                    // TODO: add more non-ssl scenarios here
+            ).map(Arguments::of);
+        }
+    }
+
+    public interface Scenario
+    {
+        default SslContextFactory newServerSslContextFactory() { return null; }
+        default SslContextFactory newClientSslContextFactory() { return null; }
+        String getScheme();
+    }
+
+    public static class NormalScenario implements Scenario
+    {
+        @Override
+        public String getScheme()
+        {
+            return HttpScheme.HTTP.asString();
+        }
+    }
+
+    public static class SslScenario implements Scenario
+    {
+        @Override
+        public SslContextFactory newServerSslContextFactory()
+        {
+            Path keystorePath = MavenTestingUtils.getTestResourcePath("keystore.jks");
+
+            SslContextFactory ssl = new SslContextFactory();
+            ssl.setEndpointIdentificationAlgorithm("");
+            ssl.setKeyStorePath(keystorePath.toString());
+            ssl.setKeyStorePassword("storepwd");
+            return ssl;
+        }
+
+        @Override
+        public SslContextFactory newClientSslContextFactory()
+        {
+            return new SslContextFactory();
+        }
+
+        @Override
+        public String getScheme()
+        {
+            return HttpScheme.HTTPS.asString();
+        }
     }
 }

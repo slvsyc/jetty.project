@@ -81,8 +81,8 @@ import org.eclipse.jetty.util.component.Dumpable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -1812,6 +1812,7 @@ public class SslBytesServerTest extends SslBytesTest
         assertThat(((Dumpable)server.getConnectors()[0]).dump(), Matchers.not(Matchers.containsString("SCEP@")));
     }
 
+    // TODO: Remove?  We are on JDK 1.8+ now.
     private void assumeJavaVersionSupportsTLSRenegotiations()
     {
         // Due to a security bug, TLS renegotiations were disabled in JDK 1.6.0_19-21
@@ -1822,7 +1823,7 @@ public class SslBytesServerTest extends SslBytesTest
         if (matcher.matches())
         {
             String nano = matcher.group(1);
-            Assume.assumeThat(Integer.parseInt(nano), Matchers.greaterThan(21));
+            Assumptions.assumeTrue(Integer.parseInt(nano) > 21);
         }
     }
 

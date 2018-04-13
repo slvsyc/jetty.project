@@ -36,9 +36,8 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTest
 {
@@ -48,18 +47,14 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
     private final AtomicBoolean failureWasAsync = new AtomicBoolean();
     private final AtomicBoolean completeWasSync = new AtomicBoolean();
 
-    public HttpResponseConcurrentAbortTest(SslContextFactory sslContextFactory)
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testAbortOnBegin(Scenario scenario) throws Exception
     {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void testAbortOnBegin() throws Exception
-    {
-        start(new EmptyServerHandler());
+        start(scenario, new EmptyServerHandler());
 
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .onResponseBegin(new Response.BeginListener()
                 {
                     @Override
@@ -75,13 +70,14 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
         assertTrue(completeWasSync.get());
     }
 
-    @Test
-    public void testAbortOnHeader() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testAbortOnHeader(Scenario scenario) throws Exception
     {
-        start(new EmptyServerHandler());
+        start(scenario, new EmptyServerHandler());
 
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .onResponseHeader(new Response.HeaderListener()
                 {
                     @Override
@@ -98,13 +94,14 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
         assertTrue(completeWasSync.get());
     }
 
-    @Test
-    public void testAbortOnHeaders() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testAbortOnHeaders(Scenario scenario) throws Exception
     {
-        start(new EmptyServerHandler());
+        start(scenario, new EmptyServerHandler());
 
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .onResponseHeaders(new Response.HeadersListener()
                 {
                     @Override
@@ -120,10 +117,11 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
         assertTrue(completeWasSync.get());
     }
 
-    @Test
-    public void testAbortOnContent() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testAbortOnContent(Scenario scenario) throws Exception
     {
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -136,7 +134,7 @@ public class HttpResponseConcurrentAbortTest extends AbstractHttpClientServerTes
         });
 
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .onResponseContent(new Response.ContentListener()
                 {
                     @Override

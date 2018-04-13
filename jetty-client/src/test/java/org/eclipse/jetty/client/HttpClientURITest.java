@@ -52,49 +52,47 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.URIUtil;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class HttpClientURITest extends AbstractHttpClientServerTest
 {
-    public HttpClientURITest(SslContextFactory sslContextFactory)
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testIPv6Host(Scenario scenario) throws Exception
     {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void testIPv6Host() throws Exception
-    {
-        start(new EmptyServerHandler());
+        start(scenario, new EmptyServerHandler());
 
         String host = "::1";
         Request request = client.newRequest(host, connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS);
 
         assertEquals(host, request.getHost());
         StringBuilder uri = new StringBuilder();
-        URIUtil.appendSchemeHostPort(uri, scheme, host, connector.getLocalPort());
+        URIUtil.appendSchemeHostPort(uri, scenario.getScheme(), host, connector.getLocalPort());
         assertEquals(uri.toString(), request.getURI().toString());
 
         assertEquals(HttpStatus.OK_200, request.send().getStatus());
     }
 
-    @Test
-    public void testIDNHost() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testIDNHost(Scenario scenario) throws Exception
     {
-        startClient();
+        startClient(scenario);
         assertThrows(IllegalArgumentException.class, ()-> {
-            client.newRequest(scheme + "://пример.рф"); // example.com-like host in IDN domain
+            client.newRequest(scenario.getScheme() + "://пример.рф"); // example.com-like host in IDN domain
         });
     }
 
-    @Test
-    public void testIDNRedirect() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testIDNRedirect(Scenario scenario) throws Exception
     {
         // Internationalized Domain Name.
         // String exampleHost = scheme + "://пример.рф";
-        String exampleHost = scheme + "://\uD0BF\uD180\uD0B8\uD0BC\uD0B5\uD180.\uD180\uD184";
+        String exampleHost = scenario.getScheme() + "://\uD0BF\uD180\uD0B8\uD0BC\uD0B5\uD180.\uD180\uD184";
         String incorrectlyDecoded = new String(exampleHost.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
 
         // Simple server that only parses clear-text HTTP/1.1.
@@ -103,7 +101,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
 
         try
         {
-            startClient();
+            startClient(scenario);
 
             ContentResponse response = client.newRequest("localhost", server.getLocalPort())
                     .timeout(5, TimeUnit.SECONDS)
@@ -127,11 +125,12 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         }
     }
 
-    @Test
-    public void testPath() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testPath(Scenario scenario) throws Exception
     {
         final String path = "/path";
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -142,7 +141,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .path(path);
 
@@ -157,14 +156,15 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testPathWithQuery() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testPathWithQuery(Scenario scenario) throws Exception
     {
         String name = "a";
         String value = "1";
         final String query = name + "=" + value;
         final String path = "/path";
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -177,7 +177,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
 
         String pathQuery = path + "?" + query;
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .path(pathQuery);
 
@@ -193,15 +193,16 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testPathWithParam() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testPathWithParam(Scenario scenario) throws Exception
     {
         String name = "a";
         String value = "1";
         final String query = name + "=" + value;
         final String path = "/path";
         String pathQuery = path + "?" + query;
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -213,7 +214,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .path(path)
                 .param(name, value);
@@ -230,8 +231,9 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testPathWithQueryAndParam() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testPathWithQueryAndParam(Scenario scenario) throws Exception
     {
         String name1 = "a";
         String value1 = "1";
@@ -240,7 +242,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         final String query = name1 + "=" + value1 + "&" + name2 + "=" + value2;
         final String path = "/path";
         String pathQuery = path + "?" + query;
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -252,7 +254,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .path(path + "?" + name1 + "=" + value1)
                 .param(name2, value2);
@@ -270,8 +272,9 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testPathWithQueryAndParamValueEncoded() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testPathWithQueryAndParamValueEncoded(Scenario scenario) throws Exception
     {
         final String name1 = "a";
         final String value1 = "\u20AC";
@@ -282,7 +285,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         final String query = name1 + "=" + encodedValue1 + "&" + name2 + "=" + encodedValue2;
         final String path = "/path";
         String pathQuery = path + "?" + query;
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -296,7 +299,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .path(path + "?" + name1 + "=" + encodedValue1)
                 .param(name2, value2);
@@ -314,13 +317,14 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testNoParameterNameNoParameterValue() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testNoParameterNameNoParameterValue(Scenario scenario) throws Exception
     {
         final String path = "/path";
         final String query = "="; // Bogus query
         String pathQuery = path + "?" + query;
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -332,7 +336,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .path(pathQuery);
 
@@ -347,13 +351,14 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testNoParameterNameWithParameterValue() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testNoParameterNameWithParameterValue(Scenario scenario) throws Exception
     {
         final String path = "/path";
         final String query = "=1"; // Bogus query
         String pathQuery = path + "?" + query;
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -365,7 +370,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .path(pathQuery);
 
@@ -380,12 +385,13 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testCaseSensitiveParameterName() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testCaseSensitiveParameterName(Scenario scenario) throws Exception
     {
         final String name1 = "a";
         final String name2 = "A";
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -397,7 +403,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/path?" + name1 + "=" + name1)
                 .param(name2, name2)
                 .timeout(5, TimeUnit.SECONDS)
@@ -406,14 +412,15 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testRawQueryIsPreservedInURI() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testRawQueryIsPreservedInURI(Scenario scenario) throws Exception
     {
         final String name = "a";
         final String rawValue = "Hello%20World";
         final String rawQuery = name + "=" + rawValue;
         final String value = "Hello World";
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -424,7 +431,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
             }
         });
 
-        String uri = scheme + "://localhost:" + connector.getLocalPort() + "/path?" + rawQuery;
+        String uri = scenario.getScheme() + "://localhost:" + connector.getLocalPort() + "/path?" + rawQuery;
         Request request = client.newRequest(uri)
                 .timeout(5, TimeUnit.SECONDS);
         assertEquals(rawQuery, request.getQuery());
@@ -434,14 +441,15 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testRawQueryIsPreservedInPath() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testRawQueryIsPreservedInPath(Scenario scenario) throws Exception
     {
         final String name = "a";
         final String rawValue = "Hello%20World";
         final String rawQuery = name + "=" + rawValue;
         final String value = "Hello World";
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -453,7 +461,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/path?" + rawQuery)
                 .timeout(5, TimeUnit.SECONDS);
         assertEquals(rawQuery, request.getQuery());
@@ -463,8 +471,9 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testRawQueryIsPreservedWithParam() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testRawQueryIsPreservedWithParam(Scenario scenario) throws Exception
     {
         final String name1 = "a";
         final String name2 = "b";
@@ -474,7 +483,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         final String value2 = "alfa omega";
         final String encodedQuery2 = name2 + "=" + URLEncoder.encode(value2, "UTF-8");
         final String query = rawQuery1 + "&" + encodedQuery2;
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -487,7 +496,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("/path?" + rawQuery1)
                 .param(name2, value2)
                 .timeout(5, TimeUnit.SECONDS);
@@ -498,10 +507,11 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testSchemeIsCaseInsensitive() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testSchemeIsCaseInsensitive(Scenario scenario) throws Exception
     {
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -511,17 +521,18 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme.toUpperCase(Locale.ENGLISH))
+                .scheme(scenario.getScheme().toUpperCase(Locale.ENGLISH))
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testHostIsCaseInsensitive() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testHostIsCaseInsensitive(Scenario scenario) throws Exception
     {
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -531,17 +542,18 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("LOCALHOST", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testAsteriskFormTarget() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testAsteriskFormTarget(Scenario scenario) throws Exception
     {
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -554,7 +566,7 @@ public class HttpClientURITest extends AbstractHttpClientServerTest
 
         Request request = client.newRequest("localhost", connector.getLocalPort())
                 .method(HttpMethod.OPTIONS)
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .path("*")
                 .timeout(5, TimeUnit.SECONDS);
 

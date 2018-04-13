@@ -38,22 +38,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class HttpClientGZIPTest extends AbstractHttpClientServerTest
 {
-    public HttpClientGZIPTest(SslContextFactory sslContextFactory)
-    {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void testGZIPContentEncoding() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testGZIPContentEncoding(Scenario scenario) throws Exception
     {
         final byte[] data = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, org.eclipse.jetty.server.Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -67,7 +62,7 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
 
@@ -75,11 +70,12 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
         assertArrayEquals(data, response.getContent());
     }
 
-    @Test
-    public void testGZIPContentOneByteAtATime() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testGZIPContentOneByteAtATime(Scenario scenario) throws Exception
     {
         final byte[] data = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -104,18 +100,19 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .send();
 
         assertEquals(200, response.getStatus());
         assertArrayEquals(data, response.getContent());
     }
 
-    @Test
-    public void testGZIPContentSentTwiceInOneWrite() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testGZIPContentSentTwiceInOneWrite(Scenario scenario) throws Exception
     {
         final byte[] data = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -138,7 +135,7 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .send();
 
         assertEquals(200, response.getStatus());
@@ -148,24 +145,26 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
         assertArrayEquals(expected, response.getContent());
     }
 
-    @Test
-    public void testGZIPContentFragmentedBeforeTrailer() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testGZIPContentFragmentedBeforeTrailer(Scenario scenario) throws Exception
     {
         // There are 8 trailer bytes to gzip encoding.
-        testGZIPContentFragmented(9);
+        testGZIPContentFragmented(scenario, 9);
     }
 
-    @Test
-    public void testGZIPContentFragmentedAtTrailer() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testGZIPContentFragmentedAtTrailer(Scenario scenario) throws Exception
     {
         // There are 8 trailer bytes to gzip encoding.
-        testGZIPContentFragmented(1);
+        testGZIPContentFragmented(scenario, 1);
     }
 
-    private void testGZIPContentFragmented(final int fragment) throws Exception
+    private void testGZIPContentFragmented(Scenario scenario, final int fragment) throws Exception
     {
         final byte[] data = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -194,17 +193,18 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
         });
 
         ContentResponse response = client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .send();
 
         assertEquals(200, response.getStatus());
         assertArrayEquals(data, response.getContent());
     }
 
-    @Test
-    public void testGZIPContentCorrupted() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testGZIPContentCorrupted(Scenario scenario) throws Exception
     {
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -218,7 +218,7 @@ public class HttpClientGZIPTest extends AbstractHttpClientServerTest
 
         final CountDownLatch latch = new CountDownLatch(1);
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .send(result ->
                 {
                     if (result.isFailed())

@@ -38,21 +38,16 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.Callback;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class HttpClientAsyncContentTest extends AbstractHttpClientServerTest
 {
-    public HttpClientAsyncContentTest(SslContextFactory sslContextFactory)
+    @ParameterizedTest
+    @ArgumentsSource(ScenarioProvider.class)
+    public void testSmallAsyncContent(Scenario scenario) throws Exception
     {
-        super(sslContextFactory);
-    }
-
-    @Test
-    public void testSmallAsyncContent() throws Exception
-    {
-        start(new AbstractHandler()
+        start(scenario, new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -69,7 +64,7 @@ public class HttpClientAsyncContentTest extends AbstractHttpClientServerTest
         final AtomicReference<CountDownLatch> contentLatch = new AtomicReference<>(new CountDownLatch(1));
         final CountDownLatch completeLatch = new CountDownLatch(1);
         client.newRequest("localhost", connector.getLocalPort())
-                .scheme(scheme)
+                .scheme(scenario.getScheme())
                 .onResponseContentAsync(new Response.AsyncContentListener()
                 {
                     @Override
