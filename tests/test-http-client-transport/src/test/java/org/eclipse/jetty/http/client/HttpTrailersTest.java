@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.eclipse.jetty.http.client.Transport.FCGI;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -27,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,25 +42,32 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import org.junit.jupiter.api.Test;
-
-public class HttpTrailersTest extends AbstractTest
+public class HttpTrailersTest extends AbstractTest<TransportScenario>
 {
-    public HttpTrailersTest(Transport transport)
+    @Override
+    public void init(Transport transport) throws IOException
     {
-        super(transport == Transport.FCGI ? null : transport);
+        Assumptions.assumeTrue(transport != FCGI);
+        setScenario(new TransportScenario(transport));
     }
 
-    @Test
-    public void testRequestTrailersNoContent() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testRequestTrailersNoContent(Transport transport) throws Exception
     {
+        init(transport);
         testRequestTrailers(null);
     }
 
-    @Test
-    public void testRequestTrailersWithContent() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testRequestTrailersWithContent(Transport transport) throws Exception
     {
+        init(transport);
         testRequestTrailers("abcdefghijklmnopqrstuvwxyz".getBytes(StandardCharsets.UTF_8));
     }
 
@@ -68,10 +75,10 @@ public class HttpTrailersTest extends AbstractTest
     {
         String trailerName = "Trailer";
         String trailerValue = "value";
-        start(new AbstractHandler.ErrorDispatchHandler()
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 jettyRequest.setHandled(true);
 
@@ -94,7 +101,7 @@ public class HttpTrailersTest extends AbstractTest
         HttpFields trailers = new HttpFields();
         trailers.put(trailerName, trailerValue);
 
-        HttpRequest request = (HttpRequest)client.newRequest(newURI());
+        HttpRequest request = (HttpRequest)scenario.client.newRequest(scenario.newURI());
         request = request.trailers(() -> trailers);
         if (content != null)
             request.method(HttpMethod.POST).content(new BytesContentProvider(content));
@@ -102,13 +109,15 @@ public class HttpTrailersTest extends AbstractTest
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testEmptyRequestTrailers() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testEmptyRequestTrailers(Transport transport) throws Exception
     {
-        start(new AbstractHandler.ErrorDispatchHandler()
+        init(transport);
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 jettyRequest.setHandled(true);
 
@@ -128,21 +137,25 @@ public class HttpTrailersTest extends AbstractTest
         });
 
         HttpFields trailers = new HttpFields();
-        HttpRequest request = (HttpRequest)client.newRequest(newURI());
+        HttpRequest request = (HttpRequest)scenario.client.newRequest(scenario.newURI());
         request = request.trailers(() -> trailers);
         ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
         assertEquals(HttpStatus.OK_200, response.getStatus());
     }
 
-    @Test
-    public void testResponseTrailersNoContent() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testResponseTrailersNoContent(Transport transport) throws Exception
     {
+        init(transport);
         testResponseTrailers(null);
     }
 
-    @Test
-    public void testResponseTrailersWithContent() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testResponseTrailersWithContent(Transport transport) throws Exception
     {
+        init(transport);
         testResponseTrailers("abcdefghijklmnopqrstuvwxyz".getBytes(StandardCharsets.UTF_8));
     }
 
@@ -150,10 +163,10 @@ public class HttpTrailersTest extends AbstractTest
     {
         String trailerName = "Trailer";
         String trailerValue = "value";
-        start(new AbstractHandler.ErrorDispatchHandler()
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 jettyRequest.setHandled(true);
 
@@ -168,7 +181,7 @@ public class HttpTrailersTest extends AbstractTest
         });
 
         AtomicReference<Throwable> failure = new AtomicReference<>(new Throwable("no_success"));
-        ContentResponse response = client.newRequest(newURI())
+        ContentResponse response = scenario.client.newRequest(scenario.newURI())
                 .onResponseSuccess(r ->
                 {
                     try
@@ -190,13 +203,15 @@ public class HttpTrailersTest extends AbstractTest
         assertNull(failure.get());
     }
 
-    @Test
-    public void testEmptyResponseTrailers() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testEmptyResponseTrailers(Transport transport) throws Exception
     {
-        start(new AbstractHandler.ErrorDispatchHandler()
+        init(transport);
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response)
             {
                 jettyRequest.setHandled(true);
 
@@ -208,7 +223,7 @@ public class HttpTrailersTest extends AbstractTest
         });
 
         AtomicReference<Throwable> failure = new AtomicReference<>(new Throwable("no_success"));
-        ContentResponse response = client.newRequest(newURI())
+        ContentResponse response = scenario.client.newRequest(scenario.newURI())
                 .onResponseSuccess(r ->
                 {
                     try

@@ -18,13 +18,12 @@
 
 package org.eclipse.jetty.server;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -34,12 +33,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpTester;
-import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.toolchain.test.MavenTestingUtils;
@@ -48,25 +45,21 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.hamcrest.Matchers;
-
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 public class ConnectionOpenCloseTest extends AbstractHttpTest
 {
-    public ConnectionOpenCloseTest()
-    {
-        super(HttpVersion.HTTP_1_1.asString());
-    }
-    
     @Test
+    @Tag("Slow")
     @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testOpenClose() throws Exception
     {
         server.setHandler(new AbstractHandler()
         {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             {
                 throw new IllegalStateException();
             }
@@ -93,7 +86,7 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
             }
         });
 
-        try (Socket socket = new Socket("localhost", connector.getLocalPort());)
+        try (Socket socket = new Socket("localhost", connector.getLocalPort()))
         {
             socket.setSoTimeout((int)connector.getIdleTimeout());
 
@@ -108,15 +101,16 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
             assertEquals(2, callbacks.get());
         }
     }
-    
+
     @Test
+    @Tag("Slow")
     @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testOpenRequestClose() throws Exception
     {
         server.setHandler(new AbstractHandler()
         {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             {
                 baseRequest.setHandled(true);
             }
@@ -172,6 +166,7 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
     }
 
     @Test
+    @Tag("Slow")
     @DisabledIfSystemProperty(named = "env", matches = "ci") // TODO: SLOW, needs review
     public void testSSLOpenRequestClose() throws Exception
     {
@@ -189,7 +184,7 @@ public class ConnectionOpenCloseTest extends AbstractHttpTest
         server.setHandler(new AbstractHandler()
         {
             @Override
-            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             {
                 baseRequest.setHandled(true);
             }

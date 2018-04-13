@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.eclipse.jetty.http.client.Transport.H2C;
+import static org.eclipse.jetty.http.client.Transport.HTTP;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
@@ -38,23 +40,25 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.IO;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import org.junit.Assume;
-import org.junit.jupiter.api.Test;
-
-public class ConnectionStatisticsTest extends AbstractTest
+public class ConnectionStatisticsTest extends AbstractTest<TransportScenario>
 {
-    public ConnectionStatisticsTest(Transport transport)
+    @Override
+    public void init(Transport transport) throws IOException
     {
-        super(transport);
+        setScenario(new TransportScenario(transport));
+        Assumptions.assumeTrue(scenario.transport == HTTP || scenario.transport == H2C);
     }
 
-    @Test
-    public void testConnectionStatistics() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testConnectionStatistics(Transport transport) throws Exception
     {
-        Assume.assumeThat(transport, Matchers.isOneOf( Transport.HTTP, Transport.H2C));
-
-        start(new AbstractHandler()
+        init(transport);
+        scenario.start(new AbstractHandler()
         {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -80,20 +84,20 @@ public class ConnectionStatisticsTest extends AbstractTest
         };
         
         ConnectionStatistics serverStats = new ConnectionStatistics();
-        connector.addBean(serverStats);
-        connector.addBean(closer);
+        scenario.connector.addBean(serverStats);
+        scenario.connector.addBean(closer);
         serverStats.start();
 
         ConnectionStatistics clientStats = new ConnectionStatistics();
-        client.addBean(clientStats);
-        client.addBean(closer);
+        scenario.client.addBean(clientStats);
+        scenario.client.addBean(closer);
         clientStats.start();
-        
-        client.setIdleTimeout(1000);
+
+        scenario.client.setIdleTimeout(1000);
 
         byte[] content = new byte[3072];
         long contentLength = content.length;
-        ContentResponse response = client.newRequest(newURI())
+        ContentResponse response = scenario.client.newRequest(scenario.newURI())
                 .header(HttpHeader.CONNECTION,"close")
                 .content(new BytesContentProvider(content))
                 .timeout(5, TimeUnit.SECONDS)

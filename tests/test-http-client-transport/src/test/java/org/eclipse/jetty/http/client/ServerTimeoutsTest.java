@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.http.client;
 
+import static org.eclipse.jetty.http.client.Transport.FCGI;
+import static org.eclipse.jetty.http.client.Transport.UNIX_SOCKET;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -50,8 +52,6 @@ import org.eclipse.jetty.http.BadMessageException;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http2.FlowControlStrategy;
 import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
-import org.eclipse.jetty.http2.server.AbstractHTTP2ServerConnectionFactory;
-import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
@@ -59,58 +59,58 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.log.StacklessLogging;
-import org.hamcrest.Matchers;
-import org.junit.Assume;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-public class ServerTimeoutsTest extends AbstractTest
+public class ServerTimeoutsTest extends AbstractTest<TransportScenario>
 {
-    public ServerTimeoutsTest(Transport transport)
+    @Override
+    public void init(Transport transport) throws IOException
     {
         // Skip FCGI for now, not much interested in its server-side behavior.
-        super(transport == Transport.FCGI ? null : transport);
+        Assumptions.assumeTrue(transport != FCGI);
+        setScenario(new TransportScenario(transport));
     }
 
-    private void setServerIdleTimeout(long idleTimeout)
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingReadWithDelayedFirstContentWithUndelayedDispatchIdleTimeoutFires(Transport transport) throws Exception
     {
-        AbstractHTTP2ServerConnectionFactory h2 = connector.getConnectionFactory(AbstractHTTP2ServerConnectionFactory.class);
-        if (h2 != null)
-            h2.setStreamIdleTimeout(idleTimeout);
-        else
-            if (connector instanceof AbstractConnector)
-                AbstractConnector.class.cast(connector).setIdleTimeout(idleTimeout);
+        init(transport);
+        testBlockingReadWithDelayedFirstContentIdleTimeoutFires(scenario, false);
     }
 
-    @Test
-    public void testBlockingReadWithDelayedFirstContentWithUndelayedDispatchIdleTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingReadWithDelayedFirstContentWithDelayedDispatchIdleTimeoutFires(Transport transport) throws Exception
     {
-        testBlockingReadWithDelayedFirstContentIdleTimeoutFires(false);
+        init(transport);
+        testBlockingReadWithDelayedFirstContentIdleTimeoutFires(scenario, true);
     }
 
-    @Test
-    public void testBlockingReadWithDelayedFirstContentWithDelayedDispatchIdleTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testAsyncReadWithDelayedFirstContentWithUndelayedDispatchIdleTimeoutFires(Transport transport) throws Exception
     {
-        testBlockingReadWithDelayedFirstContentIdleTimeoutFires(true);
+        init(transport);
+        testAsyncReadWithDelayedFirstContentIdleTimeoutFires(scenario, false);
     }
 
-    @Test
-    public void testAsyncReadWithDelayedFirstContentWithUndelayedDispatchIdleTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testAsyncReadWithDelayedFirstContentWithDelayedDispatchIdleTimeoutFires(Transport transport) throws Exception
     {
-        testAsyncReadWithDelayedFirstContentIdleTimeoutFires(false);
+        init(transport);
+        testAsyncReadWithDelayedFirstContentIdleTimeoutFires(scenario, true);
     }
 
-    @Test
-    public void testAsyncReadWithDelayedFirstContentWithDelayedDispatchIdleTimeoutFires() throws Exception
+    private void testBlockingReadWithDelayedFirstContentIdleTimeoutFires(TransportScenario scenario, boolean delayDispatch) throws Exception
     {
-        testAsyncReadWithDelayedFirstContentIdleTimeoutFires(true);
-    }
-
-    private void testBlockingReadWithDelayedFirstContentIdleTimeoutFires(boolean delayDispatch) throws Exception
-    {
-        testReadWithDelayedFirstContentIdleTimeoutFires(new EmptyServerHandler()
+        testReadWithDelayedFirstContentIdleTimeoutFires(scenario, new EmptyServerHandler()
         {
             @Override
-            protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 // The client did not send the content,
                 // idle timeout should result in IOException.
@@ -119,12 +119,12 @@ public class ServerTimeoutsTest extends AbstractTest
         }, delayDispatch);
     }
 
-    private void testAsyncReadWithDelayedFirstContentIdleTimeoutFires(boolean delayDispatch) throws Exception
+    private void testAsyncReadWithDelayedFirstContentIdleTimeoutFires(TransportScenario scenario, boolean delayDispatch) throws Exception
     {
-        testReadWithDelayedFirstContentIdleTimeoutFires(new EmptyServerHandler()
+        testReadWithDelayedFirstContentIdleTimeoutFires(scenario, new EmptyServerHandler()
         {
             @Override
-            protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 AsyncContext asyncContext = request.startAsync();
                 asyncContext.setTimeout(0);
@@ -153,11 +153,11 @@ public class ServerTimeoutsTest extends AbstractTest
         }, delayDispatch);
     }
 
-    private void testReadWithDelayedFirstContentIdleTimeoutFires(Handler handler, boolean delayDispatch) throws Exception
+    private void testReadWithDelayedFirstContentIdleTimeoutFires(TransportScenario scenario, Handler handler, boolean delayDispatch) throws Exception
     {
-        httpConfig.setDelayDispatchUntilContent(delayDispatch);
+        scenario.httpConfig.setDelayDispatchUntilContent(delayDispatch);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new AbstractHandler()
+        scenario.start(new AbstractHandler()
         {
             @Override
             public void handle(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -173,11 +173,11 @@ public class ServerTimeoutsTest extends AbstractTest
             }
         });
         long idleTimeout = 1000;
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
         CountDownLatch resultLatch = new CountDownLatch(2);
         DeferredContentProvider content = new DeferredContentProvider();
-        client.POST(newURI())
+        scenario.client.POST(scenario.newURI())
                 .content(content)
                 .onResponseSuccess(response ->
                 {
@@ -193,20 +193,22 @@ public class ServerTimeoutsTest extends AbstractTest
         assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testNoBlockingTimeoutBlockingReadIdleTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testNoBlockingTimeoutBlockingReadIdleTimeoutFires(Transport transport) throws Exception
     {
-        httpConfig.setBlockingTimeout(-1);
+        init(transport);
+        scenario.httpConfig.setBlockingTimeout(-1);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new BlockingReadHandler(handlerLatch));
+        scenario.start(new BlockingReadHandler(handlerLatch));
         long idleTimeout = 2500;
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class))
         {
             DeferredContentProvider contentProvider = new DeferredContentProvider(ByteBuffer.allocate(1));
             CountDownLatch resultLatch = new CountDownLatch(1);
-            client.POST(newURI())
+            scenario.client.POST(scenario.newURI())
                     .content(contentProvider)
                     .send(result ->
                     {
@@ -222,21 +224,23 @@ public class ServerTimeoutsTest extends AbstractTest
         }
     }
 
-    @Test
-    public void testBlockingTimeoutSmallerThanIdleTimeoutBlockingReadBlockingTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingTimeoutSmallerThanIdleTimeoutBlockingReadBlockingTimeoutFires(Transport transport) throws Exception
     {
+        init(transport);
         long blockingTimeout = 2500;
-        httpConfig.setBlockingTimeout(blockingTimeout);
+        scenario.httpConfig.setBlockingTimeout(blockingTimeout);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new BlockingReadHandler(handlerLatch));
+        scenario.start(new BlockingReadHandler(handlerLatch));
         long idleTimeout = 3 * blockingTimeout;
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class))
         {
             DeferredContentProvider contentProvider = new DeferredContentProvider(ByteBuffer.allocate(1));
             CountDownLatch resultLatch = new CountDownLatch(1);
-            client.POST(newURI())
+            scenario.client.POST(scenario.newURI())
                     .content(contentProvider)
                     .send(result ->
                     {
@@ -252,21 +256,23 @@ public class ServerTimeoutsTest extends AbstractTest
         }
     }
 
-    @Test
-    public void testBlockingTimeoutLargerThanIdleTimeoutBlockingReadIdleTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingTimeoutLargerThanIdleTimeoutBlockingReadIdleTimeoutFires(Transport transport) throws Exception
     {
+        init(transport);
         long idleTimeout = 2500;
         long blockingTimeout = 3 * idleTimeout;
-        httpConfig.setBlockingTimeout(blockingTimeout);
+        scenario.httpConfig.setBlockingTimeout(blockingTimeout);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new BlockingReadHandler(handlerLatch));
-        setServerIdleTimeout(idleTimeout);
+        scenario.start(new BlockingReadHandler(handlerLatch));
+        scenario.setServerIdleTimeout(idleTimeout);
 
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class))
         {
             DeferredContentProvider contentProvider = new DeferredContentProvider(ByteBuffer.allocate(1));
             CountDownLatch resultLatch = new CountDownLatch(1);
-            client.POST(newURI())
+            scenario.client.POST(scenario.newURI())
                     .content(contentProvider)
                     .send(result ->
                     {
@@ -282,20 +288,22 @@ public class ServerTimeoutsTest extends AbstractTest
         }
     }
 
-    @Test
-    public void testNoBlockingTimeoutBlockingWriteIdleTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testNoBlockingTimeoutBlockingWriteIdleTimeoutFires(Transport transport) throws Exception
     {
-        httpConfig.setBlockingTimeout(-1);
+        init(transport);
+        scenario.httpConfig.setBlockingTimeout(-1);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new BlockingWriteHandler(handlerLatch));
+        scenario.start(new BlockingWriteHandler(handlerLatch));
         long idleTimeout = 2500;
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class))
         {
             BlockingQueue<Callback> callbacks = new LinkedBlockingQueue<>();
             CountDownLatch resultLatch = new CountDownLatch(1);
-            client.newRequest(newURI())
+            scenario.client.newRequest(scenario.newURI())
                     .onResponseContentAsync((response, content, callback) ->
                     {
                         // Do not succeed the callback so the server will block writing.
@@ -321,21 +329,23 @@ public class ServerTimeoutsTest extends AbstractTest
         }
     }
 
-    @Test
-    public void testBlockingTimeoutSmallerThanIdleTimeoutBlockingWriteBlockingTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingTimeoutSmallerThanIdleTimeoutBlockingWriteBlockingTimeoutFires(Transport transport) throws Exception
     {
+        init(transport);
         long blockingTimeout = 2500;
-        httpConfig.setBlockingTimeout(blockingTimeout);
+        scenario.httpConfig.setBlockingTimeout(blockingTimeout);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new BlockingWriteHandler(handlerLatch));
+        scenario.start(new BlockingWriteHandler(handlerLatch));
         long idleTimeout = 3 * blockingTimeout;
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class))
         {
             BlockingQueue<Callback> callbacks = new LinkedBlockingQueue<>();
             CountDownLatch resultLatch = new CountDownLatch(1);
-            client.newRequest(newURI())
+            scenario.client.newRequest(scenario.newURI())
                     .onResponseContentAsync((response, content, callback) ->
                     {
                         // Do not succeed the callback so the server will block writing.
@@ -361,21 +371,23 @@ public class ServerTimeoutsTest extends AbstractTest
         }
     }
 
-    @Test
-    public void testBlockingTimeoutLargerThanIdleTimeoutBlockingWriteIdleTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingTimeoutLargerThanIdleTimeoutBlockingWriteIdleTimeoutFires(Transport transport) throws Exception
     {
+        init(transport);
         long idleTimeout = 2500;
         long blockingTimeout = 3 * idleTimeout;
-        httpConfig.setBlockingTimeout(blockingTimeout);
+        scenario.httpConfig.setBlockingTimeout(blockingTimeout);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new BlockingWriteHandler(handlerLatch));
-        setServerIdleTimeout(idleTimeout);
+        scenario.start(new BlockingWriteHandler(handlerLatch));
+        scenario.setServerIdleTimeout(idleTimeout);
 
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class))
         {
             BlockingQueue<Callback> callbacks = new LinkedBlockingQueue<>();
             CountDownLatch resultLatch = new CountDownLatch(1);
-            client.newRequest(newURI())
+            scenario.client.newRequest(scenario.newURI())
                     .onResponseContentAsync((response, content, callback) ->
                     {
                         // Do not succeed the callback so the server will block writing.
@@ -401,17 +413,19 @@ public class ServerTimeoutsTest extends AbstractTest
         }
     }
 
-    @Test
-    public void testBlockingTimeoutWithSlowRead() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingTimeoutWithSlowRead(Transport transport) throws Exception
     {
+        init(transport);
         long idleTimeout = 2500;
         long blockingTimeout = 2 * idleTimeout;
-        httpConfig.setBlockingTimeout(blockingTimeout);
+        scenario.httpConfig.setBlockingTimeout(blockingTimeout);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new AbstractHandler.ErrorDispatchHandler()
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 try
                 {
@@ -431,13 +445,13 @@ public class ServerTimeoutsTest extends AbstractTest
                 }
             }
         });
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class))
         {
             DeferredContentProvider contentProvider = new DeferredContentProvider();
             CountDownLatch resultLatch = new CountDownLatch(1);
-            client.newRequest(newURI())
+            scenario.client.newRequest(scenario.newURI())
                     .content(contentProvider)
                     .send(result ->
                     {
@@ -463,14 +477,16 @@ public class ServerTimeoutsTest extends AbstractTest
         }
     }
 
-    @Test
-    public void testAsyncReadIdleTimeoutFires() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testAsyncReadIdleTimeoutFires(Transport transport) throws Exception
     {
+        init(transport);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new AbstractHandler.ErrorDispatchHandler()
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 baseRequest.setHandled(true);
                 AsyncContext asyncContext = request.startAsync();
@@ -486,7 +502,7 @@ public class ServerTimeoutsTest extends AbstractTest
                     }
 
                     @Override
-                    public void onAllDataRead() throws IOException
+                    public void onAllDataRead()
                     {
                     }
 
@@ -504,11 +520,11 @@ public class ServerTimeoutsTest extends AbstractTest
             }
         });
         long idleTimeout = 2500;
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
         DeferredContentProvider contentProvider = new DeferredContentProvider(ByteBuffer.allocate(1));
         CountDownLatch resultLatch = new CountDownLatch(1);
-        client.POST(newURI())
+        scenario.client.POST(scenario.newURI())
                 .content(contentProvider)
                 .send(result ->
                 {
@@ -523,17 +539,19 @@ public class ServerTimeoutsTest extends AbstractTest
         assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testAsyncWriteIdleTimeoutFires() throws Exception
-    {   
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testAsyncWriteIdleTimeoutFires(Transport transport) throws Exception
+    {
+        init(transport);
         // TODO work out why this test fails for UNIX_SOCKET
-        Assume.assumeFalse(transport==Transport.UNIX_SOCKET);
+        Assumptions.assumeFalse(scenario.transport == UNIX_SOCKET);
 
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new AbstractHandler.ErrorDispatchHandler()
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 baseRequest.setHandled(true);
                 AsyncContext asyncContext = request.startAsync();
@@ -560,11 +578,11 @@ public class ServerTimeoutsTest extends AbstractTest
             }
         });
         long idleTimeout = 2500;
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
         BlockingQueue<Callback> callbacks = new LinkedBlockingQueue<>();
         CountDownLatch resultLatch = new CountDownLatch(1);
-        client.newRequest(newURI())
+        scenario.client.newRequest(scenario.newURI())
                 .onResponseContentAsync((response, content, callback) ->
                 {
                     // Do not succeed the callback so the server will block writing.
@@ -589,16 +607,18 @@ public class ServerTimeoutsTest extends AbstractTest
         assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testBlockingReadWithMinimumDataRateBelowLimit() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingReadWithMinimumDataRateBelowLimit(Transport transport) throws Exception
     {
+        init(transport);
         int bytesPerSecond = 20;
-        httpConfig.setMinRequestDataRate(bytesPerSecond);
+        scenario.httpConfig.setMinRequestDataRate(bytesPerSecond);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new AbstractHandler.ErrorDispatchHandler()
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            public void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            public void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 try
                 {
@@ -621,7 +641,7 @@ public class ServerTimeoutsTest extends AbstractTest
 
         DeferredContentProvider contentProvider = new DeferredContentProvider();
         CountDownLatch resultLatch = new CountDownLatch(1);
-        client.newRequest(newURI())
+        scenario.client.newRequest(scenario.newURI())
                 .content(contentProvider)
                 .send(result ->
                 {
@@ -641,16 +661,18 @@ public class ServerTimeoutsTest extends AbstractTest
         assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testBlockingReadWithMinimumDataRateAboveLimit() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingReadWithMinimumDataRateAboveLimit(Transport transport) throws Exception
     {
+        init(transport);
         int bytesPerSecond = 20;
-        httpConfig.setMinRequestDataRate(bytesPerSecond);
+        scenario.httpConfig.setMinRequestDataRate(bytesPerSecond);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new AbstractHandler.ErrorDispatchHandler()
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 baseRequest.setHandled(true);
                 ServletInputStream input = request.getInputStream();
@@ -666,7 +688,7 @@ public class ServerTimeoutsTest extends AbstractTest
 
         DeferredContentProvider contentProvider = new DeferredContentProvider();
         CountDownLatch resultLatch = new CountDownLatch(1);
-        client.newRequest(newURI())
+        scenario.client.newRequest(scenario.newURI())
                 .content(contentProvider)
                 .send(result ->
                 {
@@ -685,21 +707,23 @@ public class ServerTimeoutsTest extends AbstractTest
         assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testBlockingReadHttpIdleTimeoutOverridesIdleTimeout() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingReadHttpIdleTimeoutOverridesIdleTimeout(Transport transport) throws Exception
     {
+        init(transport);
         long httpIdleTimeout = 2500;
         long idleTimeout = 3 * httpIdleTimeout;
-        httpConfig.setIdleTimeout(httpIdleTimeout);
+        scenario.httpConfig.setIdleTimeout(httpIdleTimeout);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new BlockingReadHandler(handlerLatch));
-        setServerIdleTimeout(idleTimeout);
+        scenario.start(new BlockingReadHandler(handlerLatch));
+        scenario.setServerIdleTimeout(idleTimeout);
 
-        try (StacklessLogging stackless = new StacklessLogging(HttpChannel.class))
+        try (StacklessLogging ignore = new StacklessLogging(HttpChannel.class))
         {
             DeferredContentProvider contentProvider = new DeferredContentProvider(ByteBuffer.allocate(1));
             CountDownLatch resultLatch = new CountDownLatch(1);
-            client.POST(newURI())
+            scenario.client.POST(scenario.newURI())
                     .content(contentProvider)
                     .send(result ->
                     {
@@ -715,17 +739,19 @@ public class ServerTimeoutsTest extends AbstractTest
         }
     }
 
-    @Test
-    public void testAsyncReadHttpIdleTimeoutOverridesIdleTimeout() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testAsyncReadHttpIdleTimeoutOverridesIdleTimeout(Transport transport) throws Exception
     {
+        init(transport);
         long httpIdleTimeout = 2500;
         long idleTimeout = 3 * httpIdleTimeout;
-        httpConfig.setIdleTimeout(httpIdleTimeout);
+        scenario.httpConfig.setIdleTimeout(httpIdleTimeout);
         CountDownLatch handlerLatch = new CountDownLatch(1);
-        start(new AbstractHandler.ErrorDispatchHandler()
+        scenario.start(new AbstractHandler.ErrorDispatchHandler()
         {
             @Override
-            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 baseRequest.setHandled(true);
                 AsyncContext asyncContext = request.startAsync();
@@ -741,7 +767,7 @@ public class ServerTimeoutsTest extends AbstractTest
                     }
 
                     @Override
-                    public void onAllDataRead() throws IOException
+                    public void onAllDataRead()
                     {
                     }
 
@@ -758,11 +784,11 @@ public class ServerTimeoutsTest extends AbstractTest
                 });
             }
         });
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
         DeferredContentProvider contentProvider = new DeferredContentProvider(ByteBuffer.allocate(1));
         CountDownLatch resultLatch = new CountDownLatch(1);
-        client.POST(newURI())
+        scenario.client.POST(scenario.newURI())
                 .content(contentProvider)
                 .send(result ->
                 {
@@ -777,14 +803,16 @@ public class ServerTimeoutsTest extends AbstractTest
         assertTrue(resultLatch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testIdleTimeoutBeforeReadIsIgnored() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testIdleTimeoutBeforeReadIsIgnored(Transport transport) throws Exception
     {
+        init(transport);
         long idleTimeout = 1000;
-        start(new HttpServlet()
+        scenario.start(new HttpServlet()
         {
             @Override
-            protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+            protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException
             {
                 try
                 {
@@ -797,7 +825,7 @@ public class ServerTimeoutsTest extends AbstractTest
                 }
             }
         });
-        setServerIdleTimeout(idleTimeout);
+        scenario.setServerIdleTimeout(idleTimeout);
 
         byte[] data = new byte[1024];
         new Random().nextBytes(data);
@@ -807,8 +835,8 @@ public class ServerTimeoutsTest extends AbstractTest
         System.arraycopy(data, data1.length, data2, 0, data2.length);
         DeferredContentProvider content = new DeferredContentProvider(ByteBuffer.wrap(data1));
         CountDownLatch latch = new CountDownLatch(1);
-        client.newRequest(newURI())
-                .path(servletPath)
+        scenario.client.newRequest(scenario.newURI())
+                .path(scenario.servletPath)
                 .content(content)
                 .send(new BufferingResponseListener()
                 {
@@ -830,8 +858,9 @@ public class ServerTimeoutsTest extends AbstractTest
         assertTrue(latch.await(5, TimeUnit.SECONDS));
     }
 
-    @Test
-    public void testBlockingWriteWithMinimumDataRateBelowLimit() throws Exception
+    @ParameterizedTest
+    @ArgumentsSource(TransportProvider.class)
+    public void testBlockingWriteWithMinimumDataRateBelowLimit(Transport transport) throws Exception
     {
         // This test needs a large write to stall the server, and a slow reading client.
         // In HTTP/1.1, when using the loopback interface, the buffers are so large that
@@ -844,15 +873,17 @@ public class ServerTimeoutsTest extends AbstractTest
         // In HTTP/2, we force the flow control window to be small, so that the server
         // stalls almost immediately without having written many bytes, so that the test
         // completes quickly.
-        Assume.assumeThat(transport, Matchers.isOneOf(Transport.H2, Transport.H2C));
+        Assumptions.assumeTrue(transport.isHttp2Based());
+
+        init(transport);
 
         int bytesPerSecond = 16 * 1024;
-        httpConfig.setMinResponseDataRate(bytesPerSecond);
+        scenario.httpConfig.setMinResponseDataRate(bytesPerSecond);
         CountDownLatch serverLatch = new CountDownLatch(1);
-        start(new EmptyServerHandler()
+        scenario.start(new EmptyServerHandler()
         {
             @Override
-            protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+            protected void service(String target, Request jettyRequest, HttpServletRequest request, HttpServletResponse response)
             {
                 try
                 {
@@ -865,12 +896,12 @@ public class ServerTimeoutsTest extends AbstractTest
                 }
             }
         });
-        ((HttpClientTransportOverHTTP2)client.getTransport()).getHTTP2Client().setInitialStreamRecvWindow(FlowControlStrategy.DEFAULT_WINDOW_SIZE);
+        ((HttpClientTransportOverHTTP2)scenario.client.getTransport()).getHTTP2Client().setInitialStreamRecvWindow(FlowControlStrategy.DEFAULT_WINDOW_SIZE);
 
         // Setup the client to read slower than the min data rate.
         BlockingQueue<Object> objects = new LinkedBlockingQueue<>();
         CountDownLatch clientLatch = new CountDownLatch(1);
-        client.newRequest(newURI())
+        scenario.client.newRequest(scenario.newURI())
                 .onResponseContentAsync((response, content, callback) ->
                 {
                     objects.offer(content.remaining());
@@ -910,7 +941,7 @@ public class ServerTimeoutsTest extends AbstractTest
         }
 
         @Override
-        protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+        protected void doNonErrorHandle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
         {
             baseRequest.setHandled(true);
             ServletInputStream input = request.getInputStream();
@@ -937,7 +968,7 @@ public class ServerTimeoutsTest extends AbstractTest
         }
 
         @Override
-        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException
         {
             baseRequest.setHandled(true);
             ServletOutputStream output = response.getOutputStream();

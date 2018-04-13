@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpTester;
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.log.StacklessLogging;
@@ -47,14 +48,7 @@ public abstract class AbstractHttpTest
     
     protected static Server server;
     protected static ServerConnector connector;
-    protected String httpVersion;
     private StacklessLogging stacklessChannelLogging;
-
-
-    public AbstractHttpTest(String httpVersion)
-    {
-        this.httpVersion = httpVersion;
-    }
 
     @BeforeEach
     public void setUp() throws Exception
@@ -64,7 +58,7 @@ public abstract class AbstractHttpTest
         connector.setIdleTimeout(100000);
         
         server.addConnector(connector);
-        stacklessChannelLogging =new StacklessLogging(HttpChannel.class);
+        stacklessChannelLogging = new StacklessLogging(HttpChannel.class);
     }
 
     @AfterEach
@@ -74,7 +68,7 @@ public abstract class AbstractHttpTest
         stacklessChannelLogging.close();
     }
 
-    protected HttpTester.Response executeRequest() throws URISyntaxException, IOException
+    protected HttpTester.Response executeRequest(HttpVersion httpVersion) throws URISyntaxException, IOException
     {
         try(Socket socket = new Socket("localhost", connector.getLocalPort()))
         {
@@ -82,7 +76,7 @@ public abstract class AbstractHttpTest
             
             try(PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream())))
             {
-                writer.write("GET / " + httpVersion + "\r\n");
+                writer.write("GET / " + httpVersion.asString() + "\r\n");
                 writer.write("Host: localhost\r\n");
                 writer.write("\r\n");
                 writer.flush();
@@ -91,7 +85,7 @@ public abstract class AbstractHttpTest
                 HttpTester.Input input = HttpTester.from(socket.getInputStream());
                 HttpTester.parseResponse(input, response);
                 
-                if ("HTTP/1.1".equals(httpVersion)
+                if (httpVersion.is("HTTP/1.1")
                         && response.isComplete()
                         && response.get("content-length") == null
                         && response.get("transfer-encoding") == null
