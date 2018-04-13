@@ -29,12 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.EOFException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpExchange;
@@ -50,35 +49,27 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.ByteArrayEndPoint;
 import org.eclipse.jetty.util.Promise;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-@RunWith(Parameterized.class)
 public class HttpReceiverOverHTTPTest
 {    
-    @Parameterized.Parameter(0)
-    public HttpCompliance compliance;
-    
     private HttpClient client;
     private HttpDestinationOverHTTP destination;
     private ByteArrayEndPoint endPoint;
     private HttpConnectionOverHTTP connection;
     
-    @Parameterized.Parameters
-    public static Collection<Object[]> parameters() throws Exception
+    public static Stream<Arguments> complianceModes() throws Exception
     {
-        return Arrays.asList(
-            new Object[] { HttpCompliance.LEGACY },
-            new Object[] { HttpCompliance.RFC2616_LEGACY },
-            new Object[] { HttpCompliance.RFC7230_LEGACY }
-        );
+        return Stream.of(
+            HttpCompliance.LEGACY,
+            HttpCompliance.RFC2616_LEGACY,
+            HttpCompliance.RFC7230_LEGACY
+        ).map(Arguments::of);
     }
     
-    @BeforeEach
-    public void init() throws Exception
+    public void init(HttpCompliance compliance) throws Exception
     {
         client = new HttpClient();
         client.setHttpCompliance(compliance);
@@ -108,9 +99,11 @@ public class HttpReceiverOverHTTPTest
         return exchange;
     }
 
-    @Test
-    public void test_Receive_NoResponseContent() throws Exception
+    @ParameterizedTest
+    @MethodSource("complianceModes")
+    public void test_Receive_NoResponseContent(HttpCompliance compliance) throws Exception
     {
+        init(compliance);
         endPoint.addInput("" +
                 "HTTP/1.1 200 OK\r\n" +
                 "Content-length: 0\r\n" +
@@ -130,9 +123,11 @@ public class HttpReceiverOverHTTPTest
         assertEquals("0", headers.get(HttpHeader.CONTENT_LENGTH));
     }
 
-    @Test
-    public void test_Receive_ResponseContent() throws Exception
+    @ParameterizedTest
+    @MethodSource("complianceModes")
+    public void test_Receive_ResponseContent(HttpCompliance compliance) throws Exception
     {
+        init(compliance);
         String content = "0123456789ABCDEF";
         endPoint.addInput("" +
                 "HTTP/1.1 200 OK\r\n" +
@@ -156,9 +151,11 @@ public class HttpReceiverOverHTTPTest
         assertEquals(content, received);
     }
 
-    @Test
-    public void test_Receive_ResponseContent_EarlyEOF() throws Exception
+    @ParameterizedTest
+    @MethodSource("complianceModes")
+    public void test_Receive_ResponseContent_EarlyEOF(HttpCompliance compliance) throws Exception
     {
+        init(compliance);
         String content1 = "0123456789";
         String content2 = "ABCDEF";
         endPoint.addInput("" +
@@ -176,9 +173,11 @@ public class HttpReceiverOverHTTPTest
         assertThat(e.getCause(), instanceOf(EOFException.class));
     }
 
-    @Test
-    public void test_Receive_ResponseContent_IdleTimeout() throws Exception
+    @ParameterizedTest
+    @MethodSource("complianceModes")
+    public void test_Receive_ResponseContent_IdleTimeout(HttpCompliance compliance) throws Exception
     {
+        init(compliance);
         endPoint.addInput("" +
                 "HTTP/1.1 200 OK\r\n" +
                 "Content-length: 1\r\n" +
@@ -195,9 +194,11 @@ public class HttpReceiverOverHTTPTest
         assertThat(e.getCause(), instanceOf(TimeoutException.class));
     }
 
-    @Test
-    public void test_Receive_BadResponse() throws Exception
+    @ParameterizedTest
+    @MethodSource("complianceModes")
+    public void test_Receive_BadResponse(HttpCompliance compliance) throws Exception
     {
+        init(compliance);
         endPoint.addInput("" +
                 "HTTP/1.1 200 OK\r\n" +
                 "Content-length: A\r\n" +
@@ -210,9 +211,11 @@ public class HttpReceiverOverHTTPTest
         assertThat(e.getCause(), instanceOf(HttpResponseException.class));
     }
 
-    @Test
-    public void test_FillInterested_RacingWith_BufferRelease() throws Exception
+    @ParameterizedTest
+    @MethodSource("complianceModes")
+    public void test_FillInterested_RacingWith_BufferRelease(HttpCompliance compliance) throws Exception
     {
+        init(compliance);
         connection = new HttpConnectionOverHTTP(endPoint, destination, new Promise.Adapter<>())
         {
             @Override

@@ -39,27 +39,12 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-@RunWith(Parameterized.class)
 public class TLSServerConnectionCloseTest
 {
-    @Parameterized.Parameters(name = "CloseMode: {0}")
-    public static Object[] parameters()
-    {
-        return new Object[]{CloseMode.NONE, CloseMode.CLOSE, CloseMode.ABRUPT};
-    }
-
     private HttpClient client;
-    private final CloseMode closeMode;
-
-    public TLSServerConnectionCloseTest(CloseMode closeMode)
-    {
-        this.closeMode = closeMode;
-    }
 
     private void startClient() throws Exception
     {
@@ -82,25 +67,28 @@ public class TLSServerConnectionCloseTest
             client.stop();
     }
 
-    @Test
-    public void testServerSendsConnectionCloseWithoutContent() throws Exception
+    @ParameterizedTest
+    @EnumSource(CloseMode.class)
+    public void testServerSendsConnectionCloseWithoutContent(CloseMode closeMode) throws Exception
     {
-        testServerSendsConnectionClose(false, "");
+        testServerSendsConnectionClose(closeMode, false, "");
     }
 
-    @Test
-    public void testServerSendsConnectionCloseWithContent() throws Exception
+    @ParameterizedTest
+    @EnumSource(CloseMode.class)
+    public void testServerSendsConnectionCloseWithContent(CloseMode closeMode) throws Exception
     {
-        testServerSendsConnectionClose(false, "data");
+        testServerSendsConnectionClose(closeMode, false, "data");
     }
 
-    @Test
-    public void testServerSendsConnectionCloseWithChunkedContent() throws Exception
+    @ParameterizedTest
+    @EnumSource(CloseMode.class)
+    public void testServerSendsConnectionCloseWithChunkedContent(CloseMode closeMode) throws Exception
     {
-        testServerSendsConnectionClose(true, "data");
+        testServerSendsConnectionClose(closeMode, true, "data");
     }
 
-    private void testServerSendsConnectionClose(boolean chunked, String content) throws Exception
+    private void testServerSendsConnectionClose(final CloseMode closeMode, boolean chunked, String content) throws Exception
     {
         ServerSocket server = new ServerSocket(0);
         int port = server.getLocalPort();

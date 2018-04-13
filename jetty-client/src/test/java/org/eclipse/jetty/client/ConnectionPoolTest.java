@@ -22,12 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,35 +48,25 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.IO;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class ConnectionPoolTest
 {
     private Server server;
     private ServerConnector connector;
     private HttpClient client;
 
-    @Parameterized.Parameters
-    public static ConnectionPool.Factory[] parameters()
+    public static Stream<Arguments> pools()
     {
-        return new ConnectionPool.Factory[]
-                {
-                        destination -> new DuplexConnectionPool(destination, 8, destination),
-                        destination -> new RoundRobinConnectionPool(destination, 8, destination)
-                };
+        List<ConnectionPool.Factory> pools = new ArrayList<>();
+        pools.add(destination -> new DuplexConnectionPool(destination, 8, destination));
+        pools.add(destination -> new RoundRobinConnectionPool(destination, 8, destination));
+        return pools.stream().map(Arguments::of);
     }
 
-    private final ConnectionPool.Factory factory;
-
-    public ConnectionPoolTest(ConnectionPool.Factory factory)
-    {
-        this.factory = factory;
-    }
-
-    private void start(Handler handler) throws Exception
+    private void start(final ConnectionPool.Factory factory, Handler handler) throws Exception
     {
         server = new Server();
         connector = new ServerConnector(server);
@@ -96,10 +88,11 @@ public class ConnectionPoolTest
             server.stop();
     }
 
-    @Test
-    public void test() throws Exception
+    @ParameterizedTest
+    @MethodSource("pools")
+    public void test(final ConnectionPool.Factory factory) throws Exception
     {
-        start(new EmptyServerHandler()
+        start(factory, new EmptyServerHandler()
         {
             @Override
             protected void service(String target, org.eclipse.jetty.server.Request jettyRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
