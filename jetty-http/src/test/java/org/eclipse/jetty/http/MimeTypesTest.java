@@ -74,8 +74,8 @@ public class MimeTypesTest
         MimeTypes mimetypes = new MimeTypes();
         String contentType = mimetypes.getMimeByExtension(filename);
         String prefix = "MimeTypes.getMimeByExtension(" + filename + ")";
-        assertNotNull(prefix,contentType);
-        assertEquals(prefix,expectedMimeType,contentType);
+        assertNotNull(contentType,prefix);
+        assertEquals(expectedMimeType,contentType,prefix);
     }
     
     private void assertCharsetFromContentType(String contentType, String expectedCharset)

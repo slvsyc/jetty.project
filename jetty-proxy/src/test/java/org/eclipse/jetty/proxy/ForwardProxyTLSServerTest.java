@@ -32,6 +32,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -63,32 +64,44 @@ import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
-
 import org.junit.Assume;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class ForwardProxyTLSServerTest
 {
-    @Parameterized.Parameters
-    public static Object[] parameters()
+    @SuppressWarnings("Duplicates")
+    public static Stream<Arguments> scenarios()
     {
-        return new Object[]{null, newSslContextFactory()};
+        String keyStorePath = MavenTestingUtils.getTestResourceFile("keystore").getAbsolutePath();
+
+        // no server SSL
+        SslContextFactory scenario1 = null;
+        // basic server SSL
+        SslContextFactory scenario2 = new SslContextFactory();
+        scenario2.setKeyStorePath(keyStorePath);
+        scenario2.setKeyStorePassword("storepwd");
+        scenario2.setKeyManagerPassword("keypwd");
+        // TODO: add more SslContextFactory configurations/scenarios?
+
+        return Stream.of(
+                scenario1, scenario2
+        ).map(Arguments::of);
     }
 
-    private final SslContextFactory proxySslContextFactory;
+    private SslContextFactory proxySslContextFactory;
     private Server server;
     private ServerConnector serverConnector;
     private Server proxy;
     private ServerConnector proxyConnector;
 
-    public ForwardProxyTLSServerTest(SslContextFactory proxySslContextFactory)
+    public void init(SslContextFactory scenario)
     {
-        this.proxySslContextFactory = proxySslContextFactory;
+        proxySslContextFactory = scenario;
     }
 
     protected void startTLSServer(Handler handler) throws Exception
@@ -161,9 +174,11 @@ public class ForwardProxyTLSServerTest
         }
     }
 
-    @Test
-    public void testOneExchange() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testOneExchange(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         startTLSServer(new ServerHandler());
         startProxy();
 
@@ -195,9 +210,11 @@ public class ForwardProxyTLSServerTest
         }
     }
 
-    @Test
-    public void testTwoExchanges() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testTwoExchanges(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         startTLSServer(new ServerHandler());
         startProxy();
 
@@ -240,9 +257,11 @@ public class ForwardProxyTLSServerTest
         }
     }
 
-    @Test
-    public void testTwoConcurrentExchanges() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testTwoConcurrentExchanges(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         startTLSServer(new ServerHandler());
         startProxy();
 
@@ -305,9 +324,11 @@ public class ForwardProxyTLSServerTest
         }
     }
 
-    @Test
-    public void testShortIdleTimeoutOverriddenByRequest() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testShortIdleTimeoutOverriddenByRequest(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         // Short idle timeout for HttpClient.
         long idleTimeout = 500;
 
@@ -359,9 +380,11 @@ public class ForwardProxyTLSServerTest
         }
     }
 
-    @Test
-    public void testProxyDown() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testProxyDown(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         startTLSServer(new ServerHandler());
         startProxy();
         int proxyPort = proxyConnector.getLocalPort();
@@ -385,9 +408,11 @@ public class ForwardProxyTLSServerTest
         httpClient.stop();
     }
 
-    @Test
-    public void testServerDown() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testServerDown(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         startTLSServer(new ServerHandler());
         int serverPort = serverConnector.getLocalPort();
         stopServer();
@@ -410,9 +435,11 @@ public class ForwardProxyTLSServerTest
         httpClient.stop();
     }
 
-    @Test
-    public void testProxyClosesConnection() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testProxyClosesConnection(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         startTLSServer(new ServerHandler());
         startProxy(new ConnectHandler()
         {
@@ -437,9 +464,11 @@ public class ForwardProxyTLSServerTest
         httpClient.stop();
     }
 
-    @Test
-    public void testProxyAuthentication() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testProxyAuthentication(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         final String realm = "test-realm";
         testProxyAuthentication(realm, new ConnectHandler()
         {
@@ -459,9 +488,11 @@ public class ForwardProxyTLSServerTest
         });
     }
 
-    @Test
-    public void testProxyAuthenticationWithResponseContent() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testProxyAuthenticationWithResponseContent(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         final String realm = "test-realm";
         testProxyAuthentication(realm, new ConnectHandler()
         {
@@ -482,9 +513,11 @@ public class ForwardProxyTLSServerTest
         });
     }
 
-    @Test
-    public void testProxyAuthenticationWithIncludedAddressWithResponseContent() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testProxyAuthenticationWithIncludedAddressWithResponseContent(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         final String realm = "test-realm";
         testProxyAuthentication(realm, new ConnectHandler()
         {
@@ -505,9 +538,11 @@ public class ForwardProxyTLSServerTest
         }, true);
     }
 
-    @Test
-    public void testProxyAuthenticationClosesConnection() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testProxyAuthenticationClosesConnection(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         final String realm = "test-realm";
         testProxyAuthentication(realm, new ConnectHandler()
         {
@@ -569,10 +604,13 @@ public class ForwardProxyTLSServerTest
         }
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    @Tag("Unstable")
     @Disabled("External Proxy Server no longer stable enough for testing")
-    public void testExternalProxy() throws Exception
+    public void testExternalProxy(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
         // Free proxy server obtained from http://hidemyass.com/proxy-list/
         String proxyHost = "81.208.25.53";
         int proxyPort = 3128;

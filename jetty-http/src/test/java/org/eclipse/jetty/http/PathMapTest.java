@@ -70,7 +70,7 @@ public class PathMapTest
 
         for (String[] test : tests)
         {
-            assertEquals(test[0], test[1], p.getMatch(test[0]).getValue());
+            assertEquals(test[1], p.getMatch(test[0]).getValue(), test[0]);
         }
 
         assertEquals("1", p.get("/abs/path"), "Get absolute path");

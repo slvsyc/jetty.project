@@ -26,27 +26,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.util.BufferUtil;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class HttpGeneratorServerHTTPTest
 {
-    @Parameter(value = 0)
-    public Run run;
     private String _content;
     private String _reason;
 
-    @Test
-    public void testHTTP() throws Exception
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testHTTP(Run run) throws Exception
     {
         Handler handler = new Handler();
 
@@ -64,7 +59,7 @@ public class HttpGeneratorServerHTTPTest
         parser.parseNext(BufferUtil.toBuffer(response));
 
         if (run.result._body != null)
-            assertEquals(t, run.result._body, this._content);
+            assertEquals(run.result._body, this._content, t);
 
         if (run.httpVersion == 10)
             assertTrue(gen.isPersistent() || run.result._contentLength >= 0 || EnumSet.of(ConnectionType.CLOSE, ConnectionType.KEEP_ALIVE, ConnectionType.NONE).contains(run.connection), t);
@@ -276,20 +271,18 @@ public class HttpGeneratorServerHTTPTest
 
     private static class Run
     {
-        public static Run[] as(Result result, int ver, int chunks, ConnectionType connection)
-        {
-            Run run = new Run();
-            run.result = result;
-            run.httpVersion = ver;
-            run.chunks = chunks;
-            run.connection = connection;
-            return new Run[]{run};
-        }
-
         private Result result;
         private ConnectionType connection;
         private int httpVersion;
         private int chunks;
+
+        public Run(Result result, int ver, int chunks, ConnectionType connection)
+        {
+            this.result = result;
+            this.httpVersion = ver;
+            this.chunks = chunks;
+            this.connection = connection;
+        }
 
         @Override
         public String toString()
@@ -327,8 +320,8 @@ public class HttpGeneratorServerHTTPTest
         }
     }
 
-    @Parameters(name = "{0}")
-    public static Collection<Run[]> data()
+
+    public static Stream<Arguments> data()
     {
         Result[] results = {
                 new Result(200, null, -1, null, false),
@@ -341,7 +334,7 @@ public class HttpGeneratorServerHTTPTest
                 new Result(200, "text/html", CONTENT.length(), CONTENT, false)
         };
 
-        List<Run[]> data = new ArrayList<>();
+        ArrayList<Arguments> data = new ArrayList<>();
 
         // For each test result
         for (Result result : results)
@@ -357,12 +350,13 @@ public class HttpGeneratorServerHTTPTest
                     {
                         if (connection.isSupportedByHttp(v))
                         {
-                            data.add(Run.as(result, v, chunks, connection));
+                            data.add(Arguments.of(new Run(result, v, chunks, connection)));
                         }
                     }
                 }
             }
         }
-        return data;
+
+        return data.stream();
     }
 }

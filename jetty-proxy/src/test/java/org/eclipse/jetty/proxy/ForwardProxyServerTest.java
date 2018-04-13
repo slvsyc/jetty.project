@@ -21,10 +21,10 @@ package org.eclipse.jetty.proxy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpProxy;
@@ -48,38 +48,40 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class ForwardProxyServerTest
 {
-    public enum Mode{
-        NO_SSL,
-        WITH_SSL
+    @SuppressWarnings("Duplicates")
+    public static Stream<Arguments> scenarios()
+    {
+        String keyStorePath = MavenTestingUtils.getTestResourceFile("keystore").getAbsolutePath();
+
+        // no server SSL
+        SslContextFactory scenario1 = null;
+        // basic server SSL
+        SslContextFactory scenario2 = new SslContextFactory();
+        scenario2.setKeyStorePath(keyStorePath);
+        scenario2.setKeyStorePassword("storepwd");
+        scenario2.setKeyManagerPassword("keypwd");
+        // TODO: add more SslContextFactory configurations/scenarios?
+
+        return Stream.of(
+                scenario1, scenario2
+        ).map(Arguments::of);
     }
 
-    private static SslContextFactory serverSslContextFactory;
+    private SslContextFactory serverSslContextFactory;
     private Server server;
     private ServerConnector serverConnector;
     private Server proxy;
     private ServerConnector proxyConnector;
 
-    @BeforeAll
-    @ParameterizedTest
-    @EnumSource(Mode.class)
-    public static void init(Mode mode)
+    public void init(SslContextFactory scenario)
     {
-        switch(mode)
-        {
-            case NO_SSL:
-                break;
-            case WITH_SSL:
-                serverSslContextFactory = newSslContextFactory();
-            default:
-                fail("Unhandled Mode: " + mode);
-        }
+        serverSslContextFactory = scenario;
     }
 
     protected void startServer(ConnectionFactory connectionFactory) throws Exception
@@ -116,16 +118,6 @@ public class ForwardProxyServerTest
         return new HttpProxy("localhost", proxyConnector.getLocalPort());
     }
 
-    private static SslContextFactory newSslContextFactory()
-    {
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        String keyStorePath = MavenTestingUtils.getTestResourceFile("keystore").getAbsolutePath();
-        sslContextFactory.setKeyStorePath(keyStorePath);
-        sslContextFactory.setKeyStorePassword("storepwd");
-        sslContextFactory.setKeyManagerPassword("keypwd");
-        return sslContextFactory;
-    }
-
     @AfterEach
     public void stop() throws Exception
     {
@@ -151,9 +143,12 @@ public class ForwardProxyServerTest
         }
     }
 
-    @Test
-    public void testRequestTarget() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testRequestTarget(SslContextFactory scenario) throws Exception
     {
+        init(scenario);
+
         startServer(new AbstractConnectionFactory("http/1.1")
         {
             @Override
@@ -209,7 +204,13 @@ public class ForwardProxyServerTest
         });
         startProxy();
 
-        HttpClient httpClient = new HttpClient(newSslContextFactory());
+        String keyStorePath = MavenTestingUtils.getTestResourceFile("keystore").getAbsolutePath();
+        SslContextFactory clientSsl = new SslContextFactory();
+        clientSsl.setKeyStorePath(keyStorePath);
+        clientSsl.setKeyStorePassword("storepwd");
+        clientSsl.setKeyManagerPassword("keypwd");
+
+        HttpClient httpClient = new HttpClient(clientSsl);
         httpClient.getProxyConfiguration().getProxies().add(newHttpProxy());
         httpClient.start();
 

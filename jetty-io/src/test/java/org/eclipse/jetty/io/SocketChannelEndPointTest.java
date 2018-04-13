@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.Assume.assumeTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
@@ -42,8 +41,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -51,6 +48,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocket;
@@ -68,14 +66,14 @@ import org.eclipse.jetty.util.thread.Scheduler;
 import org.eclipse.jetty.util.thread.TimerScheduler;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
-
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @SuppressWarnings("Duplicates")
-@RunWith(Parameterized.class)
 public class SocketChannelEndPointTest
 {
     private static final Logger LOG = Log.getLogger(SocketChannelEndPoint.class);
@@ -89,19 +87,15 @@ public class SocketChannelEndPointTest
         boolean supportsHalfCloses();
     }
 
-    @Parameterized.Parameters(name = "{0}")
-    public static List<Object[]> data() throws Exception
+    public static Stream<Arguments> scenarios() throws Exception
     {
-        List<Object[]> ret = new ArrayList<>();
-
         NormalScenario normalScenario = new NormalScenario();
-        ret.add(new Object[]{normalScenario});
-        ret.add(new Object[]{new SslScenario(normalScenario)});
+        SslScenario sslScenario = new SslScenario(normalScenario);
 
-        return ret;
+        return Stream.of(normalScenario, sslScenario).map(Arguments::of);
     }
 
-    private final Scenario _scenario;
+    private Scenario _scenario;
 
     private ServerSocketChannel _connector;
     private QueuedThreadPool _threadPool;
@@ -114,7 +108,7 @@ public class SocketChannelEndPointTest
     private AtomicInteger _blockAt = new AtomicInteger(0);
     private AtomicInteger _writeCount = new AtomicInteger(1);
 
-    public SocketChannelEndPointTest(Scenario scenario) throws Exception
+    public void init(Scenario scenario) throws Exception
     {
         _scenario = scenario;
         _threadPool = new QueuedThreadPool();
@@ -138,9 +132,11 @@ public class SocketChannelEndPointTest
         _connector.close();
     }
 
-    @Test
-    public void testEcho() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testEcho(Scenario scenario) throws Exception
     {
+        init(scenario);
         Socket client = _scenario.newClient(_connector);
 
         client.setSoTimeout(60000);
@@ -194,7 +190,8 @@ public class SocketChannelEndPointTest
     @Test
     public void testShutdown() throws Exception
     {
-        assumeTrue("Scenario supports half-close", _scenario.supportsHalfCloses());
+        // We don't test SSL as JVM SSL doesn't support half-close
+        init(new NormalScenario());
 
         Socket client = _scenario.newClient(_connector);
 
@@ -238,9 +235,11 @@ public class SocketChannelEndPointTest
         assertEquals(-1, client.getInputStream().read());
     }
 
-    @Test
-    public void testReadBlocked() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testReadBlocked(Scenario scenario) throws Exception
     {
+        init(scenario);
         Socket client = _scenario.newClient(_connector);
 
         SocketChannel server = _connector.accept();
@@ -282,9 +281,11 @@ public class SocketChannelEndPointTest
         }
     }
 
-    @Test
-    public void testStress() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testStress(Scenario scenario) throws Exception
     {
+        init(scenario);
         Socket client = _scenario.newClient(_connector);
         client.setSoTimeout(30000);
 
@@ -385,9 +386,11 @@ public class SocketChannelEndPointTest
         assertEquals(0, latch.getCount());
     }
 
-    @Test
-    public void testWriteBlocked() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testWriteBlocked(Scenario scenario) throws Exception
     {
+        init(scenario);
         Socket client = _scenario.newClient(_connector);
 
         client.setSoTimeout(10000);
@@ -446,11 +449,13 @@ public class SocketChannelEndPointTest
     }
 
 
-    // TODO make this test reliable
-    @Test
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    @Tag("Unstable")
     @Disabled
-    public void testRejectedExecution() throws Exception
+    public void testRejectedExecution(Scenario scenario) throws Exception
     {
+        init(scenario);
         _manager.stop();
         _threadPool.stop();
 

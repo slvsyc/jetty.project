@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -48,33 +49,27 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-@RunWith(Parameterized.class)
 public class FastCGIProxyServletTest
 {
-    @Parameterized.Parameters
-    public static Object[] parameters()
+    public static Stream<Arguments> factories()
     {
-        return new Object[]{true, false};
+        return Stream.of(
+                true, // send status 200
+                false // don't send status 200
+        ).map(Arguments::of);
     }
 
-    private final boolean sendStatus200;
     private Server server;
     private ServerConnector httpConnector;
     private ServerConnector fcgiConnector;
     private ServletContextHandler context;
     private HttpClient client;
 
-    public FastCGIProxyServletTest(boolean sendStatus200)
-    {
-        this.sendStatus200 = sendStatus200;
-    }
-
-    public void prepare(HttpServlet servlet) throws Exception
+    public void prepare(boolean sendStatus200, HttpServlet servlet) throws Exception
     {
         QueuedThreadPool serverThreads = new QueuedThreadPool();
         serverThreads.setName("server");
@@ -121,31 +116,34 @@ public class FastCGIProxyServletTest
         server.stop();
     }
 
-    @Test
-    public void testGETWithSmallResponseContent() throws Exception
+    @ParameterizedTest(name="[{index}] sendStatus200={0}")
+    @MethodSource("factories")
+    public void testGETWithSmallResponseContent(boolean sendStatus200) throws Exception
     {
-        testGETWithResponseContent(1024, 0);
+        testGETWithResponseContent(sendStatus200, 1024, 0);
     }
 
-    @Test
-    public void testGETWithLargeResponseContent() throws Exception
+    @ParameterizedTest(name="[{index}] sendStatus200={0}")
+    @MethodSource("factories")
+    public void testGETWithLargeResponseContent(boolean sendStatus200) throws Exception
     {
-        testGETWithResponseContent(16 * 1024 * 1024, 0);
+        testGETWithResponseContent(sendStatus200, 16 * 1024 * 1024, 0);
     }
 
-    @Test
-    public void testGETWithLargeResponseContentWithSlowClient() throws Exception
+    @ParameterizedTest(name="[{index}] sendStatus200={0}")
+    @MethodSource("factories")
+    public void testGETWithLargeResponseContentWithSlowClient(boolean sendStatus200) throws Exception
     {
-        testGETWithResponseContent(16 * 1024 * 1024, 1);
+        testGETWithResponseContent(sendStatus200, 16 * 1024 * 1024, 1);
     }
 
-    private void testGETWithResponseContent(int length, final long delay) throws Exception
+    private void testGETWithResponseContent(boolean sendStatus200, int length, final long delay) throws Exception
     {
         final byte[] data = new byte[length];
         new Random().nextBytes(data);
 
         final String path = "/foo/index.php";
-        prepare(new HttpServlet()
+        prepare(sendStatus200, new HttpServlet()
         {
             @Override
             protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -180,13 +178,14 @@ public class FastCGIProxyServletTest
         assertArrayEquals(data, response.getContent());
     }
 
-    @Test
-    public void testURIRewrite() throws Exception
+    @ParameterizedTest(name="[{index}] sendStatus200={0}")
+    @MethodSource("factories")
+    public void testURIRewrite(boolean sendStatus200) throws Exception
     {
         String originalPath = "/original/index.php";
         String originalQuery = "foo=bar";
         String remotePath = "/remote/index.php";
-        prepare(new HttpServlet()
+        prepare(sendStatus200, new HttpServlet()
         {
             @Override
             protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
