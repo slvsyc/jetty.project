@@ -426,7 +426,10 @@ public class HttpClientTimeoutTest extends AbstractTest<TransportScenario>
         scenario.start(new EmptyServerHandler());
 
         long timeout = 1000;
-        Request request = scenario.client.newRequest("badscheme://localhost:" + scenario.getNetworkConnectorLocalPortInt().get());
+        String uri = "badscheme://0.0.0.1";
+        if(scenario.getNetworkConnectorLocalPort().isPresent())
+            uri += ":" + scenario.getNetworkConnectorLocalPort().get();
+        Request request = scenario.client.newRequest(uri);
 
         // TODO: assert a more specific Throwable
         assertThrows(Exception.class, ()-> {

@@ -44,6 +44,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -521,7 +522,7 @@ public class HttpClientStreamTest extends AbstractTest<TransportScenario>
                 }, data.length / 2))
                 .timeout(5, TimeUnit.SECONDS)
                 .send());
-        assertThat(e.getCause(), instanceOf(ArrayIndexOutOfBoundsException.class));
+        assertThat(e.getCause(), instanceOf(NoSuchElementException.class));
     }
 
     @ParameterizedTest
@@ -983,7 +984,10 @@ public class HttpClientStreamTest extends AbstractTest<TransportScenario>
         final byte[] data = new byte[512];
         final CountDownLatch latch = new CountDownLatch(1);
         OutputStreamContentProvider content = new OutputStreamContentProvider();
-        scenario.client.newRequest("http://0.0.0.1" + scenario.getNetworkConnectorLocalPort().orElse(""))
+        String uri = "http://0.0.0.1";
+        if(scenario.getNetworkConnectorLocalPort().isPresent())
+            uri += ":" + scenario.getNetworkConnectorLocalPort().get();
+        scenario.client.newRequest(uri)
                 .scheme(scenario.getScheme())
                 .content(content)
                 .send(result ->
@@ -1071,7 +1075,10 @@ public class HttpClientStreamTest extends AbstractTest<TransportScenario>
         InputStreamContentProvider content = new InputStreamContentProvider(stream);
 
         final CountDownLatch completeLatch = new CountDownLatch(1);
-        scenario.client.newRequest("http://0.0.0.1" + scenario.getNetworkConnectorLocalPort().orElse(""))
+        String uri = "http://0.0.0.1";
+        if(scenario.getNetworkConnectorLocalPort().isPresent())
+            uri += ":" + scenario.getNetworkConnectorLocalPort().get();
+        scenario.client.newRequest(uri)
                 .scheme(scenario.getScheme())
                 .content(content)
                 .send(result ->
