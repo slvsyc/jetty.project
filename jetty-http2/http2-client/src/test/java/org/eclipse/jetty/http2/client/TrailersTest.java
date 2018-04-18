@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.http2.client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,6 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -43,12 +49,13 @@ import org.eclipse.jetty.http2.api.Session;
 import org.eclipse.jetty.http2.api.Stream;
 import org.eclipse.jetty.http2.api.server.ServerSessionListener;
 import org.eclipse.jetty.http2.frames.DataFrame;
+import org.eclipse.jetty.http2.frames.Frame;
 import org.eclipse.jetty.http2.frames.HeadersFrame;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.Promise;
-
 import org.junit.jupiter.api.Test;
 
 public class TrailersTest extends AbstractTest
@@ -228,5 +235,63 @@ public class TrailersTest extends AbstractTest
         });
 
         assertTrue(latch.await(5, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testTrailersSentByServerShouldNotSendEmptyDataFrame() throws Exception
+    {
+        String trailerName = "X-Trailer";
+        String trailerValue = "Zot!";
+        start(new EmptyHttpServlet()
+        {
+            @Override
+            protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+            {
+                Request jettyRequest = (Request)request;
+                Response jettyResponse = jettyRequest.getResponse();
+                HttpFields trailers = new HttpFields();
+                jettyResponse.setTrailers(() -> trailers);
+
+                jettyResponse.getOutputStream().write("hello_trailers".getBytes(StandardCharsets.UTF_8));
+                jettyResponse.flushBuffer();
+                // Force the content to be sent above, and then only send the trailers below.
+                trailers.put(trailerName, trailerValue);
+            }
+        });
+
+        Session session = newClient(new Session.Listener.Adapter());
+        MetaData.Request request = newRequest("GET", new HttpFields());
+        HeadersFrame requestFrame = new HeadersFrame(request, null, true);
+        CountDownLatch latch = new CountDownLatch(1);
+        List<Frame> frames = new ArrayList<>();
+        session.newStream(requestFrame, new Promise.Adapter<>(), new Stream.Listener.Adapter()
+        {
+            @Override
+            public void onHeaders(Stream stream, HeadersFrame frame)
+            {
+                frames.add(frame);
+                if (frame.isEndStream())
+                    latch.countDown();
+            }
+
+            @Override
+            public void onData(Stream stream, DataFrame frame, Callback callback)
+            {
+                frames.add(frame);
+                callback.succeeded();
+            }
+        });
+
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertThat(frames.toString(), frames.size(), is(3));
+
+        HeadersFrame headers = (HeadersFrame)frames.get(0);
+        DataFrame data = (DataFrame)frames.get(1);
+        HeadersFrame trailers = (HeadersFrame)frames.get(2);
+
+        assertFalse(headers.isEndStream());
+        assertFalse(data.isEndStream());
+        assertTrue(trailers.isEndStream());
+        assertThat(trailers.getMetaData().getFields().get(trailerName), equalTo(trailerValue));
     }
 }
