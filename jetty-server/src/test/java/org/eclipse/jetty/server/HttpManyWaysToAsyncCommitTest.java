@@ -268,7 +268,7 @@ public class HttpManyWaysToAsyncCommitTest extends AbstractHttpTest
 
         assertThat("response code", response.getStatus(), is(200));
         assertThat("no exceptions", handler.failure(), is(nullValue()));
-        if (!"HTTP/1.0".equals(httpVersion))
+        if (httpVersion.is("HTTP/1.1"))
             assertHeader(response, "transfer-encoding", "chunked");
     }
 
@@ -284,7 +284,7 @@ public class HttpManyWaysToAsyncCommitTest extends AbstractHttpTest
 
         assertThat("response code", response.getStatus(), is(200));
         assertThat("no exceptions", handler.failure(), is(nullValue()));
-        if (!"HTTP/1.0".equals(httpVersion))
+        if (httpVersion.is("HTTP/1.1"))
             assertHeader(response, "transfer-encoding", "chunked");
     }
 
@@ -344,7 +344,7 @@ public class HttpManyWaysToAsyncCommitTest extends AbstractHttpTest
 
         assertThat("response code", response.getStatus(), is(200));
         assertThat("no exceptions", handler.failure(), is(nullValue()));
-        if (!"HTTP/1.0".equals(httpVersion))
+        if (httpVersion.is("HTTP/1.1"))
             assertHeader(response, "transfer-encoding", "chunked");
     }
 
@@ -360,7 +360,7 @@ public class HttpManyWaysToAsyncCommitTest extends AbstractHttpTest
 
         assertThat("response code", response.getStatus(), is(200));
         assertThat("no exceptions", handler.failure(), is(nullValue()));
-        if (!"HTTP/1.0".equals(httpVersion))
+        if (httpVersion.is("HTTP/1.1"))
             assertHeader(response, "transfer-encoding", "chunked");
     }
 
@@ -418,7 +418,7 @@ public class HttpManyWaysToAsyncCommitTest extends AbstractHttpTest
 
         assertThat("response code", response.getStatus(), is(200));
         assertThat("no exceptions", handler.failure(), is(nullValue()));
-        if (!"HTTP/1.0".equals(httpVersion))
+        if (httpVersion.is("HTTP/1.1"))
             assertHeader(response, "transfer-encoding", "chunked"); // HTTP/1.0 does not do chunked.  it will just send content and close
     }
 
@@ -434,7 +434,7 @@ public class HttpManyWaysToAsyncCommitTest extends AbstractHttpTest
 
         assertThat("response code", response.getStatus(), is(200));
         assertThat("no exceptions", handler.failure(), is(nullValue()));
-        if (!"HTTP/1.0".equals(httpVersion))
+        if (httpVersion.is("HTTP/1.1"))
             assertHeader(response, "transfer-encoding", "chunked"); 
     }
 
@@ -495,7 +495,7 @@ public class HttpManyWaysToAsyncCommitTest extends AbstractHttpTest
 
         assertThat("response code", response.getStatus(), is(200));
         assertResponseBody(response, "foobar");
-        if (!"HTTP/1.0".equals(httpVersion))
+        if (httpVersion.is("HTTP/1.1"))
             assertHeader(response, "transfer-encoding", "chunked");
         assertThat("no exceptions", handler.failure(), is(nullValue()));
     }
@@ -513,7 +513,7 @@ public class HttpManyWaysToAsyncCommitTest extends AbstractHttpTest
         // Buffer size is too small, so the content is written directly producing a 200 response
         assertThat("response code", response.getStatus(), is(200));
         assertResponseBody(response, "foobar");
-        if (!"HTTP/1.0".equals(httpVersion))
+        if (httpVersion.is("HTTP/1.1"))
             assertHeader(response, "transfer-encoding", "chunked");
         assertThat("no exceptions", handler.failure(), is(nullValue()));
     }
