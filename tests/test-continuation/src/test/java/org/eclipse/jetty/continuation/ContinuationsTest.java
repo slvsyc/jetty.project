@@ -667,7 +667,7 @@ public class ContinuationsTest
         public Scenario(String description, Handler handler, List<String> history, Listener listener, Class<? extends Continuation> expectedImplClass, List<String> log)
         {
             this.setupDescription = description;
-            this.setupHandler = setupHandler;
+            this.setupHandler = handler;
             this.history = history;
             this.listener = listener;
             this.expectedImplClass = expectedImplClass;

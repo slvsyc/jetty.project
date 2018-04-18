@@ -570,16 +570,20 @@ public class DefaultServletTest
         assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
         assertThat(response.getContent(), containsString("<h1>Alt Index</h1>"));
 
-        deleteFile(altIndex);
-        rawResponse = connector.getResponse("GET /context/alt/dir/ HTTP/1.0\r\n\r\n");
-        response = HttpTester.parseResponse(rawResponse);
-        assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
-        assertThat(response.getContent(), containsString("<h1>Alt Inde</h1>"));
+        if (deleteFile(altIndex))
+        {
+            rawResponse = connector.getResponse("GET /context/alt/dir/ HTTP/1.0\r\n\r\n");
+            response = HttpTester.parseResponse(rawResponse);
+            assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
+            assertThat(response.getContent(), containsString("<h1>Alt Inde</h1>"));
 
-        deleteFile(altInde);
-        rawResponse = connector.getResponse("GET /context/alt/dir/ HTTP/1.0\r\n\r\n");
-        response = HttpTester.parseResponse(rawResponse);
-        assertThat(response.toString(), response.getStatus(), is(HttpStatus.FORBIDDEN_403));
+            if (deleteFile(altInde))
+            {
+                rawResponse = connector.getResponse("GET /context/alt/dir/ HTTP/1.0\r\n\r\n");
+                response = HttpTester.parseResponse(rawResponse);
+                assertThat(response.toString(), response.getStatus(), is(HttpStatus.FORBIDDEN_403));
+            }
+        }
 
 
         // Test normal default
@@ -599,16 +603,20 @@ public class DefaultServletTest
         assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
         assertThat(response.getContent(), containsString("<h1>Hello Index</h1>"));
 
-        deleteFile(index);
-        rawResponse = connector.getResponse("GET /context/dir/ HTTP/1.0\r\n\r\n");
-        response = HttpTester.parseResponse(rawResponse);
-        assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
-        assertThat(response.getContent(), containsString("<h1>Hello Inde</h1>"));
+        if (deleteFile(index))
+        {
+            rawResponse = connector.getResponse("GET /context/dir/ HTTP/1.0\r\n\r\n");
+            response = HttpTester.parseResponse(rawResponse);
+            assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
+            assertThat(response.getContent(), containsString("<h1>Hello Inde</h1>"));
 
-        deleteFile(inde);
-        rawResponse = connector.getResponse("GET /context/dir/ HTTP/1.0\r\n\r\n");
-        response = HttpTester.parseResponse(rawResponse);
-        assertThat(response.toString(), response.getStatus(), is(HttpStatus.FORBIDDEN_403));
+            if (deleteFile(inde))
+            {
+                rawResponse = connector.getResponse("GET /context/dir/ HTTP/1.0\r\n\r\n");
+                response = HttpTester.parseResponse(rawResponse);
+                assertThat(response.toString(), response.getStatus(), is(HttpStatus.FORBIDDEN_403));
+            }
+        }
     }
 
     @Test
@@ -651,16 +659,20 @@ public class DefaultServletTest
         assertThat(response.toString(), response.getStatus(), is(HttpStatus.MOVED_TEMPORARILY_302));
         assertThat(response, containsHeaderValue("Location", "http://0.0.0.0/context/dir/index.html"));
 
-        deleteFile(index);
-        rawResponse = connector.getResponse("GET /context/dir/ HTTP/1.0\r\n\r\n");
-        response = HttpTester.parseResponse(rawResponse);
-        assertThat(response.toString(), response.getStatus(), is(HttpStatus.MOVED_TEMPORARILY_302));
-        assertThat(response, containsHeaderValue("Location", "http://0.0.0.0/context/dir/index.htm"));
+        if (deleteFile(index))
+        {
+            rawResponse = connector.getResponse("GET /context/dir/ HTTP/1.0\r\n\r\n");
+            response = HttpTester.parseResponse(rawResponse);
+            assertThat(response.toString(), response.getStatus(), is(HttpStatus.MOVED_TEMPORARILY_302));
+            assertThat(response, containsHeaderValue("Location", "http://0.0.0.0/context/dir/index.htm"));
 
-        deleteFile(inde);
-        rawResponse = connector.getResponse("GET /context/dir/ HTTP/1.0\r\n\r\n");
-        response = HttpTester.parseResponse(rawResponse);
-        assertThat(response.toString(), response.getStatus(), is(HttpStatus.FORBIDDEN_403));
+            if (deleteFile(inde))
+            {
+                rawResponse = connector.getResponse("GET /context/dir/ HTTP/1.0\r\n\r\n");
+                response = HttpTester.parseResponse(rawResponse);
+                assertThat(response.toString(), response.getStatus(), is(HttpStatus.FORBIDDEN_403));
+            }
+        }
     }
 
     /**
@@ -767,7 +779,6 @@ public class DefaultServletTest
         assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
         assertThat(response.getContent(), containsString("<h1>Hello Index</h1>"));
 
-        // On Windows it's often impossible to delete files that are in use
         if (deleteFile(index))
         {
             rawResponse = connector.getResponse("GET /context/ HTTP/1.0\r\n\r\n");
@@ -1845,32 +1856,25 @@ public class DefaultServletTest
         if (!Files.exists(file))
             return true;
 
-        if (OS.WINDOWS.isCurrentOs())
+        // Some OS's (Windows) do not seem to like to delete content that was recently created.
+        // Attempt a delete and if it fails, attempt a rename/move.
+        try
         {
-            // Windows doesn't seem to like to delete content that was recently created
-            // Attempt a delete and if it fails, attempt a rename
+            Files.delete(file);
+        }
+        catch (IOException ignore)
+        {
+            Path deletedDir = MavenTestingUtils.getTargetTestingPath(".deleted");
+            FS.ensureDirExists(deletedDir);
+            Path dest = Files.createTempFile(deletedDir, file.getFileName().toString(), "deleted");
             try
             {
-                Files.delete(file);
+                Files.move(file, dest);
             }
-            catch (IOException ignore)
+            catch (UnsupportedOperationException | IOException e)
             {
-                Path deletedDir = MavenTestingUtils.getTargetTestingPath(".deleted");
-                FS.ensureDirExists(deletedDir);
-                Path dest = Files.createTempFile(deletedDir, file.getFileName().toString(), "deleted");
-                try
-                {
-                    Files.move(file, dest);
-                }
-                catch (UnsupportedOperationException | IOException e)
-                {
-                    System.err.println("WARNING: unable to move file out of the way: " + file);
-                }
+                System.err.println("WARNING: unable to move file out of the way: " + file);
             }
-        }
-        else
-        {
-            FS.ensureDeleted(file);
         }
 
         return !Files.exists(file);
