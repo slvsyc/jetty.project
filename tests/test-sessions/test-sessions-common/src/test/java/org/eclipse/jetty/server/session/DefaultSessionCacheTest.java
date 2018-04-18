@@ -19,6 +19,8 @@
 
 package org.eclipse.jetty.server.session;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -498,10 +500,7 @@ public class DefaultSessionCacheTest
        store.store("567", data2);
        
        result = cache.checkExpiration(Collections.emptySet());
-       assertNotNull(result);
-       assertEquals(2, result.size());
-       assertTrue(result.contains("1234"));
-       assertTrue(result.contains("567"));
+       assertThat(result, containsInAnyOrder("1234", "567"));
    }
 
    @Test

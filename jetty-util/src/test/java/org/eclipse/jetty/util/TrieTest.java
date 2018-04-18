@@ -19,58 +19,50 @@
 package org.eclipse.jetty.util;
 
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-
-@RunWith(value = Parameterized.class)
 public class TrieTest
 {
-    @Parameterized.Parameters
-    public static Collection<Object[]> data()
+    public static Stream<Arguments> implementations()
     {
-        Object[][] data = new Object[][]{
-            {new ArrayTrie<Integer>(128)},
-            {new TreeTrie<Integer>()},
-            {new ArrayTernaryTrie<Integer>(128)}
-        };
-        return Arrays.asList(data);
+        List<Trie> impls = new ArrayList<>();
+
+        impls.add(new ArrayTrie<Integer>(128));
+        impls.add(new TreeTrie<Integer>());
+        impls.add(new ArrayTernaryTrie<Integer>(128));
+
+        for(Trie<Integer> trie: impls)
+        {
+            trie.put("hello",1);
+            trie.put("He",2);
+            trie.put("HELL",3);
+            trie.put("wibble",4);
+            trie.put("Wobble",5);
+            trie.put("foo-bar",6);
+            trie.put("foo+bar",7);
+            trie.put("HELL4",8);
+            trie.put("",9);
+        }
+
+        return impls.stream().map(Arguments::of);
     }
 
-    Trie<Integer> trie;
-    
-    public TrieTest(Trie<Integer> t)
-    {
-        trie=t;
-    }
-    
-    @BeforeEach
-    public void before()
-    {
-        trie.put("hello",1);
-        trie.put("He",2);
-        trie.put("HELL",3);
-        trie.put("wibble",4);
-        trie.put("Wobble",5);
-        trie.put("foo-bar",6);
-        trie.put("foo+bar",7);
-        trie.put("HELL4",8);
-        trie.put("",9);
-    }
-
-    @Test
-    public void testOverflow() throws Exception
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testOverflow(Trie<Integer> trie) throws Exception
     {
         int i=0;
         while (true) 
@@ -87,22 +79,28 @@ public class TrieTest
         assertTrue(!trie.isFull() || !trie.put("overflow", 0));
     }
     
-    @Test
-    public void testKeySet() throws Exception
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testKeySet(Trie<Integer> trie) throws Exception
     {
-        assertTrue(trie.keySet().contains("hello"));
-        assertTrue(trie.keySet().contains("He"));
-        assertTrue(trie.keySet().contains("HELL"));
-        assertTrue(trie.keySet().contains("wibble"));
-        assertTrue(trie.keySet().contains("Wobble"));
-        assertTrue(trie.keySet().contains("foo-bar"));
-        assertTrue(trie.keySet().contains("foo+bar"));
-        assertTrue(trie.keySet().contains("HELL4"));
-        assertTrue(trie.keySet().contains(""));
+        String values[] = new String[]{
+                "hello",
+                "He",
+                "HELL",
+                "wibble",
+                "Wobble",
+                "foo-bar",
+                "foo+bar",
+                "HELL4",
+                ""};
+
+        for(String value: values)
+            assertThat(value, isIn(trie.keySet()));
     }
-    
-    @Test
-    public void testGetString() throws Exception
+
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testGetString(Trie<Integer> trie) throws Exception
     {
         assertEquals(1,trie.get("hello").intValue());
         assertEquals(2,trie.get("He").intValue());
@@ -127,8 +125,9 @@ public class TrieTest
         assertEquals(null,trie.get("Blah"));
     }
 
-    @Test
-    public void testGetBuffer() throws Exception
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testGetBuffer(Trie<Integer> trie) throws Exception
     {
         assertEquals(1,trie.get(BufferUtil.toBuffer("xhellox"),1,5).intValue());
         assertEquals(2,trie.get(BufferUtil.toBuffer("xhellox"),1,2).intValue());
@@ -150,9 +149,10 @@ public class TrieTest
         assertEquals(null,trie.get(BufferUtil.toBuffer("xHelpx"),1,4));
         assertEquals(null,trie.get(BufferUtil.toBuffer("xBlahx"),1,4));
     }
-    
-    @Test
-    public void testGetDirectBuffer() throws Exception
+
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testGetDirectBuffer(Trie<Integer> trie) throws Exception
     {
         assertEquals(1,trie.get(BufferUtil.toDirectBuffer("xhellox"),1,5).intValue());
         assertEquals(2,trie.get(BufferUtil.toDirectBuffer("xhellox"),1,2).intValue());
@@ -176,8 +176,9 @@ public class TrieTest
     }
     
 
-    @Test
-    public void testGetBestArray() throws Exception
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testGetBestArray(Trie<Integer> trie) throws Exception
     {
         assertEquals(1,trie.getBest(StringUtil.getUtf8Bytes("xhelloxxxx"),1,8).intValue());
         assertEquals(2,trie.getBest(StringUtil.getUtf8Bytes("xhelxoxxxx"),1,8).intValue());
@@ -193,8 +194,9 @@ public class TrieTest
         assertEquals(9,trie.getBest(StringUtil.getUtf8Bytes("xZZZZZxxxx"),1,8).intValue());
     }
 
-    @Test
-    public void testGetBestBuffer() throws Exception
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testGetBestBuffer(Trie<Integer> trie) throws Exception
     {
         assertEquals(1,trie.getBest(BufferUtil.toBuffer("xhelloxxxx"),1,8).intValue());
         assertEquals(2,trie.getBest(BufferUtil.toBuffer("xhelxoxxxx"),1,8).intValue());
@@ -213,8 +215,9 @@ public class TrieTest
         assertEquals(1,trie.getBest(buffer,-1,10).intValue());
     }
 
-    @Test
-    public void testGetBestDirectBuffer() throws Exception
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testGetBestDirectBuffer(Trie<Integer> trie) throws Exception
     {
         assertEquals(1,trie.getBest(BufferUtil.toDirectBuffer("xhelloxxxx"),1,8).intValue());
         assertEquals(2,trie.getBest(BufferUtil.toDirectBuffer("xhelxoxxxx"),1,8).intValue());
@@ -233,17 +236,16 @@ public class TrieTest
         assertEquals(1,trie.getBest(buffer,-1,10).intValue());
     }
     
-    @Test 
-    public void testFull() throws Exception
+    @ParameterizedTest
+    @MethodSource("implementations")
+    public void testFull(Trie<Integer> trie) throws Exception
     {
        if (!(trie instanceof ArrayTrie<?> || trie instanceof ArrayTernaryTrie<?>))
            return;
        
        assertFalse(trie.put("Large: This is a really large key and should blow the maximum size of the array trie as lots of nodes should already be used.",99));
-       testGetString();
-       testGetBestArray();
-       testGetBestBuffer();
+       testGetString(trie);
+       testGetBestArray(trie);
+       testGetBestBuffer(trie);
     }
-    
-    
 }

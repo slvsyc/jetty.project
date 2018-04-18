@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.servlet;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -93,7 +95,7 @@ public class ServletHolderTest {
     @Test
     public void testNoClassName() throws Exception
     {
-        try (StacklessLogging stackless = new StacklessLogging(ServletHandler.class, ContextHandler.class, ServletContextHandler.class))
+        try (StacklessLogging ignore = new StacklessLogging(ServletHandler.class, ContextHandler.class, ServletContextHandler.class))
         {
             ServletContextHandler context = new ServletContextHandler(); 
             ServletHandler handler = context.getServletHandler();
@@ -106,12 +108,11 @@ public class ServletHolderTest {
         }
         catch (UnavailableException e)
         {
-            assertTrue(e.getMessage().contains("foo"));
+            assertThat(e.getMessage(), containsString("foo"));
         }
-        catch (MultiException e)
+        catch (MultiException m)
         {
-            MultiException m = (MultiException)e;
-            assertTrue(m.getCause().getMessage().contains("foo"));
+            assertThat(m.getCause().getMessage(), containsString("foo"));
         }
     }
     
@@ -131,12 +132,11 @@ public class ServletHolderTest {
         }
         catch (UnavailableException e)
         {
-            assertTrue(e.getMessage().contains("foo"));
+            assertThat(e.getMessage(), containsString("foo"));
         }
-        catch (MultiException e)
+        catch (MultiException m)
         {
-            MultiException m = (MultiException)e;
-            assertTrue(m.getCause().getMessage().contains("foo"));
+            assertThat(m.getCause().getMessage(), containsString("foo"));
         }
     }
    

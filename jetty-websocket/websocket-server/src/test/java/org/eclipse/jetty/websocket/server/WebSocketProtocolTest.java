@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.websocket.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -74,7 +76,7 @@ public class WebSocketProtocolTest
 
             BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
             String line = input.readLine();
-            assertTrue(line.contains(" 101 "));
+            assertThat(line, containsString(" 101 "));
             HttpFields fields = new HttpFields();
             while ((line = input.readLine()) != null)
             {

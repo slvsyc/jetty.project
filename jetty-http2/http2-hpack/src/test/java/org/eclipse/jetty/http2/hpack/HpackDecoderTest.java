@@ -22,6 +22,7 @@ package org.eclipse.jetty.http2.hpack;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
+import static org.eclipse.jetty.http.HttpFieldsMatchers.containsHeaderValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -178,12 +179,12 @@ public class HpackDecoderTest
 
         assertThat(response.getStatus(),is(200));
         assertThat(response.getFields().size(),is(6));
-        assertTrue(response.getFields().contains(new HttpField(HttpHeader.DATE,"Fri, 15 Jul 2016 02:36:20 GMT")));
-        assertTrue(response.getFields().contains(new HttpField(HttpHeader.CONTENT_TYPE,"text/html")));
-        assertTrue(response.getFields().contains(new HttpField(HttpHeader.CONTENT_ENCODING,"")));
-        assertTrue(response.getFields().contains(new HttpField(HttpHeader.CONTENT_LENGTH,"42")));
-        assertTrue(response.getFields().contains(new HttpField(HttpHeader.SERVER,"nghttpx nghttp2/1.12.0")));
-        assertTrue(response.getFields().contains(new HttpField(HttpHeader.VIA,"1.1 nghttpx")));
+        assertThat(response.getFields(), containsHeaderValue(HttpHeader.DATE,"Fri, 15 Jul 2016 02:36:20 GMT"));
+        assertThat(response.getFields(), containsHeaderValue(HttpHeader.CONTENT_TYPE,"text/html"));
+        assertThat(response.getFields(), containsHeaderValue(HttpHeader.CONTENT_ENCODING,""));
+        assertThat(response.getFields(), containsHeaderValue(HttpHeader.CONTENT_LENGTH,"42"));
+        assertThat(response.getFields(), containsHeaderValue(HttpHeader.SERVER,"nghttpx nghttp2/1.12.0"));
+        assertThat(response.getFields(), containsHeaderValue(HttpHeader.VIA,"1.1 nghttpx"));
     }
 
     @Test

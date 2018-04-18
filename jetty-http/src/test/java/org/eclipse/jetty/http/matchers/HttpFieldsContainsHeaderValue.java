@@ -59,6 +59,10 @@ public class HttpFieldsContainsHeaderValue extends TypeSafeMatcher<HttpFields>
         if (field.contains(this.value))
             return true;
 
+        // Simple equals
+        if(this.value == field.getValue())
+            return true;
+
         // Try individual value logic
         String lcValue = this.value.toLowerCase(Locale.ENGLISH);
         for (String value : field.getValues())

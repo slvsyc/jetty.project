@@ -854,7 +854,7 @@ public class MultipartFilterTest
 
         response = HttpTester.parseResponse(tester.getResponses(request.generate()));
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertTrue(response.getContent().contains("aaaa,bbbbb"));
+        assertThat(response.getContent(), containsString("aaaa,bbbbb"));
     }
     @Test
     public void testLeadingWhitespaceBodyWithoutCRLF()
@@ -886,7 +886,7 @@ public class MultipartFilterTest
 
         response = HttpTester.parseResponse(tester.getResponses(request.generate()));
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        assertTrue(response.getContent().contains("aaaa,bbbbb"));
+        assertThat(response.getContent(), containsString("aaaa,bbbbb"));
     }
     
     public void testContentTypeWithCharSet() throws Exception
@@ -915,7 +915,7 @@ public class MultipartFilterTest
 
         response = HttpTester.parseResponse(tester.getResponses(request.generate()));
         assertEquals(HttpServletResponse.SC_OK,response.getStatus());
-        assertTrue(response.getContent().indexOf("brown cow")>=0);
+        assertThat(response.getContent(), containsString("brown cow"));
     }
     
     
@@ -947,10 +947,10 @@ public class MultipartFilterTest
         }
         request.setContent(baos.toString());
 
-        try(StacklessLogging stackless = new StacklessLogging(ServletHandler.class, HttpChannel.class))
+        try(StacklessLogging ignored = new StacklessLogging(ServletHandler.class, HttpChannel.class))
         {
             response = HttpTester.parseResponse(tester.getResponses(request.generate()));
-            assertTrue(response.getContent().contains("Buffer size exceeded"));
+            assertThat(response.getContent(), containsString("Buffer size exceeded"));
             assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response.getStatus());
         }
     }

@@ -117,9 +117,9 @@ public class OverlayedAppProviderTest
         assertTrue(results!=null);
         assertEquals(4,results.size());
         assertThat(results, contains("webapps/foo-1.2.3.war"));
-        assertTrue(results, contains("templates/foo=foo-1.2.3.war"));
-        assertTrue(results, contains("nodes/nodeA.war"));
-        assertTrue(results, contains("instances/foo=instance.war"));
+        assertThat(results, contains("templates/foo=foo-1.2.3.war"));
+        assertThat(results, contains("nodes/nodeA.war"));
+        assertThat(results, contains("instances/foo=instance.war"));
 
         provider.scan();
         provider.scan();

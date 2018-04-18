@@ -18,8 +18,11 @@
 
 package org.eclipse.jetty.test;
 
+import static org.eclipse.jetty.http.HttpFieldsMatchers.containsHeaderValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -28,6 +31,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpTester;
@@ -36,9 +40,8 @@ import org.eclipse.jetty.test.support.rawhttp.HttpSocketImpl;
 import org.eclipse.jetty.test.support.rawhttp.HttpTesting;
 import org.eclipse.jetty.util.IO;
 import org.junit.jupiter.api.AfterAll;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -47,7 +50,6 @@ import org.junit.jupiter.api.Test;
  */
 public class DefaultHandlerTest
 {
-    private boolean debug = false;
     private static TestableJettyServer server;
     private int serverPort;
 
@@ -101,7 +103,6 @@ public class DefaultHandlerTest
         Socket sock = new Socket(InetAddress.getLocalHost(),serverPort);
         sock.setSoTimeout(5000); // 5 second timeout;
 
-        DEBUG("--raw-request--\n" + rawRequest);
         InputStream in = new ByteArrayInputStream(rawRequest.toString().getBytes());
 
         // Send request
@@ -109,13 +110,10 @@ public class DefaultHandlerTest
 
         // Collect response
         String rawResponse = IO.toString(sock.getInputStream());
-        DEBUG("--raw-response--\n" + rawResponse);
-        
         HttpTester.Response response = HttpTester.parseResponse(rawResponse);
 
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-
-        assertTrue(response.getContent().contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"));
+        assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
+        assertThat(response.getContent(), containsString("ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"));
     }
 
     @Test
@@ -131,16 +129,8 @@ public class DefaultHandlerTest
         HttpTesting testing = new HttpTesting(new HttpSocketImpl(),serverPort);
         HttpTester.Response response = testing.request(request);
 
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-        assertEquals("text/plain", response.get("Content-Type"));
-        assertTrue(response.getContent().contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"));
-    }
-
-    private void DEBUG(String msg)
-    {
-        if (debug)
-        {
-            System.out.println(msg);
-        }
+        assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
+        assertThat(response, containsHeaderValue(HttpHeader.CONTENT_TYPE, "text/plain"));
+        assertThat(response.getContent(), containsString("ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"));
     }
 }

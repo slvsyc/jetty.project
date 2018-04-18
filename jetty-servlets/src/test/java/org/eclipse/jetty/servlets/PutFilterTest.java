@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.servlets;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -268,11 +270,10 @@ public class PutFilterTest
         Set<String> options = new HashSet<String>();
         String allow=response.get("Allow");
         options.addAll(StringUtil.csvSplit(null,allow,0,allow.length()));
-        assertTrue(options.contains("GET"));
-        assertTrue(options.contains("POST"));
-        assertTrue(options.contains("PUT"));
-        assertTrue(options.contains("MOVE"));
-
+        assertThat("GET", isIn(options));
+        assertThat("POST", isIn(options));
+        assertThat("PUT", isIn(options));
+        assertThat("MOVE", isIn(options));
     }
 
     @Test

@@ -19,6 +19,8 @@
 
 package org.eclipse.jetty.server.session;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -399,9 +401,7 @@ public abstract class AbstractSessionDataStoreTest
         
         Set<String> candidates = new HashSet<>(Arrays.asList(new String[] {"1234", "5678"}));
         Set<String> expiredIds = store.getExpired(candidates);
-        assertEquals(2, expiredIds.size());
-        assertTrue(expiredIds.contains("1234"));
-        assertTrue(expiredIds.contains("5678"));
+        assertThat(expiredIds, containsInAnyOrder("1234", "5678"));
     }
     
 
@@ -461,9 +461,7 @@ public abstract class AbstractSessionDataStoreTest
         
         Set<String> candidates = new HashSet<>(Arrays.asList(new String[] {"1234", "5678"}));
         Set<String> expiredIds = store.getExpired(candidates);
-        assertEquals(2, expiredIds.size());
-        assertTrue(expiredIds.contains("1234"));
-        assertTrue(expiredIds.contains("5678"));
+        assertThat(expiredIds, containsInAnyOrder("1234", "5678"));
     }
     
     /**
@@ -501,9 +499,7 @@ public abstract class AbstractSessionDataStoreTest
         
         Set<String> candidates = new HashSet<>();
         Set<String> expiredIds = store.getExpired(candidates);
-        assertEquals(2, expiredIds.size());
-        assertTrue(expiredIds.contains("1234"));
-        assertTrue(expiredIds.contains("5678"));
+        assertThat(expiredIds, containsInAnyOrder("1234", "5678"));
     }
     
     
@@ -536,8 +532,7 @@ public abstract class AbstractSessionDataStoreTest
         
         Set<String> candidates = new HashSet<>();
         Set<String> expiredIds = store.getExpired(candidates);
-        assertEquals(1, expiredIds.size());
-        assertTrue(expiredIds.contains("1234"));
+        assertThat(expiredIds, containsInAnyOrder("1234"));
     }
     
     
