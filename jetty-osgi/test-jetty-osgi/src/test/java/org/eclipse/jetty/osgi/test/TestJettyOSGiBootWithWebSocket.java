@@ -32,8 +32,8 @@ import javax.inject.Inject;
 
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
@@ -87,7 +87,7 @@ public class TestJettyOSGiBootWithWebSocket
     }
 
 
-    @Disabled
+    @Ignore
     public void assertAllBundlesActiveOrResolved()
     {
         TestOSGiUtil.assertAllBundlesActiveOrResolved(bundleContext);

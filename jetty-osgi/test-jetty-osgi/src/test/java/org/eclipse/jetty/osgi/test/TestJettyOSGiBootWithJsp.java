@@ -32,8 +32,8 @@ import javax.inject.Inject;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
@@ -86,7 +86,7 @@ public class TestJettyOSGiBootWithJsp
     }
 
 
-    @Disabled
+    @Ignore
     @Test
     public void assertAllBundlesActiveOrResolved()
     {

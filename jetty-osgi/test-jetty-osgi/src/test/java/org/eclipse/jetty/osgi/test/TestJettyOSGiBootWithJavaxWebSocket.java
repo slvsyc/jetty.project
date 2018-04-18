@@ -35,8 +35,8 @@ import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
@@ -53,7 +53,6 @@ import aQute.bnd.osgi.Constants;
  * Test using websocket in osgi
  */
 @RunWith(PaxExam.class)
-
 public class TestJettyOSGiBootWithJavaxWebSocket
 {
     private static final String LOG_LEVEL = "WARN";
@@ -105,7 +104,7 @@ public class TestJettyOSGiBootWithJavaxWebSocket
     }
 
 
-    @Disabled
+    @Ignore
     public void assertAllBundlesActiveOrResolved()
     {
         TestOSGiUtil.assertAllBundlesActiveOrResolved(bundleContext);
