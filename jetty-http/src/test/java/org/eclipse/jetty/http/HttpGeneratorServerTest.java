@@ -26,7 +26,6 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.ByteBuffer;
 import java.util.function.Supplier;
@@ -831,7 +830,7 @@ public class HttpGeneratorServerTest
         HttpGenerator.Result result = generator.generateResponse(info, false, header, null, null, true);
         assertSame(HttpGenerator.Result.FLUSH, result);
         String headers = BufferUtil.toString(header);
-        assertTrue(headers.contains(HttpHeaderValue.KEEP_ALIVE.asString()));
-        assertTrue(headers.contains(customValue));
+        assertThat(headers, containsString(HttpHeaderValue.KEEP_ALIVE.asString()));
+        assertThat(headers, containsString(customValue));
     }
 }

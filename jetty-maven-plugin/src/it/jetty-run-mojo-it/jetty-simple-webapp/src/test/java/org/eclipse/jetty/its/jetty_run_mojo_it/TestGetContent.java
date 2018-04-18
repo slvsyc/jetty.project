@@ -16,15 +16,18 @@
 //  ========================================================================
 //
 
-package org.eclipse.jetty.its.jetty_run_forked_mojo_it;
+package org.eclipse.jetty.its.jetty_run_mojo_it;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
 import org.eclipse.jetty.client.HttpClient;
-
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 /**
  *

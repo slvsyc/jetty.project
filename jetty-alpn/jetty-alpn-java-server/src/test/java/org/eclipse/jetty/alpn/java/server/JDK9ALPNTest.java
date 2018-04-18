@@ -18,7 +18,8 @@
 
 package org.eclipse.jetty.alpn.java.server;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,7 +45,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-
 import org.junit.jupiter.api.Test;
 
 public class JDK9ALPNTest
@@ -111,7 +111,7 @@ public class JDK9ALPNTest
             InputStream input = client.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
             String line = reader.readLine();
-            assertTrue(line.contains(" 200 "));
+            assertThat(line, containsString(" 200 "));
             while (true)
             {
                 if (reader.readLine() == null)
@@ -156,7 +156,7 @@ public class JDK9ALPNTest
             InputStream input = client.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
             String line = reader.readLine();
-            assertTrue(line.contains(" 200 "));
+            assertThat(line, containsString(" 200 "));
             while (true)
             {
                 if (reader.readLine() == null)

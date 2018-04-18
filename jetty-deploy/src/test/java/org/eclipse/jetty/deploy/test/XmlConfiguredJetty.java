@@ -19,6 +19,7 @@
 package org.eclipse.jetty.deploy.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -185,9 +186,8 @@ public class XmlConfiguredJetty
 
     public void assertResponseContains(String path, String needle) throws IOException
     {
-        // System.err.println("Issuing request to " + path);
         String content = getResponse(path);
-        assertTrue(content.contains(needle),"Content should contain <" + needle + ">, instead got <" + content + ">");
+        assertThat(content, containsString(needle));
     }
 
     public void assertWebAppContextsExists(String... expectedContextPaths)

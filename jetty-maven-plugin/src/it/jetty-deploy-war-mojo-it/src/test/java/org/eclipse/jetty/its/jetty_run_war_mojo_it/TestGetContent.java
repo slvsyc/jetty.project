@@ -19,13 +19,17 @@
 
 package org.eclipse.jetty.its.jetty_run_war_mojo_it;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
 import org.eclipse.jetty.client.HttpClient;
-
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 /**
  *
@@ -45,11 +49,11 @@ public class TestGetContent
 
             String response = httpClient.GET( "http://localhost:" + port ).getContentAsString();
 
-            assertTrue(response.trim().contains("Bean Validation Webapp example") );
+            assertThat(response, containsString("Bean Validation Webapp example"));
 
             response = httpClient.GET( "http://localhost:" + port ).getContentAsString();
 
-            assertTrue(response.trim().contains("Bean Validation Webapp example") );
+            assertThat(response, containsString("Bean Validation Webapp example"));
         }
         finally
         {

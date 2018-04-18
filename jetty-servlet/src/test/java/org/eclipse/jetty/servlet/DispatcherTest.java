@@ -19,6 +19,7 @@
 package org.eclipse.jetty.servlet;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -269,7 +270,7 @@ public class DispatcherTest
     {
         String responses = _connector.getResponse("GET /resource/content.txt HTTP/1.0\n" + "Host: localhost\n\n");
 
-        assertTrue(responses.contains("content goes here")); // from inside the context.txt file
+        assertThat(responses, containsString("content goes here")); // from inside the context.txt file
     }
 
     @Test
@@ -282,7 +283,7 @@ public class DispatcherTest
         // from inside the context.txt file
         assertNotNull(responses);
 
-        assertTrue(responses.contains("content goes here"));
+        assertThat(responses, containsString("content goes here"));
     }
 
     @Test
@@ -293,7 +294,7 @@ public class DispatcherTest
         String responses = _connector.getResponse("GET /context/resourceServlet/content.txt?do=forward HTTP/1.0\n" + "Host: localhost\n\n");
 
         // from inside the context.txt file
-        assertTrue(responses.contains("content goes here"));
+        assertThat(responses, containsString("content goes here"));
     }
 
     @Test
@@ -304,7 +305,7 @@ public class DispatcherTest
         String responses = _connector.getResponse("GET /context/resourceServlet/content.txt?do=include&wrapped=true HTTP/1.0\n" + "Host: localhost\n\n");
 
         // from inside the context.txt file
-        assertTrue(responses.contains("content goes here"));
+        assertThat(responses, containsString("content goes here"));
     }
 
     @Test
@@ -315,7 +316,7 @@ public class DispatcherTest
         String responses = _connector.getResponse("GET /context/resourceServlet/content.txt?do=forward&wrapped=true HTTP/1.0\n" + "Host: localhost\n\n");
 
         // from inside the context.txt file
-        assertTrue(responses.contains("content goes here"));
+        assertThat(responses, containsString("content goes here"));
     }
 
     @Test
@@ -332,9 +333,9 @@ public class DispatcherTest
 
         String rechoResponse = _connector.getResponse("GET /context/?echo=echoText HTTP/1.0\n" + "Host: localhost\n\n");
 
-        assertTrue(rogerResponse.contains("Roger That!"));
-        assertTrue(echoResponse.contains("echoText"));
-        assertTrue(rechoResponse.contains("txeTohce"));
+        assertThat(rogerResponse, containsString("Roger That!"));
+        assertThat(echoResponse, containsString("echoText"));
+        assertThat(rechoResponse, containsString("txeTohce"));
     }
 
 

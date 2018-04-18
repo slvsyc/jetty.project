@@ -18,10 +18,11 @@
 
 package org.eclipse.jetty.http;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -470,22 +471,13 @@ public class MultiPartParserTest
                 "\r"+
                 "Joe Blow\r\n"+
                 "--AaB03x--\r\n");
-        
 
-        try
-        {
-            parser.parse(data,true);
-            fail("Invalid End of Line");
-        }
-        catch(BadMessageException e) {
-            assertTrue(e.getMessage().contains("Bad EOL"));
-        }
-
-
+        BadMessageException x = assertThrows(BadMessageException.class,
+                ()-> parser.parse(data,true),
+                "Invalid EOL");
+        assertThat(x.getMessage(), containsString("Bad EOL"));
     }
-    
-    
-    
+
     @Test
     public void splitTest() 
     {

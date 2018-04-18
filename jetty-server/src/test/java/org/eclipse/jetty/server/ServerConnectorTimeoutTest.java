@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +79,8 @@ public class ServerConnectorTimeoutTest extends ConnectorTimeoutTest
         _handler.setSuspendFor(100);
         _handler.setResumeAfter(25);
         assertTimeoutPreemptively(ofSeconds(10),()-> {
-            assertTrue(process(null).toUpperCase(Locale.ENGLISH).contains("RESUMED"));
+            String process = process(null).toUpperCase(Locale.ENGLISH);
+            assertThat(process, containsString("RESUMED"));
         });
     }
 
@@ -96,7 +96,8 @@ public class ServerConnectorTimeoutTest extends ConnectorTimeoutTest
 
         _handler.setSuspendFor(50);
         assertTimeoutPreemptively(ofSeconds(10),()-> {
-            assertTrue(process(null).toUpperCase(Locale.ENGLISH).contains("TIMEOUT"));
+            String process = process(null).toUpperCase(Locale.ENGLISH);
+            assertThat(process, containsString("TIMEOUT"));
         });
     }
 
@@ -113,7 +114,8 @@ public class ServerConnectorTimeoutTest extends ConnectorTimeoutTest
         _handler.setSuspendFor(100);
         _handler.setCompleteAfter(25);
         assertTimeoutPreemptively(ofSeconds(10),()-> {
-            assertTrue(process(null).toUpperCase(Locale.ENGLISH).contains("COMPLETED"));
+            String process = process(null).toUpperCase(Locale.ENGLISH);
+            assertThat(process, containsString("COMPLETED"));
         });
     }
 

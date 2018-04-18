@@ -22,7 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 import static org.junit.jupiter.api.condition.OS.MAC;
 
@@ -52,6 +51,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
+@EnabledOnOs({LINUX, MAC})
 public class UnixSocketTest
 {
     private Logger log = Log.getLogger( getClass() );
@@ -80,7 +80,6 @@ public class UnixSocketTest
     }
     
     @Test
-    @EnabledOnOs({LINUX, MAC})
     public void testUnixSocket() throws Exception
     {
         server = new Server();
@@ -133,7 +132,7 @@ public class UnixSocketTest
 
         log.debug( "response from server: {}", contentResponse.getContentAsString() );
 
-        assertTrue(contentResponse.getContentAsString().contains( "Hello World" ));
+        assertThat(contentResponse.getContentAsString(), containsString( "Hello World" ));
     }
 
     

@@ -47,7 +47,7 @@ public class HttpGeneratorServerHTTPTest
 
         HttpGenerator gen = new HttpGenerator();
 
-        String t = run.toString();
+        String msg = run.toString();
 
         run.result.getHttpFields().clear();
 
@@ -59,19 +59,20 @@ public class HttpGeneratorServerHTTPTest
         parser.parseNext(BufferUtil.toBuffer(response));
 
         if (run.result._body != null)
-            assertEquals(run.result._body, this._content, t);
+            assertEquals(run.result._body, this._content, msg);
 
+        // TODO: Break down rationale more clearly, these should be separate checks and/or assertions
         if (run.httpVersion == 10)
-            assertTrue(gen.isPersistent() || run.result._contentLength >= 0 || EnumSet.of(ConnectionType.CLOSE, ConnectionType.KEEP_ALIVE, ConnectionType.NONE).contains(run.connection), t);
+            assertTrue(gen.isPersistent() || run.result._contentLength >= 0 || EnumSet.of(ConnectionType.CLOSE, ConnectionType.KEEP_ALIVE, ConnectionType.NONE).contains(run.connection), msg);
         else
-            assertTrue(gen.isPersistent() || EnumSet.of(ConnectionType.CLOSE, ConnectionType.TE_CLOSE).contains(run.connection), t);
+            assertTrue(gen.isPersistent() || EnumSet.of(ConnectionType.CLOSE, ConnectionType.TE_CLOSE).contains(run.connection), msg);
 
         assertEquals("OK??Test", _reason);
 
         if (_content == null)
-            assertTrue(run.result._body == null, t);
+            assertTrue(run.result._body == null, msg);
         else
-            assertThat(t, run.result._contentLength, either(equalTo(_content.length())).or(equalTo(-1)));
+            assertThat(msg, run.result._contentLength, either(equalTo(_content.length())).or(equalTo(-1)));
     }
 
     private static class Result

@@ -18,8 +18,10 @@
 
 package org.eclipse.jetty.server.session;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -190,16 +192,11 @@ public class SessionInvalidateCreateScavengeTest extends AbstractTestBase
                     session.invalidate();
 
                     //now try to access the invalid session
-                    try
-                    {
-                        session.getAttribute("identity");
-                        fail("Session should be invalid");
-                    }
-                    catch (IllegalStateException e)
-                    {
-                        assertNotNull(e.getMessage());
-                        assertTrue(e.getMessage().contains("id"));
-                    }
+                    HttpSession finalSession = session;
+                    IllegalStateException x = assertThrows(IllegalStateException.class,
+                            ()-> finalSession.getAttribute("identity"),
+                            "Session should be invalid");
+                    assertThat(x.getMessage(), containsString("id"));
 
                     //now make a new session
                     session = request.getSession(true);

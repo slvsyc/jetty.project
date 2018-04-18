@@ -18,11 +18,14 @@
 
 package org.eclipse.jetty.proxy;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +51,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.client.util.DeferredContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -204,10 +208,10 @@ public class ProxyServletFailureTest
             socket.setSoTimeout(2 * idleTimeout);
     
             HttpTester.Response response = HttpTester.parseResponse(socket.getInputStream());
-            assertTrue(response.getStatus() >= 500);
-            String connectionHeader = response.get("connection");
+            assertThat("response status", response.getStatus(), greaterThanOrEqualTo(500));
+            String connectionHeader = response.get(HttpHeader.CONNECTION);
             assertNotNull(connectionHeader);
-            assertTrue(connectionHeader.contains("close"));
+            assertThat(connectionHeader, containsString("close"));
             assertEquals(-1, socket.getInputStream().read());
         }
     }
@@ -240,10 +244,10 @@ public class ProxyServletFailureTest
             socket.setSoTimeout(2 * idleTimeout);
             
             HttpTester.Response response = HttpTester.parseResponse(socket.getInputStream());
-            assertTrue(response.getStatus() >= 500);
-            String connectionHeader = response.get("connection");
+            assertThat("response status", response.getStatus(), greaterThanOrEqualTo(500));
+            String connectionHeader = response.get(HttpHeader.CONNECTION);
             assertNotNull(connectionHeader);
-            assertTrue(connectionHeader.contains("close"));
+            assertThat(connectionHeader, containsString("close"));
             assertEquals(-1, socket.getInputStream().read());
         }
     }
@@ -310,7 +314,7 @@ public class ProxyServletFailureTest
                     .content(new BytesContentProvider(content))
                     .send();
 
-            assertEquals(expected, response.getStatus());
+            assertThat(response.toString(), response.getStatus(), is(expected));
         }
     }
 

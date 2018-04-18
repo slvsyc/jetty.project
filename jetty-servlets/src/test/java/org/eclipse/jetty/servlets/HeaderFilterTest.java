@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.servlets;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsIn.isIn;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -107,7 +109,7 @@ public class HeaderFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        assertTrue(response.contains(HttpHeader.EXPIRES));
+        assertThat(response.toString(), HttpHeader.EXPIRES.asString(), isIn(response.getFieldNamesCollection()));
     }
 
     @Test
@@ -124,7 +126,7 @@ public class HeaderFilterTest
         request.setURI("/context/test/0");
 
         HttpTester.Response response = HttpTester.parseResponse(_tester.getResponses(request.generate()));
-        assertTrue(response.contains(HttpHeader.EXPIRES));
+        assertThat(response.toString(), HttpHeader.EXPIRES.asString(), isIn(response.getFieldNamesCollection()));
     }
 
     public static class NullServlet extends HttpServlet

@@ -19,6 +19,7 @@
 package org.eclipse.jetty.server;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -151,7 +152,7 @@ public class SlowClientWithPipelinedRequestTest
             if (crlfs == 4)
                 break;
         }
-        assertTrue(lines.toString().contains(" 200 "));
+        assertThat(lines.toString(), containsString(" 200 "));
         // Read the body
         for (int i = 0; i < contentLength; ++i)
             input.read();
@@ -170,7 +171,7 @@ public class SlowClientWithPipelinedRequestTest
             if (crlfs == 4)
                 break;
         }
-        assertTrue(lines.toString().contains(" 200 "));
+        assertThat(lines.toString(), containsString(" 200 "));
 
         client.close();
     }

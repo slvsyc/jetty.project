@@ -21,6 +21,7 @@ package org.eclipse.jetty.server;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -1014,9 +1015,10 @@ public class ResponseTest
 
         assertNotNull(set);
         ArrayList<String> list = Collections.list(set);
-        assertEquals(2, list.size());
-        assertTrue(list.contains("name=value;Path=/path;Domain=domain;Secure;HttpOnly"));
-        assertTrue(list.contains("name2=value2;Path=/path;Domain=domain"));
+        assertThat(list, containsInAnyOrder(
+                "name=value;Path=/path;Domain=domain;Secure;HttpOnly",
+                "name2=value2;Path=/path;Domain=domain"
+        ));
 
         //get rid of the cookies
         response.reset();

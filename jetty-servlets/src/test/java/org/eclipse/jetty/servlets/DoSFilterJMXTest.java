@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.servlets;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,12 +82,12 @@ public class DoSFilterJMXTest
         boolean result = (Boolean)mbeanServer.invoke(objectName, "addWhitelistAddress", new Object[]{address}, new String[]{String.class.getName()});
         assertTrue(result);
         whitelist = (String)mbeanServer.getAttribute(objectName, "whitelist");
-        assertTrue(whitelist.contains(address));
+        assertThat(whitelist, containsString(address));
 
         result = (Boolean)mbeanServer.invoke(objectName, "removeWhitelistAddress", new Object[]{address}, new String[]{String.class.getName()});
         assertTrue(result);
         whitelist = (String)mbeanServer.getAttribute(objectName, "whitelist");
-        assertFalse(whitelist.contains(address));
+        assertThat(whitelist, not(containsString(address)));
 
         server.stop();
     }

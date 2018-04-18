@@ -18,16 +18,18 @@
 
 package org.eclipse.jetty.http;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -48,7 +50,6 @@ import javax.servlet.http.Part;
 import org.eclipse.jetty.http.MultiPartFormInputStream.MultiPart;
 import org.eclipse.jetty.util.B64Code;
 import org.eclipse.jetty.util.IO;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -88,15 +89,11 @@ public class MultiPartFormInputStreamTest
                                                                          config,
                                                                          _tmpDir);
         mpis.setDeleteOnExit(true);
-        try
-        {
-            mpis.getParts();
-            fail ("Incomplete Multipart");
-        }
-        catch (IOException e)
-        {
-            assertTrue(e.getMessage().startsWith("Incomplete"));
-        }
+
+        IOException x = assertThrows(IOException.class,
+                ()-> mpis.getParts(),
+                "Incomplete Multipart");
+        assertThat(x.getMessage(), startsWith("Incomplete"));
     }
 
 
@@ -224,8 +221,7 @@ public class MultiPartFormInputStreamTest
 
     @Test
     public void testNoBody()
-            throws Exception
-            {
+    {
         String body = "";
 
         MultipartConfigElement config = new MultipartConfigElement(_dirname, 1024, 3072, 50);
@@ -234,15 +230,9 @@ public class MultiPartFormInputStreamTest
                                                                          config,
                                                                          _tmpDir);
         mpis.setDeleteOnExit(true);
-        try
-        {
-            mpis.getParts();
-            fail ("Missing initial multi part boundary");
-        }
-        catch (IOException e)
-        {
-            assertTrue(e.getMessage().contains("Missing initial multi part boundary"));
-        }
+
+        IOException x = assertThrows(IOException.class, ()-> mpis.getParts());
+        assertThat(x.getMessage(), containsString("Missing initial multi part boundary"));
     }
     
     
@@ -291,8 +281,7 @@ public class MultiPartFormInputStreamTest
     
     @Test
     public void testWhitespaceBodyWithCRLF()
-            throws Exception
-            {
+    {
         String whitespace = "              \n\n\n\r\n\r\n\r\n\r\n";
 
 
@@ -302,21 +291,13 @@ public class MultiPartFormInputStreamTest
                                                                          config,
                                                                          _tmpDir);
         mpis.setDeleteOnExit(true);
-        try
-        {
-            mpis.getParts();
-            fail("Missing initial multi part boundary");
-        }
-        catch (IOException e)
-        {
-            assertTrue(e.getMessage().contains("Missing initial multi part boundary"));
-        }
+        IOException x = assertThrows(IOException.class, ()-> mpis.getParts());
+        assertThat(x.getMessage(), containsString("Missing initial multi part boundary"));
     }
 
     @Test
     public void testWhitespaceBody()
-            throws Exception
-            {
+    {
         String whitespace = " ";
 
         MultipartConfigElement config = new MultipartConfigElement(_dirname, 1024, 3072, 50);
@@ -325,15 +306,8 @@ public class MultiPartFormInputStreamTest
                                                                          config,
                                                                          _tmpDir);
         mpis.setDeleteOnExit(true);
-        try
-        {
-            mpis.getParts();
-            fail ("Multipart missing body");
-        }
-        catch (IOException e)
-        {
-            assertTrue(e.getMessage().startsWith("Missing initial"));
-        }
+        IOException x = assertThrows(IOException.class, ()-> mpis.getParts());
+        assertThat(x.getMessage(), containsString("Missing initial"));
     }
 
     @Test
@@ -379,9 +353,8 @@ public class MultiPartFormInputStreamTest
 
 
     @Test
-    public void testLeadingWhitespaceBodyWithoutCRLF()
-            throws Exception
-            {
+    public void testLeadingWhitespaceBodyWithoutCRLF() throws Exception
+    {
         String body = "            "+
                 "--AaB03x\r\n"+
                 "content-disposition: form-data; name=\"field1\"\r\n"+
@@ -405,18 +378,12 @@ public class MultiPartFormInputStreamTest
         assertThat(parts, notNullValue());
         assertThat(parts.size(), is(1));
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Part stuff = mpis.getPart("stuff");
         assertThat(stuff, notNullValue());
-        baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         IO.copy(stuff.getInputStream(), baos);
-        assertTrue(baos.toString("US-ASCII").contains("bbbbb"));
+        assertThat(baos.toString("US-ASCII"), containsString("bbbbb"));
     }
-    
-    
-    
-    
-    
 
     @Test
     public void testNoLimits()
@@ -434,7 +401,6 @@ public class MultiPartFormInputStreamTest
 
     @Test
     public void testRequestTooBig ()
-    throws Exception
     {
         MultipartConfigElement config = new MultipartConfigElement(_dirname, 60, 100, 50);
         MultiPartFormInputStream mpis = new MultiPartFormInputStream(new ByteArrayInputStream(_multi.getBytes()),
@@ -442,22 +408,14 @@ public class MultiPartFormInputStreamTest
                                                              config,
                                                              _tmpDir);
         mpis.setDeleteOnExit(true);
-        
-        try
-        {
-            mpis.getParts();
-            fail("Request should have exceeded maxRequestSize");
-        }
-        catch (IllegalStateException e)
-        {
-            assertTrue(e.getMessage().startsWith("Request exceeds maxRequestSize"));
-        }
+
+        IllegalStateException x = assertThrows(IllegalStateException.class, ()-> mpis.getParts());
+        assertThat(x.getMessage(), containsString("Request exceeds maxRequestSize"));
     }
     
     
     @Test
     public void testRequestTooBigThrowsErrorOnGetParts ()
-    throws Exception
     {
         MultipartConfigElement config = new MultipartConfigElement(_dirname, 60, 100, 50);
         MultiPartFormInputStream mpis = new MultiPartFormInputStream(new ByteArrayInputStream(_multi.getBytes()),
@@ -465,34 +423,18 @@ public class MultiPartFormInputStreamTest
                                                              config,
                                                              _tmpDir);
         mpis.setDeleteOnExit(true);
-        Collection<Part> parts = null;
-        
+
         //cause parsing
-        try
-        {
-            parts = mpis.getParts();
-            fail("Request should have exceeded maxRequestSize");
-        }
-        catch (IllegalStateException e)
-        {
-            assertTrue(e.getMessage().startsWith("Request exceeds maxRequestSize"));
-        }
-        
+        IllegalStateException x = assertThrows(IllegalStateException.class, ()-> mpis.getParts());
+        assertThat(x.getMessage(), containsString("Request exceeds maxRequestSize"));
+
         //try again
-        try
-        {
-            parts = mpis.getParts();
-            fail("Request should have exceeded maxRequestSize");
-        }
-        catch (IllegalStateException e)
-        {
-            assertTrue(e.getMessage().startsWith("Request exceeds maxRequestSize"));
-        }
+        x = assertThrows(IllegalStateException.class, ()-> mpis.getParts());
+        assertThat(x.getMessage(), containsString("Request exceeds maxRequestSize"));
     }
 
     @Test
     public void testFileTooBig()
-    throws Exception
     {
         MultipartConfigElement config = new MultipartConfigElement(_dirname, 40, 1024, 30);
         MultiPartFormInputStream mpis = new MultiPartFormInputStream(new ByteArrayInputStream(_multi.getBytes()),
@@ -500,21 +442,14 @@ public class MultiPartFormInputStreamTest
                                                              config,
                                                              _tmpDir);
         mpis.setDeleteOnExit(true);
-        Collection<Part> parts = null;
-        try
-        {
-            parts = mpis.getParts();
-            fail("stuff.txt should have been larger than maxFileSize");
-        }
-        catch (IllegalStateException e)
-        {
-            assertTrue(e.getMessage().startsWith("Multipart Mime part"));
-        }
+        IllegalStateException x = assertThrows(IllegalStateException.class,
+                ()-> mpis.getParts(),
+                "stuff.txt should have been larger than maxFileSize");
+        assertThat(x.getMessage(), startsWith("Multipart Mime part"));
     }
     
     @Test
     public void testFileTooBigThrowsErrorOnGetParts()
-    throws Exception
     {
         MultipartConfigElement config = new MultipartConfigElement(_dirname, 40, 1024, 30);
         MultiPartFormInputStream mpis = new MultiPartFormInputStream(new ByteArrayInputStream(_multi.getBytes()),
@@ -522,30 +457,18 @@ public class MultiPartFormInputStreamTest
                                                              config,
                                                              _tmpDir);
         mpis.setDeleteOnExit(true);
-        Collection<Part> parts = null;
-        try
-        {
-            parts = mpis.getParts(); //caused parsing
-            fail("stuff.txt should have been larger than maxFileSize");
-        }
-        catch (Throwable e)
-        {
-            assertTrue(e.getMessage().startsWith("Multipart Mime part"));
-        }
-        
+        // Caused parsing
+        IllegalStateException x = assertThrows(IllegalStateException.class,
+                ()-> mpis.getParts(),
+                "stuff.txt should have been larger than maxFileSize");
+        assertThat(x.getMessage(), startsWith("Multipart Mime part"));
+
         //test again after the parsing
-        try
-        {
-            parts = mpis.getParts(); //caused parsing
-            fail("stuff.txt should have been larger than maxFileSize");
-        }
-        catch (IllegalStateException e)
-        {
-            assertTrue(e.getMessage().startsWith("Multipart Mime part"));
-        }
+        x = assertThrows(IllegalStateException.class,
+                ()-> mpis.getParts(),
+                "stuff.txt should have been larger than maxFileSize");
+        assertThat(x.getMessage(), startsWith("Multipart Mime part"));
     }
-    
-    
 
     @Test
     public void testPartFileNotDeleted () throws Exception
@@ -628,7 +551,6 @@ public class MultiPartFormInputStreamTest
     
     @Test
     public void testCROnlyRequest()
-    throws Exception
     {
         String str = "--AaB03x\r"+
         "content-disposition: form-data; name=\"field1\"\r"+
@@ -646,35 +568,15 @@ public class MultiPartFormInputStreamTest
                                                                          config,
                                                                          _tmpDir);
         mpis.setDeleteOnExit(true);
-        
-        try
-        {
-            Collection<Part> parts = mpis.getParts();
-            assertThat(parts.size(), is(2));
 
-            assertThat(parts.size(), is(2));
-            Part p1 = mpis.getPart("field1");
-            assertThat(p1, notNullValue());
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            IO.copy(p1.getInputStream(), baos);
-            assertThat(baos.toString("UTF-8"), is("Joe Blow"));
-
-            Part p2 = mpis.getPart("field2");
-            assertThat(p2, notNullValue());
-            baos = new ByteArrayOutputStream();
-            IO.copy(p2.getInputStream(), baos);
-            assertThat(baos.toString("UTF-8"), is("Other"));
-        }
-        catch(Throwable e)
-        {
-            assertTrue(e.getMessage().contains("Bad EOL"));
-        }
+        IllegalStateException x = assertThrows(IllegalStateException.class,
+                ()-> mpis.getParts(),
+                "Improper EOL");
+        assertThat(x.getMessage(), containsString("Bad EOL"));
     }
 
     @Test
     public void testCRandLFMixRequest()
-    throws Exception
     {
         String str = "--AaB03x\r"+
                 "content-disposition: form-data; name=\"field1\"\r"+
@@ -693,29 +595,11 @@ public class MultiPartFormInputStreamTest
                                                                          config,
                                                                          _tmpDir);
         mpis.setDeleteOnExit(true);
-        
-        
-        try
-        {
-            Collection<Part> parts = mpis.getParts();
-            assertThat(parts.size(), is(2));
-    
-            Part p1 = mpis.getPart("field1");
-            assertThat(p1, notNullValue());      
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            IO.copy(p1.getInputStream(), baos);
-            assertThat(baos.toString("UTF-8"), is("\nJoe Blow\n"));
-            
-            Part p2 = mpis.getPart("field2");
-            assertThat(p2, notNullValue());
-            baos = new ByteArrayOutputStream();
-            IO.copy(p2.getInputStream(), baos);
-            assertThat(baos.toString("UTF-8"), is("Other"));
-        }
-        catch(Throwable e)
-        {
-            assertTrue(e.getMessage().contains("Bad EOL"));
-        }
+
+        IllegalStateException x = assertThrows(IllegalStateException.class,
+                ()-> mpis.getParts(),
+                "Improper EOL");
+        assertThat(x.getMessage(), containsString("Bad EOL"));
     }
     
     @Test
@@ -734,16 +618,10 @@ public class MultiPartFormInputStreamTest
                                                              config,
                                                              _tmpDir);
         mpis.setDeleteOnExit(true);
-        try
-        {
-            mpis.getParts();
-            fail ("Header Line Exceeded Max Length");
-        }
-        catch (Throwable e)
-        {
-            assertTrue(e.getMessage().startsWith("Header Line Exceeded Max Length"));
-        }
-
+        IllegalStateException x = assertThrows(IllegalStateException.class,
+                ()-> mpis.getParts(),
+                "Header Line Exceeded Max Length");
+        assertThat(x.getMessage(), containsString("Header Line Exceeded Max Length"));
     }
     
     @Test
@@ -936,7 +814,7 @@ public class MultiPartFormInputStreamTest
         }
         catch (Exception e)
         {
-            fail("Part.getInputStream() after file rename operation");
+            fail("Part.getInputStream() after file rename operation", e);
         }
         f.deleteOnExit(); //clean up after test
     }

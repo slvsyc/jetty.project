@@ -18,9 +18,10 @@
 
 package org.eclipse.jetty.util.ajax;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 
 import org.junit.jupiter.api.Test;
 
@@ -72,7 +72,7 @@ public class JSONCollectionConvertorTest
         object1.put(field, list1);
 
         String string = json.toJSON(object1);
-        assertTrue(string.contains(list1.getClass().getName()));
+        assertThat(string, containsString(list1.getClass().getName()));
 
         @SuppressWarnings("unchecked")
         Map<String, Object> object2 = (Map<String, Object>)json.parse(new JSON.StringSource(string));
@@ -105,7 +105,7 @@ public class JSONCollectionConvertorTest
         json.addConvertor(Set.class, new JSONCollectionConvertor());
 
         String string = json.toJSON(set1);
-        assertTrue(string.contains(set1.getClass().getName()));
+        assertThat(string, containsString(set1.getClass().getName()));
 
         @SuppressWarnings("unchecked")
         Set<String> set2 = (Set<String>)json.parse(new JSON.StringSource(string));

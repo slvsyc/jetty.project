@@ -19,8 +19,13 @@
 package org.eclipse.jetty.plus.webapp;
 
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -102,23 +107,16 @@ public class PlusDescriptorProcessorTest
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(context.getClassLoader());
 
-        try
-        {
+        InvocationTargetException x = assertThrows(InvocationTargetException.class, ()->{
             PlusDescriptorProcessor pdp = new PlusDescriptorProcessor();
             pdp.process(context, fragDescriptor4);
             fail("Expected missing resource declaration");
-        }
-        catch (InvocationTargetException ex)
-        {
-            Throwable cause = ex.getCause();
-            assertNotNull(cause);
-            assertNotNull(cause.getMessage());
-            assertTrue(cause.getMessage().contains("jdbc/mymissingdatasource"));
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader(oldLoader);
-        }
+        });
+        Thread.currentThread().setContextClassLoader(oldLoader);
+
+        assertThat(x.getCause(), is(notNullValue()));
+        assertThat(x.getCause().getMessage(), containsString("jdbc/mymissingdatasource"));
+
     }
 
     @Test

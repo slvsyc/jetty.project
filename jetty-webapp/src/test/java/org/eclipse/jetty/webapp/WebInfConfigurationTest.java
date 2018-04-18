@@ -19,8 +19,11 @@
 
 package org.eclipse.jetty.webapp;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -60,7 +63,7 @@ public class WebInfConfigurationTest
         config.findAndFilterContainerPaths(context);
         List<Resource> containerResources = context.getMetaData().getContainerResources();
         assertEquals(1, containerResources.size());
-        assertTrue(containerResources.get(0).toString().contains("jetty-util"));
+        assertThat(containerResources.get(0).toString(), containsString("jetty-util"));
     }
     
     /**
@@ -85,7 +88,7 @@ public class WebInfConfigurationTest
         for (Resource r:containerResources)
         {
             String s = r.toString();
-            assertTrue(s.endsWith("foo-bar-janb.jar") || s.contains("jetty-util"));
+            assertThat(s, anyOf(endsWith("foo-bar-janb.jar"), containsString("jetty-util")));
         }
     }
     
@@ -112,7 +115,7 @@ public class WebInfConfigurationTest
         config.findAndFilterContainerPaths(context);
         List<Resource> containerResources = context.getMetaData().getContainerResources();
         assertEquals(1, containerResources.size());
-        assertTrue(containerResources.get(0).toString().contains("jetty-util"));
+        assertThat(containerResources.get(0).toString(), containsString("jetty-util"));
     }
 
 }

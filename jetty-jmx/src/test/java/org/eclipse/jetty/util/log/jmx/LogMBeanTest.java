@@ -18,7 +18,9 @@
 
 package org.eclipse.jetty.util.log.jmx;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.acme.Managed;
@@ -46,13 +48,13 @@ public class LogMBeanTest
     public void testKeySet()
     {
         // given
-        assertFalse(logMBean.getLoggers().contains(MANAGED_CLASS), "Managed is not registered with loggers");
+        assertThat("Managed is not registered with loggers", MANAGED_CLASS, not(isIn(logMBean.getLoggers())));
 
         // when
         logMBean.setDebugEnabled(MANAGED_CLASS,true);
 
         // then
-        assertTrue(logMBean.getLoggers().contains(MANAGED_CLASS), "Managed must be registered with loggers");
+        assertThat("Managed must be registered with loggers", MANAGED_CLASS, isIn(logMBean.getLoggers()));
         assertTrue(logMBean.isDebugEnabled(MANAGED_CLASS), "This must return true as debug is enabled for this class");
     }
 }

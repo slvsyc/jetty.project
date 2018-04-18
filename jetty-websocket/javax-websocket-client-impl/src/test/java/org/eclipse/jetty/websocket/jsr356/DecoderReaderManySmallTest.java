@@ -18,8 +18,9 @@
 
 package org.eclipse.jetty.websocket.jsr356;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isIn;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,11 +53,10 @@ import org.eclipse.jetty.websocket.common.frames.TextFrame;
 import org.eclipse.jetty.websocket.common.test.BlockheadConnection;
 import org.eclipse.jetty.websocket.common.test.BlockheadServer;
 import org.eclipse.jetty.websocket.common.test.Timeouts;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
-
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -200,7 +200,7 @@ public class DecoderReaderManySmallTest
             // validate that all expected ids have been seen (order is irrelevant here)
             for (int expected = from; expected < to; expected++)
             {
-                assertTrue(seen.contains(expected), "Has expected id:" + expected);
+                assertThat("Has expected id:" + expected, expected, isIn(seen));
             }
         }
     }

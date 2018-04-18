@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.http2.alpn.tests;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,7 +41,6 @@ import javax.net.ssl.SSLSocket;
 import org.eclipse.jetty.alpn.ALPN;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-
 import org.junit.jupiter.api.Test;
 
 public class ALPNNegotiationTest extends AbstractALPNTest
@@ -218,7 +219,7 @@ public class ALPNNegotiationTest extends AbstractALPNTest
             InputStream input = client.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
             String line = reader.readLine();
-            assertTrue(line.contains(" 404 "));
+            assertThat(line, containsString(" 404 "));
         }
     }
 
@@ -270,7 +271,7 @@ public class ALPNNegotiationTest extends AbstractALPNTest
             InputStream input = client.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
             String line = reader.readLine();
-            assertTrue(line.contains(" 404 "));
+            assertThat(line, containsString(" 404 "));
         }
     }
 
@@ -321,7 +322,7 @@ public class ALPNNegotiationTest extends AbstractALPNTest
             InputStream input = client.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
             String line = reader.readLine();
-            assertTrue(line.contains(" 404 "));
+            assertThat(line, containsString(" 404 "));
         }
     }
 }

@@ -20,6 +20,7 @@ package org.eclipse.jetty.annotations;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -141,7 +142,7 @@ public class TestAnnotationParser
                 if (annotation == null || !"org.eclipse.jetty.annotations.Sample".equals(annotation))
                     return;
                 assertEquals("org.eclipse.jetty.annotations.ClassA",info.getClassInfo().getClassName());
-                assertTrue(methods.contains(info.getMethodName()));
+                assertThat(info.getMethodName(), isIn(methods));
                 assertEquals("org.eclipse.jetty.annotations.Sample",annotation);
             }
         }

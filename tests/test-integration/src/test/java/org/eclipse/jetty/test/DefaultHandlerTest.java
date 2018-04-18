@@ -118,44 +118,6 @@ public class DefaultHandlerTest
         assertTrue(response.getContent().contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"));
     }
 
-    /*
-    @Test
-    public void testMultiGET_Raw() throws Exception
-    {
-        StringBuffer rawRequests = new StringBuffer();
-        rawRequests.append("GET /tests/alpha.txt HTTP/1.1\r\n");
-        rawRequests.append("Host: localhost\r\n");
-        rawRequests.append("\r\n");
-        rawRequests.append("GET /tests/R1.txt HTTP/1.1\r\n");
-        rawRequests.append("Host: localhost\r\n");
-        rawRequests.append("\r\n");
-        rawRequests.append("GET /tests/R1.txt HTTP/1.1\r\n");
-        rawRequests.append("Host: localhost\r\n");
-        rawRequests.append("Connection: close\r\n");
-        rawRequests.append("\r\n");
-
-        HttpTesting http = new HttpTesting(new HttpSocketImpl(),serverPort);
-      
-
-        List<HttpTester.Response> responses = http.requests(rawRequests);
-
-        HttpTester.Response response = responses.get(0);
-        assertEquals(HttpStatus.OK_200, response.getStatus());
-        assertTrue(response.getContent().contains("ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"));
-
-        response = responses.get(1);
-        assertEquals(HttpStatus.OK_200, response.getStatus()); 
-        assertTrue(response.getContent().contains("Host=Default\nResource=R1\n"));
-
-        response = responses.get(2);
-        assertEquals(HttpStatus.OK_200, response.getStatus()); 
-        assertTrue(response.getContent().contains("Host=Default\nResource=R1\n"));
-    }
-    */
-    
-    
-    
-
     @Test
     public void testGET_HttpTesting() throws Exception
     {

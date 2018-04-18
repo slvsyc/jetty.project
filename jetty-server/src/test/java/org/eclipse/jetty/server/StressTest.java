@@ -18,6 +18,9 @@
 
 package org.eclipse.jetty.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.OS.MAC;
@@ -424,10 +427,10 @@ public class StressTest
                 long end=TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
 
                 String endOfResponse = "\r\n\r\n";
-                assertTrue(response.contains(endOfResponse),"response = '" + response + "'");
+                assertThat(response, containsString(endOfResponse));
                 response=response.substring(response.indexOf(endOfResponse) + endOfResponse.length());
 
-                assertTrue(response.startsWith("DATA "+__tests[i]),uri);
+                assertThat(uri, response, startsWith("DATA "+__tests[i]));
                 long latency=end-start;
 
                 _latencies[5].add(new Long(latency));
