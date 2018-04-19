@@ -264,10 +264,10 @@ public class AsyncIOServletTest extends AbstractTest<AsyncIOServletTest.AsyncTra
                     clientLatch.countDown();
                 });
 
-        assertTrue(closeLatch.await(5, TimeUnit.SECONDS));
-        assertTrue(responseLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(closeLatch.await(5, TimeUnit.SECONDS), "close latch expired");
+        assertTrue(responseLatch.await(5, TimeUnit.SECONDS), "response latch expired");
         content.close();
-        assertTrue(clientLatch.await(5, TimeUnit.SECONDS));
+        assertTrue(clientLatch.await(5, TimeUnit.SECONDS), "client latch expired");
     }
 
     @ParameterizedTest
