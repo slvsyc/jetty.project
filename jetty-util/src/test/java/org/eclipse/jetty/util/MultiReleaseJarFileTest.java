@@ -128,8 +128,6 @@ public class MultiReleaseJarFileTest
     @EnabledOnJre({JRE.JAVA_9, JRE.JAVA_10, JRE.JAVA_11})
     public void testClassLoaderJava9() throws Exception
     {
-        Assume.assumeTrue(JavaVersion.VERSION.getPlatform()==9);
-        
         try(URLClassLoader loader = new URLClassLoader(new URL[]{example.toURI().toURL()}))
         {
             assertThat(IO.toString(loader.getResource("org/example/OnlyInBase.class").openStream()),is("org/example/OnlyInBase.class"));
