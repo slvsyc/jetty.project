@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.server;
 
+import static org.eclipse.jetty.http.HttpFieldsMatchers.containsHeaderValue;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -34,6 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpTester;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.io.ArrayByteBufferPool;
@@ -95,16 +97,6 @@ public abstract class AbstractHttpTest
                 return response;
             }
         }
-    }
-
-    protected void assertResponseBody(HttpTester.Response response, String expectedResponseBody)
-    {
-        assertThat("response body is" + expectedResponseBody, response.getContent(), is(expectedResponseBody));
-    }
-
-    protected void assertHeader(HttpTester.Response response, String headerName, String expectedValue)
-    {
-        assertThat(headerName + "=" + expectedValue, response.get(headerName), is(expectedValue));
     }
 
     protected static class TestCommitException extends IllegalStateException

@@ -1504,7 +1504,7 @@ public class HttpClientTest extends AbstractHttpClientServerTest
                     }
                 };
             }
-        }, scenario.newClientSslContextFactory());
+        }, scenario.newSslContextFactory());
         client.start();
 
         final CountDownLatch latch = new CountDownLatch(2);

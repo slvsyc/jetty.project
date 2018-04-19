@@ -55,7 +55,7 @@ public abstract class AbstractHttpClientServerTest
             serverThreads.setName("server");
             server = new Server(serverThreads);
         }
-        connector = new ServerConnector(server, scenario.newServerSslContextFactory());
+        connector = new ServerConnector(server, scenario.newSslContextFactory());
         server.addConnector(connector);
         server.setHandler(handler);
         server.start();
@@ -70,7 +70,7 @@ public abstract class AbstractHttpClientServerTest
     {
         QueuedThreadPool clientThreads = new QueuedThreadPool();
         clientThreads.setName("client");
-        client = new HttpClient(transport, scenario.newClientSslContextFactory());
+        client = new HttpClient(transport, scenario.newSslContextFactory());
         client.setExecutor(clientThreads);
         client.setSocketAddressResolver(new SocketAddressResolver.Sync());
         client.start();
@@ -111,8 +111,7 @@ public abstract class AbstractHttpClientServerTest
 
     public interface Scenario
     {
-        default SslContextFactory newServerSslContextFactory() { return null; }
-        default SslContextFactory newClientSslContextFactory() { return null; }
+        default SslContextFactory newSslContextFactory() { return null; }
         String getScheme();
     }
 
@@ -128,7 +127,7 @@ public abstract class AbstractHttpClientServerTest
     public static class SslScenario implements Scenario
     {
         @Override
-        public SslContextFactory newServerSslContextFactory()
+        public SslContextFactory newSslContextFactory()
         {
             Path keystorePath = MavenTestingUtils.getTestResourcePath("keystore.jks");
 
@@ -137,12 +136,6 @@ public abstract class AbstractHttpClientServerTest
             ssl.setKeyStorePath(keystorePath.toString());
             ssl.setKeyStorePassword("storepwd");
             return ssl;
-        }
-
-        @Override
-        public SslContextFactory newClientSslContextFactory()
-        {
-            return new SslContextFactory();
         }
 
         @Override

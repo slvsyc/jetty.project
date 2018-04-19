@@ -286,31 +286,6 @@ public class DefaultServletTest
             );
 
             scenarios.addScenario(
-                    "GET " + prefix + "/.%2E/.%2E/sekret/pass",
-                    "GET " + prefix + "/ HTTP/1.0\r\n\r\n",
-                    HttpStatus.NOT_FOUND_404,
-                    (response) -> assertThat(response.getContent(), not(containsString("Sssh")))
-            );
-
-            scenarios.addScenario(
-                    "GET " + prefix + "/../index.html",
-                    "GET " + prefix + "/../index.html HTTP/1.0\r\n\r\n",
-                    HttpStatus.OK_200,
-                    (response) -> assertThat(response.getContent(), containsString("Hello Index"))
-            );
-
-            scenarios.addScenario(
-                    "GET " + prefix + "/../../",
-                    "GET " + prefix + "/../../ HTTP/1.0\r\n\r\n",
-                    HttpStatus.NOT_FOUND_404,
-                    (response) -> {
-                        String body = response.getContent();
-                        assertThat(body, containsString("/../../"));
-                        assertThat(body, not(containsString("Directory: ")));
-                    }
-            );
-
-            scenarios.addScenario(
                     "GET " + prefix + "/../../sekret/pass",
                     "GET " + prefix + "/../../sekret/pass HTTP/1.0\r\n\r\n",
                     HttpStatus.NOT_FOUND_404,
@@ -318,10 +293,52 @@ public class DefaultServletTest
             );
 
             scenarios.addScenario(
-                    "GET " + prefix + "/../index.html",
-                    "GET " + prefix + "/../index.html HTTP/1.0\r\n\r\n",
-                    HttpStatus.OK_200,
-                    (response) -> assertThat(response.getContent(), containsString("Hello Index"))
+                    "GET " + prefix + "/%2E%2E/%2E%2E/sekret/pass",
+                    "GET " + prefix + "/ HTTP/1.0\r\n\r\n",
+                    HttpStatus.NOT_FOUND_404,
+                    (response) -> assertThat(response.getContent(), not(containsString("Sssh")))
+            );
+
+            // A Raw Question mark in the prefix can be interpreted as a query section
+            if (prefix.contains("?"))
+            {
+                scenarios.addScenario(
+                        "GET " + prefix + "/../index.html",
+                        "GET " + prefix + "/../index.html HTTP/1.0\r\n\r\n",
+                        HttpStatus.NOT_FOUND_404
+                );
+
+                scenarios.addScenario(
+                        "GET " + prefix + "/%2E%2E/index.html",
+                        "GET " + prefix + "/%2E%2E/index.html HTTP/1.0\r\n\r\n",
+                        HttpStatus.NOT_FOUND_404
+                );
+            }
+            else
+            {
+                scenarios.addScenario(
+                        "GET " + prefix + "/../index.html",
+                        "GET " + prefix + "/../index.html HTTP/1.0\r\n\r\n",
+                        HttpStatus.OK_200,
+                        (response) -> assertThat(response.getContent(), containsString("Hello Index"))
+                );
+
+                scenarios.addScenario(
+                        "GET " + prefix + "/%2E%2E/index.html",
+                        "GET " + prefix + "/%2E%2E/index.html HTTP/1.0\r\n\r\n",
+                        HttpStatus.OK_200,
+                        (response) -> assertThat(response.getContent(), containsString("Hello Index"))
+                );
+            }
+
+            scenarios.addScenario(
+                    "GET " + prefix + "/../../",
+                    "GET " + prefix + "/../../ HTTP/1.0\r\n\r\n",
+                    HttpStatus.NOT_FOUND_404,
+                    (response) -> {
+                        String body = response.getContent();
+                        assertThat(body, not(containsString("Directory: ")));
+                    }
             );
         }
 
