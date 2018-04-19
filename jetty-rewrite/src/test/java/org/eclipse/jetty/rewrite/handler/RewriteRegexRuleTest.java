@@ -20,15 +20,12 @@ package org.eclipse.jetty.rewrite.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -62,84 +59,85 @@ public class RewriteRegexRuleTest extends AbstractRuleTestCase
     public void testRequestUriEnabled(Scenario scenario) throws Exception
     {
         start(false);
+        RewriteRegexRule rule = new RewriteRegexRule();
 
         reset();
         _request.setURIPathQuery(null);
 
-        /*
-        String t=test[0]+"?"+test[1]+">"+test[2]+"|"+test[3];
-        _rule.setRegex(test[2]);
-        _rule.setReplacement(test[3]);
+        rule.setRegex(scenario.regex);
+        rule.setReplacement(scenario.replacement);
 
-        _request.setURIPathQuery(test[0]+(test[1]==null?"":("?"+test[1])));
+        _request.setURIPathQuery(scenario.uriPathQuery +(scenario.queryString ==null?"":("?"+scenario.queryString)));
 
-        String result = _rule.matchAndApply(test[0], _request, _response);
-        assertEquals(t, test[4], result);
-        _rule.applyURI(_request,test[0],result);
+        String result = rule.matchAndApply(scenario.uriPathQuery, _request, _response);
+        assertEquals(scenario.expectedRequestURI, result);
+        rule.applyURI(_request,scenario.uriPathQuery,result);
 
         if (result!=null)
         {
-            assertEquals(t,test[4], _request.getRequestURI());
-            assertEquals(t,test[5], _request.getQueryString());
+            assertEquals(scenario.expectedRequestURI, _request.getRequestURI());
+            assertEquals(scenario.expectedQueryString, _request.getQueryString());
         }
 
-        if (test[5]!=null)
+        if (scenario.expectedQueryString !=null)
         {
             MultiMap<String> params=new MultiMap<String>();
-            UrlEncoded.decodeTo(test[5],params, StandardCharsets.UTF_8);
+            UrlEncoded.decodeTo(scenario.expectedQueryString,params, StandardCharsets.UTF_8);
 
             for (String n:params.keySet())
                 assertEquals(params.getString(n),_request.getParameter(n));
         }
-        */
     }
 
     @ParameterizedTest
     @MethodSource("scenarios")
-    public void testContainedRequestUriEnabled() throws Exception
+    public void testContainedRequestUriEnabled(Scenario scenario) throws Exception
     {
         start(false);
+        RewriteRegexRule rule = new RewriteRegexRule();
 
         RuleContainer container = new RuleContainer();
         container.setRewriteRequestURI(true);
-        /*
-        container.addRule(_rule);
-        for (String[] test : _tests)
-        {
-            reset();
-            String t=test[0]+"?"+test[1]+">"+test[2]+"|"+test[3];
-            _rule.setRegex(test[2]);
-            _rule.setReplacement(test[3]);
+        container.addRule(rule);
 
-            _request.setURIPathQuery(test[0]);
-            _request.setQueryString(test[1]);
-            _request.getAttributes().clearAttributes();
-            
-            String result = container.apply(URIUtil.decodePath(test[0]),_request,_response);
-            assertEquals(t,URIUtil.decodePath(test[4]==null?test[0]:test[4]), result);
-            assertEquals(t,test[4]==null?test[0]:test[4], _request.getRequestURI());
-            assertEquals(t,test[5], _request.getQueryString());
-        }
-        */
+        reset();
+        rule.setRegex(scenario.regex);
+        rule.setReplacement(scenario.replacement);
+
+        _request.setURIPathQuery(scenario.uriPathQuery);
+        _request.setQueryString(scenario.queryString);
+        _request.getAttributes().clearAttributes();
+
+        String result = container.apply(URIUtil.decodePath(scenario.uriPathQuery),_request,_response);
+        assertEquals(URIUtil.decodePath(scenario.expectedRequestURI ==null?scenario.uriPathQuery :scenario.expectedRequestURI), result);
+        assertEquals(scenario.expectedRequestURI ==null?scenario.uriPathQuery :scenario.expectedRequestURI, _request.getRequestURI());
+        assertEquals(scenario.expectedQueryString, _request.getQueryString());
+
     }
 
     private static class Scenario
     {
-        String test0;
-        String test1;
-        String test2;
-        String test3;
-        String test4;
-        String test5;
+        String uriPathQuery;
+        String queryString;
+        String regex;
+        String replacement;
+        String expectedRequestURI;
+        String expectedQueryString;
 
-        public Scenario(String test0, String test1, String test2, String test3, String test4, String test5)
+        public Scenario(String uriPathQuery, String queryString, String regex, String replacement, String expectedRequestURI, String expectedQueryString)
         {
-            this.test0 = test0;
-            this.test1 = test1;
-            this.test2 = test2;
-            this.test3 = test3;
-            this.test4 = test4;
-            this.test5 = test5;
+            this.uriPathQuery = uriPathQuery;
+            this.queryString = queryString;
+            this.regex = regex;
+            this.replacement = replacement;
+            this.expectedRequestURI = expectedRequestURI;
+            this.expectedQueryString = expectedQueryString;
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.format("%s?%s>%s|%s", uriPathQuery, queryString, regex, replacement);
         }
     }
 }

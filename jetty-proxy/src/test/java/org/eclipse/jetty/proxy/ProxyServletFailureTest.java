@@ -93,6 +93,12 @@ public class ProxyServletFailureTest
 
     private void prepareProxy(Class<? extends ProxyServlet> proxyServletClass, Map<String, String> initParams) throws Exception
     {
+        proxyServlet = proxyServletClass.getDeclaredConstructor().newInstance();
+        prepareProxy(proxyServlet, initParams);
+    }
+
+    private void prepareProxy(ProxyServlet proxyServlet, Map<String, String> initParams) throws Exception
+    {
         QueuedThreadPool executor = new QueuedThreadPool();
         executor.setName("proxy");
         proxy = new Server(executor);
@@ -101,8 +107,6 @@ public class ProxyServletFailureTest
         proxyConnector.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration().setDelayDispatchUntilContent(false);
 
         ServletContextHandler proxyCtx = new ServletContextHandler(proxy, "/", true, false);
-
-        proxyServlet = proxyServletClass.getDeclaredConstructor().newInstance();
 
         ServletHolder proxyServletHolder = new ServletHolder(proxyServlet);
         proxyServletHolder.setInitParameters(initParams);
@@ -258,7 +262,9 @@ public class ProxyServletFailureTest
     {
         final byte[] content = new byte[]{'C', '0', 'F', 'F', 'E', 'E'};
         int expected;
-        if (proxyServlet instanceof AsyncProxyServlet)
+        ProxyServlet proxyServlet = null;
+
+        if (proxyServletClass.isAssignableFrom(AsyncProxyServlet.class))
         {
             // TODO should this be a 502 also???
             expected = 500;
@@ -303,7 +309,7 @@ public class ProxyServletFailureTest
             };
         }
 
-        prepareProxy(proxyServletClass);
+        prepareProxy(proxyServlet, new HashMap<>());
         prepareServer(new EchoHttpServlet());
         long idleTimeout = 1000;
         serverConnector.setIdleTimeout(idleTimeout);

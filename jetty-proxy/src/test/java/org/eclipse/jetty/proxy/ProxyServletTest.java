@@ -101,6 +101,7 @@ import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -219,7 +220,7 @@ public class ProxyServletTest
     }
 
     @ParameterizedTest
-    @MethodSource("transparentImpls")
+    @MethodSource("impls")
     public void testProxyWithoutContent(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         startServer(new HttpServlet()
@@ -681,28 +682,28 @@ public class ProxyServletTest
     }
 
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testTransparentProxyWithQuery(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         testTransparentProxyWithQuery(proxyServletClass, "/foo", "/proxy", "/test");
     }
 
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testTransparentProxyEmptyContextWithQuery(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         testTransparentProxyWithQuery(proxyServletClass, "", "/proxy", "/test");
     }
 
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testTransparentProxyEmptyTargetWithQuery(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         testTransparentProxyWithQuery(proxyServletClass, "/bar", "/proxy", "");
     }
 
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testTransparentProxyEmptyContextEmptyTargetWithQuery(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         testTransparentProxyWithQuery(proxyServletClass, "", "/proxy", "");
@@ -735,7 +736,6 @@ public class ProxyServletTest
         });
 
         String proxyTo = "http://localhost:" + serverConnector.getLocalPort() + proxyToContext;
-        proxyServlet = new ProxyServlet.Transparent();
         Map<String, String> params = new HashMap<>();
         params.put("proxyTo", proxyTo);
         params.put("prefix", prefix);
@@ -752,7 +752,7 @@ public class ProxyServletTest
     }
 
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testTransparentProxyWithQueryWithSpaces(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         final String target = "/test";
@@ -778,7 +778,6 @@ public class ProxyServletTest
         });
         String proxyTo = "http://localhost:" + serverConnector.getLocalPort();
         String prefix = "/proxy";
-        proxyServlet = new ProxyServlet.Transparent();
         Map<String, String> params = new HashMap<>();
         params.put("proxyTo", proxyTo);
         params.put("prefix", prefix);
@@ -795,7 +794,7 @@ public class ProxyServletTest
     }
 
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testTransparentProxyWithoutPrefix(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         final String target = "/test";
@@ -810,7 +809,6 @@ public class ProxyServletTest
             }
         });
         final String proxyTo = "http://localhost:" + serverConnector.getLocalPort();
-        proxyServlet = new ProxyServlet.Transparent();
         Map<String, String> initParams = new HashMap<>();
         initParams.put("proxyTo", proxyTo);
         startProxy(proxyServletClass, initParams);
@@ -825,9 +823,11 @@ public class ProxyServletTest
         assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
-    @ParameterizedTest
-    @MethodSource("impls")
-    public void testCachingProxy(Class<? extends ProxyServlet> proxyServletClass) throws Exception
+    /**
+     * Only tests overridden ProxyServlet behavior, see CachingProxyServlet
+     */
+    @Test
+    public void testCachingProxy() throws Exception
     {
         final byte[] content = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF};
         startServer(new HttpServlet()
@@ -840,56 +840,8 @@ public class ProxyServletTest
                 resp.getOutputStream().write(content);
             }
         });
-        // Don't do this at home: this example is not concurrent, not complete,
-        // it is only used for this test and to verify that ProxyServlet can be
-        // subclassed enough to write your own caching servlet
-        final String cacheHeader = "X-Cached";
-        proxyServlet = new ProxyServlet()
-        {
-            private Map<String, ContentResponse> cache = new HashMap<>();
-            private Map<String, ByteArrayOutputStream> temp = new HashMap<>();
 
-            @Override
-            protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-            {
-                ContentResponse cachedResponse = cache.get(request.getRequestURI());
-                if (cachedResponse != null)
-                {
-                    response.setStatus(cachedResponse.getStatus());
-                    // Should copy headers too, but keep it simple
-                    response.addHeader(cacheHeader, "true");
-                    response.getOutputStream().write(cachedResponse.getContent());
-                }
-                else
-                {
-                    super.service(request, response);
-                }
-            }
-
-            @Override
-            protected void onResponseContent(HttpServletRequest request, HttpServletResponse response, Response proxyResponse, byte[] buffer, int offset, int length, Callback callback)
-            {
-                // Accumulate the response content
-                ByteArrayOutputStream baos = temp.get(request.getRequestURI());
-                if (baos == null)
-                {
-                    baos = new ByteArrayOutputStream();
-                    temp.put(request.getRequestURI(), baos);
-                }
-                baos.write(buffer, offset, length);
-                super.onResponseContent(request, response, proxyResponse, buffer, offset, length, callback);
-            }
-
-            @Override
-            protected void onProxyResponseSuccess(HttpServletRequest request, HttpServletResponse response, Response proxyResponse)
-            {
-                byte[] content = temp.remove(request.getRequestURI()).toByteArray();
-                ContentResponse cached = new HttpContentResponse(proxyResponse, content, null, null);
-                cache.put(request.getRequestURI(), cached);
-                super.onProxyResponseSuccess(request, response, proxyResponse);
-            }
-        };
-        startProxy(proxyServletClass);
+        startProxy(CachingProxyServlet.class);
         startClient();
 
         // First request
@@ -905,7 +857,7 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
         assertEquals(200, response.getStatus());
-        assertThat(response.getHeaders(), containsHeader(cacheHeader));
+        assertThat(response.getHeaders(), containsHeader(CachingProxyServlet.CACHE_HEADER));
         assertArrayEquals(content, response.getContent());
     }
 

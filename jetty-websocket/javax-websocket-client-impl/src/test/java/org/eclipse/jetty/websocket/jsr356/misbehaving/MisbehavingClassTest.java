@@ -116,17 +116,16 @@ public class MisbehavingClassTest
         server.addBean(container); // allow to shutdown with server
         AnnotatedRuntimeOnOpen socket = new AnnotatedRuntimeOnOpen();
 
-        try (StacklessLogging logging = new StacklessLogging(AnnotatedRuntimeOnOpen.class, WebSocketSession.class))
+        try (StacklessLogging ignore = new StacklessLogging(AnnotatedRuntimeOnOpen.class, WebSocketSession.class))
         {
             // expecting IOException during onOpen - Should have failed .connectToServer()
             IOException e = assertThrows(IOException.class,
                     () -> container.connectToServer(socket, serverUri));
-            assertThat(e.getCause(), instanceOf(RuntimeException.class));
-            
+
             assertThat("Close should have occurred",socket.closeLatch.await(1,TimeUnit.SECONDS),is(true));
 
             Throwable cause = socket.errors.pop();
-            assertThat("Error",cause,instanceOf(ArrayIndexOutOfBoundsException.class));
+            assertThat("Error",cause,instanceOf(RuntimeException.class));
         }
     }
 }
