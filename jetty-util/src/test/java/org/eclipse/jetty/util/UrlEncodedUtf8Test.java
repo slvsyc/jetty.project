@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -92,7 +94,7 @@ public class UrlEncodedUtf8Test
             UrlEncoded.decodeUtf8To(s, 0, s.length(), values);
             if (thrown)
                 fail("Expected an exception");
-            assertEquals(test, expected, values.getString(field));
+            assertThat(test, values.getString(field), is(expected));
         }
         catch (Exception e)
         {
@@ -112,7 +114,7 @@ public class UrlEncodedUtf8Test
             UrlEncoded.decodeUtf8To(is, values, 1000000,-1);
             if (thrown)
                 fail("Expected an exception");
-            assertEquals(test, expected, values.getString(field));
+            assertThat(test, values.getString(field), is(expected));
         }
         catch (Exception e)
         {

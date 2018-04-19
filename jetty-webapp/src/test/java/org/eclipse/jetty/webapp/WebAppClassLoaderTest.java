@@ -21,6 +21,7 @@ package org.eclipse.jetty.webapp;
 import static org.eclipse.jetty.toolchain.test.ExtraMatchers.ordered;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -339,13 +340,13 @@ public class WebAppClassLoaderTest
         URL resource = resources.nextElement();
         try (InputStream data = resource.openStream())
         {
-            assertEquals(IO.toString(data), "correct contents of " + resource, "alpha");
+            assertThat("correct contents of " + resource, IO.toString(data), is("alpha"));
         }
         assertTrue(resources.hasMoreElements());
         resource = resources.nextElement();
         try (InputStream data = resource.openStream())
         {
-            assertEquals(IO.toString(data), "correct contents of " + resource, "omega");
+            assertThat("correct contents of " + resource, IO.toString(data), is("omega"));
         }
         assertFalse(resources.hasMoreElements());
     }

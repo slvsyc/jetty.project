@@ -293,9 +293,10 @@ public class TestABCase7_3
 
         BufferUtil.flipToFlush(bb,0);
 
-        closeFrame.setPayload(bb);
-
-        assertThrows(ProtocolException.class, () -> UnitGenerator.generate(closeFrame));
+        assertThrows(ProtocolException.class, () -> {
+            closeFrame.setPayload(bb);
+            UnitGenerator.generate(closeFrame);
+        });
     }
 
     @Test

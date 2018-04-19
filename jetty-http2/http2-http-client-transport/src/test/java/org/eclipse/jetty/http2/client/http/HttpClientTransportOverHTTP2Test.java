@@ -43,6 +43,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -379,7 +380,7 @@ public class HttpClientTransportOverHTTP2Test extends AbstractTest
         client.setIdleTimeout(idleTimeout);
         client.start();
 
-        assertThrows(ExecutionException.class, ()->{
+        assertThrows(TimeoutException.class, ()->{
             client.newRequest("localhost", connector.getLocalPort())
                     // Make sure the connection idle times out, not the stream.
                     .idleTimeout(2 * idleTimeout, TimeUnit.MILLISECONDS)
@@ -409,7 +410,7 @@ public class HttpClientTransportOverHTTP2Test extends AbstractTest
             }
         });
 
-        assertThrows(ExecutionException.class, ()->{
+        assertThrows(TimeoutException.class, ()->{
             long idleTimeout = 1000;
             client.newRequest("localhost", connector.getLocalPort())
                     .idleTimeout(idleTimeout, TimeUnit.MILLISECONDS)

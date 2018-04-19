@@ -54,7 +54,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(WorkDirExtension.class)
 public abstract class AbstractDoSFilterTest
 {
     protected ServletTester _tester;
@@ -62,16 +61,14 @@ public abstract class AbstractDoSFilterTest
     protected int _port;
     protected long _requestMaxTime = 200;
 
-    public WorkDir _testDir;
-    
-    public void startServer(Class<? extends Filter> filter) throws Exception
+    public void startServer(WorkDir workDir, Class<? extends Filter> filter) throws Exception
     {
         _tester = new ServletTester("/ctx");
         
         DefaultSessionCache sessionCache = new DefaultSessionCache(_tester.getContext().getSessionHandler());
         FileSessionDataStore fileStore = new FileSessionDataStore();
        
-        Path p = _testDir.getPathFile("sessions");
+        Path p = workDir.getPathFile("sessions");
         FS.ensureEmpty(p);
         fileStore.setStoreDir(p.toFile());
         sessionCache.setSessionDataStore(fileStore);

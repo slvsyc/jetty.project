@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -34,7 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.junit.Assume;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -200,7 +200,7 @@ public class LazyListTest
     @Test
     public void testAddObjectIntObject_NullInput_NonListItem2()
     {
-        Assume.assumeTrue(STRICT); // Only run in STRICT mode.
+        assumeTrue(STRICT); // Only run in STRICT mode.
 
         String item = "a";
         // Test branch of logic "index>0"
@@ -780,7 +780,7 @@ public class LazyListTest
     @Test
     public void testEnsureSize_GenericListInput_LinkedList()
     {
-        Assume.assumeTrue(STRICT); // Only run in STRICT mode.
+        assumeTrue(STRICT); // Only run in STRICT mode.
 
         // Using LinkedList concrete type as LazyList internal
         // implementation does not look for this specifically.
@@ -829,7 +829,7 @@ public class LazyListTest
     @Test
     public void testEnsureSize_Growth_LinkedList()
     {
-        Assume.assumeTrue(STRICT); // Only run in STRICT mode.
+        assumeTrue(STRICT); // Only run in STRICT mode.
 
         // Using LinkedList concrete type as LazyList internal
         // implementation has not historically looked for this
@@ -1914,7 +1914,7 @@ public class LazyListTest
     public void testAddToArray_NullNullNull()
     {
         // NPE if item && type are both null.
-        Assume.assumeTrue(STRICT);
+        assumeTrue(STRICT);
 
         // Harsh test case.
         Object input[] = null;

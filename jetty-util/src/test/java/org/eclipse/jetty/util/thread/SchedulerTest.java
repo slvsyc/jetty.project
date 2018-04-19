@@ -19,68 +19,80 @@
 package org.eclipse.jetty.util.thread;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.channels.SelectableChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
+import org.eclipse.jetty.util.component.ContainerLifeCycle;
 import org.eclipse.jetty.util.log.StacklessLogging;
+import org.eclipse.jetty.util.resource.FileResource;
+import org.eclipse.jetty.util.resource.PathResource;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 
-@RunWith(value = Parameterized.class)
 public class SchedulerTest
 {
-    @Parameterized.Parameters
-    public static Collection<Object[]> data()
-    {
-        Object[][] data = new Object[][]{
-            {new TimerScheduler()},
-            {new ScheduledExecutorScheduler()}/*,
-            {new ConcurrentScheduler(0)},
-            {new ConcurrentScheduler(1500)},
-            {new ConcurrentScheduler(executor,1500)}*/
-        };
-        return Arrays.asList(data);
+    public static Stream<Class<? extends Scheduler>> schedulerProvider() {
+        return Stream.of(
+                TimerScheduler.class,
+                ScheduledExecutorScheduler.class
+        );
     }
 
-    private Scheduler _scheduler;
+    private List<Scheduler> schedulers = new ArrayList<>();
 
-    public SchedulerTest(Scheduler scheduler)
-    {
-        _scheduler=scheduler;
-    }
-
-    @BeforeEach
-    public void before() throws Exception
+    public Scheduler start(Class<? extends Scheduler> impl) throws Exception
     {
         System.gc();
-        _scheduler.start();
+        Scheduler scheduler = impl.getDeclaredConstructor().newInstance();
+        scheduler.start();
+        schedulers.add(scheduler);
+        assertThat("Scheduler is started", scheduler.isStarted(), is(true));
+        return scheduler;
     }
 
     @AfterEach
-    public void after() throws Exception
+    public void after()
     {
-        _scheduler.stop();
+        schedulers.forEach((scheduler) -> {
+            try
+            {
+                scheduler.stop();
+            }
+            catch (Exception ignore)
+            {
+            }
+        });
     }
 
-    @Test
-    public void testExecution() throws Exception
+    @ParameterizedTest
+    @MethodSource("schedulerProvider")
+    public void testExecution(Class<? extends Scheduler> impl) throws Exception
     {
+        Scheduler scheduler = start(impl);
         final AtomicLong executed = new AtomicLong();
         long expected=System.currentTimeMillis()+1000;
-        Scheduler.Task task=_scheduler.schedule(new Runnable()
+        Scheduler.Task task=scheduler.schedule(new Runnable()
         {
             @Override
             public void run()
@@ -95,12 +107,14 @@ public class SchedulerTest
         assertThat(expected-executed.get(),Matchers.lessThan(1000L));
     }
 
-    @Test
-    public void testTwoExecution() throws Exception
+    @ParameterizedTest
+    @MethodSource("schedulerProvider")
+    public void testTwoExecution(Class<? extends Scheduler> impl) throws Exception
     {
+        Scheduler scheduler = start(impl);
         final AtomicLong executed = new AtomicLong();
         long expected=System.currentTimeMillis()+1000;
-        Scheduler.Task task=_scheduler.schedule(new Runnable()
+        Scheduler.Task task=scheduler.schedule(new Runnable()
         {
             @Override
             public void run()
@@ -116,7 +130,7 @@ public class SchedulerTest
 
         final AtomicLong executed1 = new AtomicLong();
         long expected1=System.currentTimeMillis()+1000;
-        Scheduler.Task task1=_scheduler.schedule(new Runnable()
+        Scheduler.Task task1=scheduler.schedule(new Runnable()
         {
             @Override
             public void run()
@@ -131,11 +145,13 @@ public class SchedulerTest
         assertThat(expected1-executed1.get(),Matchers.lessThan(1000L));
     }
 
-    @Test
-    public void testQuickCancel() throws Exception
+    @ParameterizedTest
+    @MethodSource("schedulerProvider")
+    public void testQuickCancel(Class<? extends Scheduler> impl) throws Exception
     {
+        Scheduler scheduler = start(impl);
         final AtomicLong executed = new AtomicLong();
-        Scheduler.Task task=_scheduler.schedule(new Runnable()
+        Scheduler.Task task=scheduler.schedule(new Runnable()
         {
             @Override
             public void run()
@@ -150,11 +166,13 @@ public class SchedulerTest
         assertEquals(0,executed.get());
     }
 
-    @Test
-    public void testLongCancel() throws Exception
+    @ParameterizedTest
+    @MethodSource("schedulerProvider")
+    public void testLongCancel(Class<? extends Scheduler> impl) throws Exception
     {
+        Scheduler scheduler = start(impl);
         final AtomicLong executed = new AtomicLong();
-        Scheduler.Task task=_scheduler.schedule(new Runnable()
+        Scheduler.Task task=scheduler.schedule(new Runnable()
         {
             @Override
             public void run()
@@ -169,13 +187,15 @@ public class SchedulerTest
         assertEquals(0,executed.get());
     }
 
-    @Test
-    public void testTaskThrowsException() throws Exception
+    @ParameterizedTest
+    @MethodSource("schedulerProvider")
+    public void testTaskThrowsException(Class<? extends Scheduler> impl) throws Exception
     {
-        try (StacklessLogging stackless = new StacklessLogging(TimerScheduler.class))
+        Scheduler scheduler = start(impl);
+        try (StacklessLogging ignore = new StacklessLogging(TimerScheduler.class))
         {
             long delay = 500;
-            _scheduler.schedule(new Runnable()
+            scheduler.schedule(new Runnable()
             {
                 @Override
                 public void run()
@@ -189,7 +209,7 @@ public class SchedulerTest
             // Check whether after a task throwing an exception, the scheduler is still working
 
             final CountDownLatch latch = new CountDownLatch(1);
-            _scheduler.schedule(new Runnable()
+            scheduler.schedule(new Runnable()
             {
                 @Override
                 public void run()

@@ -18,6 +18,7 @@
 
 package org.eclipse.jetty.proxy;
 
+import static org.eclipse.jetty.http.HttpFieldsMatchers.containsHeader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -103,6 +104,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class ProxyServletTest
 {
@@ -217,7 +219,7 @@ public class ProxyServletTest
     }
 
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testProxyWithoutContent(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         startServer(new HttpServlet()
@@ -626,15 +628,24 @@ public class ProxyServletTest
         assertFalse(response.getHeaders().containsKey(PROXIED_HEADER));
     }
 
+    public static Stream<Arguments> transparentImpls()
+    {
+        return Stream.of(
+                ProxyServlet.Transparent.class,
+                AsyncProxyServlet.Transparent.class,
+                AsyncMiddleManServlet.Transparent.class
+        ).map(Arguments::of);
+    }
+
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testTransparentProxy(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         testTransparentProxyWithPrefix(proxyServletClass, "/proxy");
     }
 
     @ParameterizedTest
-    @MethodSource("impls")
+    @MethodSource("transparentImpls")
     public void testTransparentProxyWithRootContext(Class<? extends ProxyServlet> proxyServletClass) throws Exception
     {
         testTransparentProxyWithPrefix(proxyServletClass, "/");
@@ -654,7 +665,6 @@ public class ProxyServletTest
             }
         });
         String proxyTo = "http://localhost:" + serverConnector.getLocalPort();
-        proxyServlet = new ProxyServlet.Transparent();
         Map<String, String> params = new HashMap<>();
         params.put("proxyTo", proxyTo);
         params.put("prefix", prefix);
@@ -716,13 +726,14 @@ public class ProxyServletTest
                 {
                     if (query.equals(req.getQueryString()))
                     {
-                        resp.setStatus(200);
+                        resp.setStatus(HttpStatus.OK_200);
                         return;
                     }
                 }
-                resp.setStatus(404);
+                resp.setStatus(HttpStatus.NOT_FOUND_404);
             }
         });
+
         String proxyTo = "http://localhost:" + serverConnector.getLocalPort() + proxyToContext;
         proxyServlet = new ProxyServlet.Transparent();
         Map<String, String> params = new HashMap<>();
@@ -737,7 +748,7 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
         assertEquals(200, response.getStatus());
-        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertThat(response.getHeaders(), containsHeader(PROXIED_HEADER));
     }
 
     @ParameterizedTest
@@ -886,7 +897,7 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
         assertEquals(200, response.getStatus());
-        assertTrue(response.getHeaders().containsKey(PROXIED_HEADER));
+        assertThat(response.getHeaders(), containsHeader(PROXIED_HEADER));
         assertArrayEquals(content, response.getContent());
 
         // Second request should be cached
@@ -894,7 +905,7 @@ public class ProxyServletTest
                 .timeout(5, TimeUnit.SECONDS)
                 .send();
         assertEquals(200, response.getStatus());
-        assertTrue(response.getHeaders().containsKey(cacheHeader));
+        assertThat(response.getHeaders(), containsHeader(cacheHeader));
         assertArrayEquals(content, response.getContent());
     }
 

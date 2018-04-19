@@ -22,84 +22,87 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class RewriteRegexRuleTest extends AbstractRuleTestCase
 {
-    // TODO: Parameterize
-    private String[][] _tests=
+    public static Stream<Arguments> scenarios()
     {
-            {"/foo0/bar",null,".*","/replace","/replace",null},
-            {"/foo1/bar","n=v",".*","/replace","/replace","n=v"},
-            {"/foo2/bar",null,"/xxx.*","/replace",null,null},
-            {"/foo3/bar",null,"/(.*)/(.*)","/$2/$1/xxx","/bar/foo3/xxx",null},
-            {"/f%20o3/bar",null,"/(.*)/(.*)","/$2/$1/xxx","/bar/f%20o3/xxx",null},
-            {"/foo4/bar",null,"/(.*)/(.*)","/test?p2=$2&p1=$1","/test","p2=bar&p1=foo4"},
-            {"/foo5/bar","n=v","/(.*)/(.*)","/test?p2=$2&p1=$1","/test","n=v&p2=bar&p1=foo5"},
-            {"/foo6/bar",null,"/(.*)/(.*)","/foo6/bar?p2=$2&p1=$1","/foo6/bar","p2=bar&p1=foo6"},
-            {"/foo7/bar","n=v","/(.*)/(.*)","/foo7/bar?p2=$2&p1=$1","/foo7/bar","n=v&p2=bar&p1=foo7"},
-            {"/foo8/bar",null,"/(foo8)/(.*)(bar)","/$3/$1/xxx$2","/bar/foo8/xxx",null},
-            {"/foo9/$bar",null,".*","/$replace","/$replace",null},
-            {"/fooA/$bar",null,"/fooA/(.*)","/$1/replace","/$bar/replace",null},
-            {"/fooB/bar/info",null,"/fooB/(NotHere)?([^/]*)/(.*)","/$3/other?p1=$2","/info/other","p1=bar"},
-            {"/fooC/bar/info",null,"/fooC/(NotHere)?([^/]*)/(.*)","/$3/other?p1=$2&$Q","/info/other","p1=bar&"},
-            {"/fooD/bar/info","n=v","/fooD/(NotHere)?([^/]*)/(.*)","/$3/other?p1=$2&$Q","/info/other","p1=bar&n=v"},
-            {"/fooE/bar/info","n=v","/fooE/(NotHere)?([^/]*)/(.*)","/$3/other?p1=$2","/info/other","n=v&p1=bar"},
-    };
-    private RewriteRegexRule _rule;
+        return Stream.of(
+                new Scenario("/foo0/bar",null,".*","/replace","/replace",null),
+                new Scenario("/foo1/bar","n=v",".*","/replace","/replace","n=v"),
+                new Scenario("/foo2/bar",null,"/xxx.*","/replace",null,null),
+                new Scenario("/foo3/bar",null,"/(.*)/(.*)","/$2/$1/xxx","/bar/foo3/xxx",null),
+                new Scenario("/f%20o3/bar",null,"/(.*)/(.*)","/$2/$1/xxx","/bar/f%20o3/xxx",null),
+                new Scenario("/foo4/bar",null,"/(.*)/(.*)","/test?p2=$2&p1=$1","/test","p2=bar&p1=foo4"),
+                new Scenario("/foo5/bar","n=v","/(.*)/(.*)","/test?p2=$2&p1=$1","/test","n=v&p2=bar&p1=foo5"),
+                new Scenario("/foo6/bar",null,"/(.*)/(.*)","/foo6/bar?p2=$2&p1=$1","/foo6/bar","p2=bar&p1=foo6"),
+                new Scenario("/foo7/bar","n=v","/(.*)/(.*)","/foo7/bar?p2=$2&p1=$1","/foo7/bar","n=v&p2=bar&p1=foo7"),
+                new Scenario("/foo8/bar",null,"/(foo8)/(.*)(bar)","/$3/$1/xxx$2","/bar/foo8/xxx",null),
+                new Scenario("/foo9/$bar",null,".*","/$replace","/$replace",null),
+                new Scenario("/fooA/$bar",null,"/fooA/(.*)","/$1/replace","/$bar/replace",null),
+                new Scenario("/fooB/bar/info",null,"/fooB/(NotHere)?([^/]*)/(.*)","/$3/other?p1=$2","/info/other","p1=bar"),
+                new Scenario("/fooC/bar/info",null,"/fooC/(NotHere)?([^/]*)/(.*)","/$3/other?p1=$2&$Q","/info/other","p1=bar&"),
+                new Scenario("/fooD/bar/info","n=v","/fooD/(NotHere)?([^/]*)/(.*)","/$3/other?p1=$2&$Q","/info/other","p1=bar&n=v"),
+                new Scenario("/fooE/bar/info","n=v","/fooE/(NotHere)?([^/]*)/(.*)","/$3/other?p1=$2","/info/other","n=v&p1=bar")
+        ).map(Arguments::of);
+    }
 
-    @BeforeEach
-    public void init() throws Exception
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testRequestUriEnabled(Scenario scenario) throws Exception
     {
         start(false);
-        _rule=new RewriteRegexRule();
-    }
 
-    @Test
-    public void testRequestUriEnabled() throws IOException
-    {
-        for (String[] test : _tests)
+        reset();
+        _request.setURIPathQuery(null);
+
+        /*
+        String t=test[0]+"?"+test[1]+">"+test[2]+"|"+test[3];
+        _rule.setRegex(test[2]);
+        _rule.setReplacement(test[3]);
+
+        _request.setURIPathQuery(test[0]+(test[1]==null?"":("?"+test[1])));
+
+        String result = _rule.matchAndApply(test[0], _request, _response);
+        assertEquals(t, test[4], result);
+        _rule.applyURI(_request,test[0],result);
+
+        if (result!=null)
         {
-            reset();
-            _request.setURIPathQuery(null);
-            
-            String t=test[0]+"?"+test[1]+">"+test[2]+"|"+test[3];
-            _rule.setRegex(test[2]);
-            _rule.setReplacement(test[3]);
-
-            _request.setURIPathQuery(test[0]+(test[1]==null?"":("?"+test[1])));
-            
-            String result = _rule.matchAndApply(test[0], _request, _response);
-            assertEquals(t, test[4], result);
-            _rule.applyURI(_request,test[0],result);
-
-            if (result!=null)
-            {
-                assertEquals(t,test[4], _request.getRequestURI());
-                assertEquals(t,test[5], _request.getQueryString());
-            }
-            
-            if (test[5]!=null)
-            {
-                MultiMap<String> params=new MultiMap<String>();
-                UrlEncoded.decodeTo(test[5],params, StandardCharsets.UTF_8);
-                               
-                for (String n:params.keySet())
-                    assertEquals(params.getString(n),_request.getParameter(n));
-            }
+            assertEquals(t,test[4], _request.getRequestURI());
+            assertEquals(t,test[5], _request.getQueryString());
         }
+
+        if (test[5]!=null)
+        {
+            MultiMap<String> params=new MultiMap<String>();
+            UrlEncoded.decodeTo(test[5],params, StandardCharsets.UTF_8);
+
+            for (String n:params.keySet())
+                assertEquals(params.getString(n),_request.getParameter(n));
+        }
+        */
     }
-    
-    @Test
-    public void testContainedRequestUriEnabled() throws IOException
+
+    @ParameterizedTest
+    @MethodSource("scenarios")
+    public void testContainedRequestUriEnabled() throws Exception
     {
+        start(false);
+
         RuleContainer container = new RuleContainer();
         container.setRewriteRequestURI(true);
+        /*
         container.addRule(_rule);
         for (String[] test : _tests)
         {
@@ -116,6 +119,27 @@ public class RewriteRegexRuleTest extends AbstractRuleTestCase
             assertEquals(t,URIUtil.decodePath(test[4]==null?test[0]:test[4]), result);
             assertEquals(t,test[4]==null?test[0]:test[4], _request.getRequestURI());
             assertEquals(t,test[5], _request.getQueryString());
+        }
+        */
+    }
+
+    private static class Scenario
+    {
+        String test0;
+        String test1;
+        String test2;
+        String test3;
+        String test4;
+        String test5;
+
+        public Scenario(String test0, String test1, String test2, String test3, String test4, String test5)
+        {
+            this.test0 = test0;
+            this.test1 = test1;
+            this.test2 = test2;
+            this.test3 = test3;
+            this.test4 = test4;
+            this.test5 = test5;
         }
     }
 }

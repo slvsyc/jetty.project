@@ -1319,6 +1319,8 @@ public class HttpClientTest extends AbstractHttpClientServerTest
     @ArgumentsSource(ScenarioProvider.class)
     public void testSmallContentDelimitedByEOFWithSlowRequestHTTP10(Scenario scenario) throws Exception
     {
+        Assumptions.assumeTrue(HttpScheme.HTTP.is(scenario.getScheme()));
+
         ExecutionException e = assertThrows(ExecutionException.class, ()->{
             testContentDelimitedByEOFWithSlowRequest(scenario, HttpVersion.HTTP_1_0, 1024);
         });

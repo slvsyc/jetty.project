@@ -39,7 +39,7 @@ public class UriTemplatePathSpecTest
         assertEquals(expectedVars.length, spec.getVariables().length, prefix + ".variable.length");
         for (int i = 0; i < expectedVars.length; i++)
         {
-            assertEquals(String.format("%s.variable[%d]",prefix,i),expectedVars[i],spec.getVariables()[i]);
+            assertThat(String.format("%s.variable[%d]",prefix,i),spec.getVariables()[i],is(expectedVars[i]));
         }
     }
 

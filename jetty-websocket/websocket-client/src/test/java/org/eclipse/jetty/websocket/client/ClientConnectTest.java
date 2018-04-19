@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -58,9 +59,11 @@ import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.Timeout;
 
 /**
  * Various connect condition testing
@@ -446,11 +449,17 @@ public class ClientConnectTest
             serverSocket.accept();
 
             // The attempt to get upgrade response future should throw error
-            ExecutionException e = assertThrows(ExecutionException.class,
+            Exception e = assertThrows(Exception.class,
                     ()-> future.get(3, TimeUnit.SECONDS));
 
-            // Expected path - java.net.ConnectException ?
-            assertExpectedError(e, wsocket, instanceOf(ConnectException.class));
+            if (e instanceof ExecutionException)
+            {
+                assertExpectedError((ExecutionException) e, wsocket, instanceOf(ConnectException.class));
+            }
+            else
+            {
+                assertThat("Should have been a TimeoutException", e, instanceOf(TimeoutException.class));
+            }
         }
     }
 }

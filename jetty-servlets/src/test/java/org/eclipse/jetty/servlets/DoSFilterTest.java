@@ -37,13 +37,19 @@ import javax.servlet.ServletRequest;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlets.DoSFilter.RateTracker;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDir;
+import org.eclipse.jetty.toolchain.test.jupiter.WorkDirExtension;
 import org.hamcrest.Matchers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+@ExtendWith(WorkDirExtension.class)
 public class DoSFilterTest extends AbstractDoSFilterTest
 {
+    public WorkDir workDir;
+
     private static class RemoteAddressRequest extends Request
     {
         public RemoteAddressRequest(String remoteHost, int remotePort)
@@ -83,7 +89,7 @@ public class DoSFilterTest extends AbstractDoSFilterTest
     @BeforeEach
     public void setUp() throws Exception
     {
-        startServer(DoSFilter.class);
+        startServer(workDir, DoSFilter.class);
     }
 
     @Test

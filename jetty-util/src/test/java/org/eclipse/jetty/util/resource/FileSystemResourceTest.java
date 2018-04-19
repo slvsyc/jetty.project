@@ -218,7 +218,7 @@ public class FileSystemResourceTest
     public void testBogusFilename_Unix(Class resourceClass)
     {
         // A windows path is invalid under unix
-        assertThrows(IllegalAccessException.class,
+        assertThrows(IllegalArgumentException.class,
                 () -> newResource(resourceClass, new URI("file://Z:/:")));
     }
 

@@ -18,6 +18,8 @@
 
 package org.eclipse.jetty.server;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -44,7 +46,7 @@ public class InclusiveByteRangeTest
         assertEquals(expectedFirst,actualRange.getFirst(size),msg + " - first");
         assertEquals(expectedLast,actualRange.getLast(size),msg + " - last");
         String expectedHeader = String.format("bytes %d-%d/%d",expectedFirst,expectedLast,size);
-        assertEquals(msg + " - header range string",expectedHeader,actualRange.toHeaderRangeString(size));
+        assertThat(msg + " - header range string",actualRange.toHeaderRangeString(size),is(expectedHeader));
     }
 
     private void assertSimpleRange(int expectedFirst, int expectedLast, String rangeId, int size)

@@ -19,6 +19,7 @@
 package org.eclipse.jetty.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -575,14 +576,17 @@ public class MultiMapTest
 
         String prefix = "MultiMap.getValues(" + key + ")";
 
-        assertEquals(expectedValues.length,values.size(),prefix + ".size");
+        assertThat(prefix + ".size", values.size(), is(expectedValues.length));
         int len = expectedValues.length;
         for (int i = 0; i < len; i++)
         {
-            if(expectedValues[i] == null) {
-                assertThat(prefix + "[" + i + "]",values.get(i),nullValue());
-            } else {
-                assertEquals(prefix + "[" + i + "]",expectedValues[i],values.get(i));
+            if (expectedValues[i] == null)
+            {
+                assertThat(prefix + "[" + i + "]", values.get(i), is(nullValue()));
+            }
+            else
+            {
+                assertThat(prefix + "[" + i + "]", values.get(i), is(expectedValues[i]));
             }
         }
     }
