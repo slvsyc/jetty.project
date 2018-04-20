@@ -231,7 +231,7 @@ public class AsyncIOServletTest extends AbstractTest<AsyncIOServletTest.AsyncTra
                 });
             }
         });
-        scenario.setServerIdleTimeout(1000);
+        scenario.setConnectionIdleTimeout(1000);
         CountDownLatch closeLatch = new CountDownLatch(1);
         scenario.connector.addBean(new Connection.Listener()
         {

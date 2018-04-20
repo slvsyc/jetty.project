@@ -253,14 +253,19 @@ public class TransportScenario
         return result.toArray(new ConnectionFactory[result.size()]);
     }
 
+    public void setConnectionIdleTimeout(long idleTimeout)
+    {
+        if (connector instanceof AbstractConnector)
+            AbstractConnector.class.cast(connector).setIdleTimeout(idleTimeout);
+    }
+
     public void setServerIdleTimeout(long idleTimeout)
     {
         AbstractHTTP2ServerConnectionFactory h2 = connector.getConnectionFactory(AbstractHTTP2ServerConnectionFactory.class);
         if (h2 != null)
             h2.setStreamIdleTimeout(idleTimeout);
         else
-            if (connector instanceof AbstractConnector)
-                AbstractConnector.class.cast(connector).setIdleTimeout(idleTimeout);
+            setConnectionIdleTimeout(idleTimeout);
     }
 
     public void start(Handler handler) throws Exception

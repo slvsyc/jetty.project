@@ -20,6 +20,7 @@ package org.eclipse.jetty.http.client;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jetty.util.StringUtil;
@@ -29,16 +30,14 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 public class TransportProvider implements ArgumentsProvider
 {
-    @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception
+    public static Stream<Transport> getActiveTransports()
     {
         String transports = System.getProperty(Transport.class.getName());
 
         if (!StringUtil.isBlank(transports))
         {
             return Arrays.stream(transports.split("\\s*,\\s*"))
-                    .map(Transport::valueOf)
-                    .map(Arguments::of);
+                    .map(Transport::valueOf);
         }
 
         // TODO #2014 too many test failures, don't test unix socket client for now.
@@ -46,7 +45,12 @@ public class TransportProvider implements ArgumentsProvider
         //     return Transport.values();
 
         return EnumSet.complementOf(EnumSet.of(Transport.UNIX_SOCKET))
-                .stream()
-                .map(Arguments::of);
+                .stream();
+    }
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception
+    {
+        return getActiveTransports().map(Arguments::of);
     }
 }
