@@ -18,11 +18,10 @@
 
 package org.eclipse.jetty.osgi.test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
@@ -172,8 +171,9 @@ public class TestJettyOSGiBootHTTP2
             httpClient.start();
 
             ContentResponse response = httpClient.GET("https://localhost:"+port+"/jsp/jstl.jsp");
-            assertThat(response.toString(), response.getStatus(), is(HttpStatus.OK_200));
-            assertThat(response.getContentAsString(), containsString("JSTL Example"));
+            assertEquals(response.toString(), response.getStatus(), HttpStatus.OK_200);
+            String body = response.getContentAsString();
+            assertTrue("Body contains \"JSTL Example\": " + body, body.contains("JSTL Example"));
         }
         finally
         {
