@@ -20,18 +20,26 @@ package org.eclipse.jetty.util.statistic;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.LongAccumulator;
-import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.TimeUnit;
 
 /**
  */
 public class RateStatistic
 {
     private final Deque<Long> _samples = new ArrayDeque<>();
+    private final long _period;
+    private final TimeUnit _units;
+    private final long _nanoPeriod;
     private long _max;
     private long _count;
 
+    public RateStatistic(long period, TimeUnit units)
+    {
+        _period = period;
+        _units = units;
+        _nanoPeriod = TimeUnit.NANOSECONDS.convert(_period,_units);    
+    }
+    
     /**
      * Resets the statistics.
      */
@@ -39,6 +47,38 @@ public class RateStatistic
     {
         synchronized(this)
         {
+            _samples.clear();
+            _max = 0;
+            _count = 0;
+        }
+    }
+
+    void update()
+    {
+        update(System.nanoTime());
+    }
+
+    private void update(long now)
+    {
+        long expire = now - _nanoPeriod;
+        Long head = _samples.peekFirst();
+
+        while (head!=null && head.longValue()<expire)
+        {
+            _samples.removeFirst();
+            head = _samples.peekFirst();
+        }
+    }
+
+    void age(long period, TimeUnit units)
+    {
+        long increment = TimeUnit.NANOSECONDS.convert(period,units);
+        synchronized(this)
+        {
+            int size = _samples.size();
+            for (int i=0; i<size; i++)
+                _samples.addLast(_samples.removeFirst()-increment);
+            update();
         }
     }
 
@@ -48,8 +88,25 @@ public class RateStatistic
     public long record()
     {
         synchronized(this)
-        { 
+        {
+            _count++;
+            
             long now = System.nanoTime();
+            _samples.add(now);
+            update(now);
+            long rate = _samples.size();
+            if (rate>_max)
+                _max = rate;
+            return rate;
+        }
+    }
+
+    public long getRate()
+    {
+        synchronized(this)
+        {
+            update(System.nanoTime());
+            return _samples.size();
         }
     }
 
@@ -58,7 +115,10 @@ public class RateStatistic
      */
     public long getMax()
     {
-        return _max.get();
+        synchronized(this)
+        {
+            return _max;
+        }
     }
 
     /**
@@ -66,13 +126,41 @@ public class RateStatistic
      */
     public long getCount()
     {
-        return _count.get();
+        synchronized(this)
+        {
+            return _count;
+        }
     }
 
+    void dump()
+    {
+        dump(TimeUnit.MINUTES);
+    }
+
+    void dump(TimeUnit units)
+    {
+        synchronized(this)
+        {
+            long now = System.nanoTime();
+            System.err.printf("%s@%x{count=%d,max=%d,rate=%d per %d %s}%n", 
+                getClass().getSimpleName(), hashCode(), 
+                _count, _max, _samples.size(),
+                _period, _units);
+                
+            _samples.stream().map(t->units.convert(now-t,TimeUnit.NANOSECONDS)).forEach(System.err::println);
+        }
+    }
 
     @Override
     public String toString()
     {
-        return String.format("%s@%x{count=%d,mean=%d,total=%d,stddev=%f}", getClass().getSimpleName(), hashCode(), getCount(), getMax(), getTotal(), getStdDev());
+        synchronized(this)
+        {
+            update(System.nanoTime());
+            return String.format("%s@%x{count=%d,max=%d,rate=%d per %d %s}", 
+                getClass().getSimpleName(), hashCode(), 
+                _count, _max, _samples.size(),
+                _period, _units);
+        }
     }
 }
