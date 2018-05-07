@@ -409,7 +409,6 @@ public abstract class SelectorManager extends ContainerLifeCycle implements Dump
      */
     public abstract Connection newConnection(SelectableChannel channel, EndPoint endpoint, Object attachment) throws IOException;
 
-    
     public void addEventListener(EventListener listener)
     {
         if (isRunning())
@@ -429,21 +428,52 @@ public abstract class SelectorManager extends ContainerLifeCycle implements Dump
     protected void onAccepting(SelectableChannel channel)
     {
         for (AcceptListener l : _acceptListeners)
-            l.onAccepting(channel);
+        {
+            try
+            {
+                l.onAccepting(channel);
+            }
+            catch (Throwable x)
+            {
+                LOG.warn(x);
+            }
+        }
     }
     
     protected void onAcceptFailed(SelectableChannel channel, Throwable cause)
     {
         for (AcceptListener l : _acceptListeners)
-            l.onAcceptFailed(channel,cause);
+        {
+            try
+            {
+                l.onAcceptFailed(channel,cause);
+            }
+            catch (Throwable x)
+            {
+                LOG.warn(x);
+            }
+        }
     }
     
     protected void onAccepted(SelectableChannel channel, EndPoint endPoint)
     {
         for (AcceptListener l : _acceptListeners)
-            l.onAccepted(channel,endPoint);
+        {
+            try
+            {
+                l.onAccepted(channel,endPoint);
+            }
+            catch (Throwable x)
+            {
+                LOG.warn(x);
+            }
+        }
     }
 
+    /**
+     * A listener for accept events.
+     *
+     */
     public interface AcceptListener extends EventListener
     {
         void onAccepting(SelectableChannel channel);

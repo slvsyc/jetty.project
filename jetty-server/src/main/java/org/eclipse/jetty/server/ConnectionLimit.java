@@ -37,11 +37,20 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
 /**
- * <p>A Connection Listener that limits the number of Connections.</p>
+ * <p>A Listener that limits the number of Connections.</p>
  * <p>This listener applies a limit to the number of connections, which when 
  * exceeded results in  a call to {@link AbstractConnector#setAccepting(boolean)} 
  * to prevent further connections being received.  It can be applied to an
  * entire server or to a specific connector by adding it via {@link Container#addBean(Object)}
+ * </p>
+ * <p>
+ * <b>Usage:</b>
+ * <pre>
+ *   Server server = new Server();
+ *   server.addBean(new ConnectionLimit(5000,server));
+ *   ...
+ *   server.start();
+ * </pre>
  * </p>
  * @see LowResourceMonitor
  * @see Connection.Listener
@@ -58,7 +67,7 @@ public class ConnectionLimit extends AbstractLifeCycle implements Listener, Sele
     private int _connections;
     private int _maxConnections;
     private long _limitIdleTimeout;
-    private boolean _limitting = false;
+    private boolean _limiting = false;
 
     public ConnectionLimit(@Name("maxConnections") int maxConnections, @Name("server") Server server)
     {
@@ -131,7 +140,7 @@ public class ConnectionLimit extends AbstractLifeCycle implements Listener, Sele
             LOG.debug("ConnectionLimit {} for {}",_maxConnections,_connectors);
         
         _connections = 0;
-        _limitting = false;
+        _limiting = false;
         
         for (AbstractConnector c : _connectors)
             c.addBean(this);
@@ -151,18 +160,18 @@ public class ConnectionLimit extends AbstractLifeCycle implements Listener, Sele
     {
         if ( (_accepting.size()+_connections) >= _maxConnections)
         {
-            if (!_limitting)
+            if (!_limiting)
             {
-                _limitting = true;
+                _limiting = true;
                 LOG.info("Connection Limit({}) reached for {}",_maxConnections,_connectors);
                 limit();
             }
         }
         else
         {
-            if (_limitting)
+            if (_limiting)
             {
-                _limitting = false;
+                _limiting = false;
                 LOG.info("Connection Limit({}) cleared for {}",_maxConnections,_connectors);
                 unlimit();
             }
@@ -230,13 +239,18 @@ public class ConnectionLimit extends AbstractLifeCycle implements Listener, Sele
 
         check();
         
-        if (_limitting && _limitIdleTimeout>0)
+        if (_limiting && _limitIdleTimeout>0)
             endPoint.setIdleTimeout(_limitIdleTimeout);
     }
     
     @Override
     public synchronized void onOpened(Connection connection)
     {        
+        // TODO Currently not all connection types will do the accept events (eg LocalEndPoint), so it may be 
+        // that the first we see of a connection is this onOpened call.  Eventually we should do synthentic 
+        // accept events for all connections, but for now we will just remove the accepting count and add
+        // to the connection count here.
+        
         _accepting.remove(connection.getEndPoint().getTransport());
         _connections++;
         
