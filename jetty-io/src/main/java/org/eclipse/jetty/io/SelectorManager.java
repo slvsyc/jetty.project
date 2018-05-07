@@ -27,7 +27,10 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EventListener;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntUnaryOperator;
@@ -61,6 +64,7 @@ public abstract class SelectorManager extends ContainerLifeCycle implements Dump
     private final ManagedSelector[] _selectors;
     private final AtomicInteger _selectorIndex = new AtomicInteger();
     private final IntUnaryOperator _selectorIndexUpdate;
+    private final List<AcceptListener> _acceptListeners = new ArrayList<>();
     private long _connectTimeout = DEFAULT_CONNECT_TIMEOUT;
     private ThreadPoolBudget.Lease _lease;
 
@@ -405,5 +409,46 @@ public abstract class SelectorManager extends ContainerLifeCycle implements Dump
      */
     public abstract Connection newConnection(SelectableChannel channel, EndPoint endpoint, Object attachment) throws IOException;
 
+    
+    public void addEventListener(EventListener listener)
+    {
+        if (isRunning())
+            throw new IllegalStateException(this.toString());
+        if (listener instanceof AcceptListener && !_acceptListeners.contains(listener))
+            _acceptListeners.add(AcceptListener.class.cast(listener));
+    }   
+    
+    public void removeEventListener(EventListener listener)
+    {
+        if (isRunning())
+            throw new IllegalStateException(this.toString());
+        if (listener instanceof AcceptListener)
+            _acceptListeners.remove(listener);
+    }
+    
+    protected void onAccepting(SelectableChannel channel)
+    {
+        for (AcceptListener l : _acceptListeners)
+            l.onAccepting(channel);
+    }
+    
+    protected void onAcceptFailed(SelectableChannel channel, Throwable cause)
+    {
+        for (AcceptListener l : _acceptListeners)
+            l.onAcceptFailed(channel,cause);
+    }
+    
+    protected void onAccepted(SelectableChannel channel, EndPoint endPoint)
+    {
+        for (AcceptListener l : _acceptListeners)
+            l.onAccepted(channel,endPoint);
+    }
 
+    public interface AcceptListener extends EventListener
+    {
+        void onAccepting(SelectableChannel channel);
+        void onAcceptFailed(SelectableChannel channel, Throwable cause);
+        void onAccepted(SelectableChannel channel, EndPoint endPoint);
+    }
+        
 }
