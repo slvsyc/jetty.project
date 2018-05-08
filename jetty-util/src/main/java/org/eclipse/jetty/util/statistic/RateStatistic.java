@@ -27,17 +27,25 @@ import java.util.concurrent.TimeUnit;
 public class RateStatistic
 {
     private final Deque<Long> _samples = new ArrayDeque<>();
-    private final long _period;
-    private final TimeUnit _units;
     private final long _nanoPeriod;
+    private final TimeUnit _units;
     private long _max;
     private long _count;
 
     public RateStatistic(long period, TimeUnit units)
     {
-        _period = period;
+        _nanoPeriod = TimeUnit.NANOSECONDS.convert(period,units);    
         _units = units;
-        _nanoPeriod = TimeUnit.NANOSECONDS.convert(_period,_units);    
+    }
+    
+    public long getPeriod()
+    {
+        return _units.convert(_nanoPeriod,TimeUnit.NANOSECONDS);
+    }
+    
+    public TimeUnit getUnits()
+    {
+        return _units;
     }
     
     /**
@@ -70,7 +78,7 @@ public class RateStatistic
         }
     }
 
-    void age(long period, TimeUnit units)
+    protected void age(long period, TimeUnit units)
     {
         long increment = TimeUnit.NANOSECONDS.convert(period,units);
         synchronized(this)
@@ -85,7 +93,7 @@ public class RateStatistic
     /**
      * Records a sample value.
      */
-    public long record()
+    public int record()
     {
         synchronized(this)
         {
@@ -94,14 +102,14 @@ public class RateStatistic
             long now = System.nanoTime();
             _samples.add(now);
             update(now);
-            long rate = _samples.size();
+            int rate = _samples.size();
             if (rate>_max)
                 _max = rate;
             return rate;
         }
     }
 
-    public long getRate()
+    public int getRate()
     {
         synchronized(this)
         {
@@ -145,7 +153,7 @@ public class RateStatistic
             System.err.printf("%s@%x{count=%d,max=%d,rate=%d per %d %s}%n", 
                 getClass().getSimpleName(), hashCode(), 
                 _count, _max, _samples.size(),
-                _period, _units);
+                _units.convert(_nanoPeriod,TimeUnit.NANOSECONDS), _units);
                 
             _samples.stream().map(t->units.convert(now-t,TimeUnit.NANOSECONDS)).forEach(System.err::println);
         }
@@ -160,7 +168,7 @@ public class RateStatistic
             return String.format("%s@%x{count=%d,max=%d,rate=%d per %d %s}", 
                 getClass().getSimpleName(), hashCode(), 
                 _count, _max, _samples.size(),
-                _period, _units);
+                _units.convert(_nanoPeriod,TimeUnit.NANOSECONDS), _units);
         }
     }
 }
