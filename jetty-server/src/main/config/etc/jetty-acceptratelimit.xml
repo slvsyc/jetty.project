@@ -4,8 +4,8 @@
   <Call name="addBean">
     <Arg>
       <New class="org.eclipse.jetty.server.AcceptRateLimit">
-        <Arg name="maxRate" type="int"><Property name="jetty.acceptrate.limit" default="1000" /></Arg>
-        <Arg name="period" type="long"><Property name="jetty.acceptrate.period" default="1000" /></Arg>
+        <Arg name="maxRate" type="int"><Property name="jetty.acceptratelimit.maxrate" default="1000" /></Arg>
+        <Arg name="period" type="long"><Property name="jetty.acceptratelimit.period" default="1000" /></Arg>
         <Arg name="units"><Call class="java.util.concurrent.TimeUnit" name="valueOf"><Arg>MILLISECONDS</Arg></Call></Arg>
         <Arg name="server"><Ref refid="Server" /></Arg>
       </New>

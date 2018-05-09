@@ -94,35 +94,41 @@ public class AcceptRateLimit extends AbstractLifeCycle implements SelectorManage
     }
     
     @Override
-    protected synchronized void doStart() throws Exception
+    protected void doStart() throws Exception
     {
-        if (_server!=null)
+        synchronized (_rate)
         {
-            for (Connector c: _server.getConnectors())
+            if (_server!=null)
             {
-                if (c instanceof AbstractConnector)
-                    _connectors.add((AbstractConnector)c);
-                else
-                    LOG.warn("Connector {} is not an AbstractConnection. Connections not limited",c);
+                for (Connector c: _server.getConnectors())
+                {
+                    if (c instanceof AbstractConnector)
+                        _connectors.add((AbstractConnector)c);
+                    else
+                        LOG.warn("Connector {} is not an AbstractConnection. Connections not limited",c);
+                }
             }
-        }
 
-        if (LOG.isDebugEnabled())
-            LOG.debug("AcceptLimit accept<{} rate<{} in {} for {}", _maxRate, _rate,_connectors);
-        
-        _limiting = false;
-        
-        for (AbstractConnector c : _connectors)
-            c.addBean(this);
+            if (LOG.isDebugEnabled())
+                LOG.debug("AcceptLimit accept<{} rate<{} in {} for {}", _maxRate, _rate,_connectors);
+
+            _limiting = false;
+
+            for (AbstractConnector c : _connectors)
+                c.addBean(this);
+        }
     }
 
     @Override
-    protected synchronized void doStop() throws Exception
+    protected void doStop() throws Exception
     {
-        for (AbstractConnector c : _connectors)
-            c.removeBean(this);
-        if (_server!=null)
-            _connectors.clear();   
+        synchronized (_rate)
+        {
+            for (AbstractConnector c : _connectors)
+                c.removeBean(this);
+            if (_server != null)
+                _connectors.clear();
+        }   
     }
 
     protected void limit()
@@ -145,59 +151,56 @@ public class AcceptRateLimit extends AbstractLifeCycle implements SelectorManage
     }    
 
     @Override
-    public synchronized void onAccepting(SelectableChannel channel)
+    public void onAccepting(SelectableChannel channel)
     {
-        int rate = _rate.record();
-        
-        if (LOG.isDebugEnabled())
-        {   
-            LOG.debug("onAccepting rate {}/{} for {} {}",
-                    rate,_maxRate,
-                    _rate,channel);                    
-        }
-        
-        if (rate>_maxRate)
+        synchronized (_rate)
         {
-            if (!_limiting)
+            int rate = _rate.record();
+            if (LOG.isDebugEnabled())
             {
-                _limiting = true;
+                LOG.debug("onAccepting rate {}/{} for {} {}",rate,_maxRate,_rate,channel);
+            }
+            if (rate > _maxRate)
+            {
+                if (!_limiting)
+                {
+                    _limiting = true;
 
-                LOG.warn("AcceptLimit rate exceeded {}>{} on {}",
-                        rate,_maxRate,
-                        _connectors);
-                limit();
+                    LOG.warn("AcceptLimit rate exceeded {}>{} on {}",rate,_maxRate,_connectors);
+                    limit();
+                }
             }
         }
     }
 
     @Override
-    public synchronized void onAcceptFailed(@SuppressWarnings("unused") SelectableChannel channel, @SuppressWarnings("unused") Throwable cause)
+    public void onAcceptFailed(@SuppressWarnings("unused") SelectableChannel channel, @SuppressWarnings("unused") Throwable cause)
     {
     }
 
     @Override
-    public synchronized void onAccepted(@SuppressWarnings("unused") SelectableChannel channel, @SuppressWarnings("unused") EndPoint endPoint)
+    public void onAccepted(@SuppressWarnings("unused") SelectableChannel channel, @SuppressWarnings("unused") EndPoint endPoint)
     {
     }
 
     @Override
-    public synchronized void run()
+    public void run()
     {
-        int rate = _rate.getRate();
-        if (rate>_maxRate)
+        synchronized (_rate)
         {
-            Scheduler scheduler = _connectors.get(0).getScheduler();
-            scheduler.schedule(this,_rate.getPeriod(),_rate.getUnits());
-            return;
-        }
-        
-        if (_limiting)
-        {
-            _limiting = false;
-            LOG.warn("AcceptLimit OK rate {}<={} on {}",
-                    rate,_maxRate,
-                    _connectors);
-            unlimit();
+            int rate = _rate.getRate();
+            if (rate > _maxRate)
+            {
+                Scheduler scheduler = _connectors.get(0).getScheduler();
+                scheduler.schedule(this,_rate.getPeriod(),_rate.getUnits());
+                return;
+            }
+            if (_limiting)
+            {
+                _limiting = false;
+                LOG.warn("AcceptLimit OK rate {}<={} on {}",rate,_maxRate,_connectors);
+                unlimit();
+            }
         }
     }
 

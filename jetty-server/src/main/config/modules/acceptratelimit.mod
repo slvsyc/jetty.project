@@ -14,7 +14,7 @@ etc/jetty-acceptratelimit.xml
 
 [ini-template]
 ## The limit of accepted connections
-#jetty.acceptrate.limit=1000
+#jetty.acceptratelimit.maxrate=1000
 
 ## The period (in milliseconds) over which the rate applies
-#jetty.acceptrate.period=1000
+#jetty.acceptratelimit.period=1000

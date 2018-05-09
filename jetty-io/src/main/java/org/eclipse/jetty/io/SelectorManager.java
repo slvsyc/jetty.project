@@ -471,14 +471,35 @@ public abstract class SelectorManager extends ContainerLifeCycle implements Dump
     }
 
     /**
-     * A listener for accept events.
-     *
+     * <p>A listener for accept events.</p>
+     * <p>This listener is called from either the selector or acceptor thread
+     * and implementations must be non blocking and fast.</p>
      */
     public interface AcceptListener extends EventListener
     {
-        void onAccepting(SelectableChannel channel);
-        void onAcceptFailed(SelectableChannel channel, Throwable cause);
-        void onAccepted(SelectableChannel channel, EndPoint endPoint);
+        /**
+         * Called immediately after a new SelectableChannel is accepted, but
+         * before it has been submitted to the {@link SelectorManager}.
+         * @param channel the accepted channel
+         */
+        default void onAccepting(SelectableChannel channel) {}
+        
+        /**
+         * Called if the processing of the accepted channel fails prior to being
+         * allocated an {@link EndPoint}.
+         * @param channel the accepted channel
+         * @param cause the cause of the failure or null if no known cause.
+         */
+        default void onAcceptFailed(SelectableChannel channel, Throwable cause) {}
+        
+        /**
+         * Called after the accepted channel has been allocated an {@link EndPoint} 
+         * and associated {@link Connection}. Called after the onOpen notifications have
+         * been called on both endPoint and connection.
+         * @param channel the accepted channel
+         * @param endPoint the {@link EndPoint} allocated to the channel
+         */
+        default void onAccepted(SelectableChannel channel, EndPoint endPoint) {}
     }
         
 }
