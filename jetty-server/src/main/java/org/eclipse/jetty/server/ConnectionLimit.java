@@ -45,13 +45,13 @@ import org.eclipse.jetty.util.log.Logger;
  * </p>
  * <p>
  * <b>Usage:</b>
+ * </p>
  * <pre>
  *   Server server = new Server();
  *   server.addBean(new ConnectionLimit(5000,server));
  *   ...
  *   server.start();
  * </pre>
- * </p>
  * @see LowResourceMonitor
  * @see Connection.Listener
  * @see SelectorManager.AcceptListener

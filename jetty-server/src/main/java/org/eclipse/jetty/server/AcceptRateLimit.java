@@ -39,19 +39,21 @@ import org.eclipse.jetty.util.thread.Scheduler;
 /**
  * <p>A Listener that limits the rate at which new connections are accepted</p>
  * <p>
- * If the limits are exceeded, accepting is suspended for the time period.
+ * If the limits are exceeded, accepting is suspended for the time period, so 
+ * incoming connections are held in the operating system accept queue (no syn ack sent),
+ * where they may either timeout or wait for the server to resume accepting.
  * It can be applied to an entire server or to a specific connector by adding it 
  * via {@link Container#addBean(Object)}
  * </p>
  * <p>
  * <b>Usage:</b>
+ * </p>
  * <pre>
  *   Server server = new Server();
  *   server.addBean(new AcceptLimit(100,5,TimeUnit.SECONDS,server));
  *   ...
  *   server.start();
  * </pre>
- * </p>
  * @see SelectorManager.AcceptListener
  */
 @ManagedObject
