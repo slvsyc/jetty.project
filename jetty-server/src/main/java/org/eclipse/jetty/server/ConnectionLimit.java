@@ -106,54 +106,66 @@ public class ConnectionLimit extends AbstractLifeCycle implements Listener, Sele
     }
 
     @ManagedAttribute("The maximum number of connections allowed")
-    public synchronized int getMaxConnections()
+    public int getMaxConnections()
     {
-        return _maxConnections;
+        synchronized (this)
+        {
+            return _maxConnections;
+        }
     }
     
-    public synchronized void setMaxConnections(int max)
+    public void setMaxConnections(int max)
     {
-        _maxConnections = max;
+        synchronized (this)
+        {
+            _maxConnections = max;
+        }
     }
 
     @ManagedAttribute("The current number of connections ")
-    public synchronized int getConnections()
+    public int getConnections()
     {
-        return _connections;
+        synchronized (this)
+        {
+            return _connections;
+        }
     }
     
     @Override
-    protected synchronized void doStart() throws Exception
+    protected void doStart() throws Exception
     {
-        if (_server!=null)
+        synchronized (this)
         {
-            for (Connector c: _server.getConnectors())
+            if (_server != null)
             {
-                if (c instanceof AbstractConnector)
-                    _connectors.add((AbstractConnector)c);
-                else
-                    LOG.warn("Connector {} is not an AbstractConnection. Connections not limited",c);
+                for (Connector c : _server.getConnectors())
+                {
+                    if (c instanceof AbstractConnector)
+                        _connectors.add((AbstractConnector)c);
+                    else
+                        LOG.warn("Connector {} is not an AbstractConnection. Connections not limited",c);
+                }
             }
+            if (LOG.isDebugEnabled())
+                LOG.debug("ConnectionLimit {} for {}",_maxConnections,_connectors);
+            _connections = 0;
+            _limiting = false;
+            for (AbstractConnector c : _connectors)
+                c.addBean(this);
         }
-
-        if (LOG.isDebugEnabled())
-            LOG.debug("ConnectionLimit {} for {}",_maxConnections,_connectors);
-        
-        _connections = 0;
-        _limiting = false;
-        
-        for (AbstractConnector c : _connectors)
-            c.addBean(this);
     }
 
     @Override
-    protected synchronized void doStop() throws Exception
+    protected void doStop() throws Exception
     {
-        for (AbstractConnector c : _connectors)
-            c.removeBean(this);
-        _connections = 0;
-        if (_server!=null)
-            _connectors.clear();   
+        synchronized (this)
+        {
+            for (AbstractConnector c : _connectors)
+                c.removeBean(this);
+            _connections = 0;
+            if (_server != null)
+                _connectors.clear();
+        }   
     }
     
     protected void check()
@@ -207,68 +219,72 @@ public class ConnectionLimit extends AbstractLifeCycle implements Listener, Sele
     }    
 
     @Override
-    public synchronized void onAccepting(SelectableChannel channel)
+    public void onAccepting(SelectableChannel channel)
     {
-        _accepting.add(channel);
-        
-        if (LOG.isDebugEnabled())
-            LOG.debug("onAccepting ({}+{}) < {} {}",_accepting.size(),_connections, _maxConnections,channel);
-        
-        check();
+        synchronized (this)
+        {
+            _accepting.add(channel);
+            if (LOG.isDebugEnabled())
+                LOG.debug("onAccepting ({}+{}) < {} {}",_accepting.size(),_connections,_maxConnections,channel);
+            check();
+        }
     }
 
     @Override
-    public synchronized void onAcceptFailed(SelectableChannel channel, Throwable cause)
+    public void onAcceptFailed(SelectableChannel channel, Throwable cause)
     {
-        _accepting.remove(channel);
-        
-        if (LOG.isDebugEnabled())
-            LOG.debug("onAcceptFailed ({}+{}) < {} {} {}",_accepting.size(),_connections, _maxConnections,channel,cause);
-
-        check();
+        synchronized (this)
+        {
+            _accepting.remove(channel);
+            if (LOG.isDebugEnabled())
+                LOG.debug("onAcceptFailed ({}+{}) < {} {} {}",_accepting.size(),_connections,_maxConnections,channel,cause);
+            check();
+        }
     }
 
     @Override
-    public synchronized void onAccepted(SelectableChannel channel, EndPoint endPoint)
+    public void onAccepted(SelectableChannel channel, EndPoint endPoint)
     {
-        // May have already been removed by onOpened
-        _accepting.remove(channel);
-        
-        if (LOG.isDebugEnabled())
-            LOG.debug("onAccepted ({}+{}) < {} {}->{}",_accepting,_connections, _maxConnections, channel, endPoint);
-
-        check();
-        
-        if (_limiting && _limitIdleTimeout>0)
-            endPoint.setIdleTimeout(_limitIdleTimeout);
+        synchronized (this)
+        {
+            // May have already been removed by onOpened
+            _accepting.remove(channel);
+            if (LOG.isDebugEnabled())
+                LOG.debug("onAccepted ({}+{}) < {} {}->{}",_accepting,_connections,_maxConnections,channel,endPoint);
+            check();
+            if (_limiting && _limitIdleTimeout > 0)
+                endPoint.setIdleTimeout(_limitIdleTimeout);
+        }
     }
     
     @Override
-    public synchronized void onOpened(Connection connection)
+    public void onOpened(Connection connection)
     {        
-        // TODO Currently not all connection types will do the accept events (eg LocalEndPoint), so it may be 
-        // that the first we see of a connection is this onOpened call.  Eventually we should do synthentic 
-        // accept events for all connections, but for now we will just remove the accepting count and add
-        // to the connection count here.
-        
-        _accepting.remove(connection.getEndPoint().getTransport());
-        _connections++;
-        
-        if (LOG.isDebugEnabled())
-            LOG.debug("onOpened ({}+{}) < {} {}",_accepting.size(),_connections, _maxConnections,connection);
+        synchronized (this)
+        {        
+            // TODO Currently not all connection types will do the accept events (eg LocalEndPoint), so it may be 
+            // that the first we see of a connection is this onOpened call.  Eventually we should do synthentic 
+            // accept events for all connections, but for now we will just remove the accepting count and add
+            // to the connection count here.
 
-        check();
+            _accepting.remove(connection.getEndPoint().getTransport());
+            _connections++;
+            if (LOG.isDebugEnabled())
+                LOG.debug("onOpened ({}+{}) < {} {}",_accepting.size(),_connections,_maxConnections,connection);
+            check();
+        }
     }
 
     @Override
-    public synchronized void onClosed(Connection connection)
+    public void onClosed(Connection connection)
     {
-        _connections--;
-        
-        if (LOG.isDebugEnabled())
-            LOG.debug("onClosed ({}+{}) < {} {}",_accepting.size(),_connections, _maxConnections,connection);
-
-        check();
+        synchronized (this)
+        {
+            _connections--;
+            if (LOG.isDebugEnabled())
+                LOG.debug("onClosed ({}+{}) < {} {}",_accepting.size(),_connections,_maxConnections,connection);
+            check();
+        }
     }
 
 }

@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.io.SelectorManager;
+import org.eclipse.jetty.util.annotation.ManagedAttribute;
 import org.eclipse.jetty.util.annotation.ManagedObject;
 import org.eclipse.jetty.util.annotation.Name;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
@@ -64,20 +65,20 @@ public class AcceptRateLimit extends AbstractLifeCycle implements SelectorManage
     private final Server _server;
     private final List<AbstractConnector> _connectors = new ArrayList<>();
     private final Rate _rate;
-    private final int _maxRate;
+    private final int _limit;
     private boolean _limiting = false;
 
-    public AcceptRateLimit(@Name("maxRate") int maxRate, @Name("period") long period, @Name("units") TimeUnit units, @Name("server") Server server)
+    public AcceptRateLimit(@Name("limit") int limit, @Name("period") long period, @Name("units") TimeUnit units, @Name("server") Server server)
     {
         _server = server;
-        _maxRate = maxRate;
+        _limit = limit;
         _rate = new Rate(period,units);
     }
     
-    public AcceptRateLimit(@Name("maxRate") int maxRate, @Name("period") long period, @Name("units") TimeUnit units, @Name("connectors") Connector...connectors)
+    public AcceptRateLimit(@Name("limit") int limit, @Name("period") long period, @Name("units") TimeUnit units, @Name("connectors") Connector...connectors)
     {
         _server = null;
-        _maxRate = maxRate;
+        _limit = limit;
         _rate = new Rate(period,units); 
         for (Connector c: connectors)
         {
@@ -85,6 +86,49 @@ public class AcceptRateLimit extends AbstractLifeCycle implements SelectorManage
                 _connectors.add((AbstractConnector)c);
             else
                 LOG.warn("Connector {} is not an AbstractConnection. Connections not limited",c);
+        }
+    }
+
+    @ManagedAttribute("The rate limit")
+    public int getLimit()
+    {
+        return _limit;
+    }
+    
+    @ManagedAttribute("The rate period")
+    public long getPeriod()
+    {
+        return _rate.getPeriod();
+    }
+    
+    @ManagedAttribute("The rate period units")
+    public TimeUnit getUnits()
+    {
+        return _rate.getUnits();
+    }
+    
+    @ManagedAttribute("The current rate")
+    public int getRate()
+    {
+        return _rate.getRate();
+    }
+    
+    @ManagedAttribute("The maximum rate achieved")
+    public long getMaxRate()
+    {
+        return _rate.getMax();
+    }
+    
+    public void reset()
+    {
+        synchronized (_rate)
+        {
+            _rate.reset();
+            if (_limiting)
+            {
+                _limiting = false;
+                unlimit();
+            }
         }
     }
     
@@ -110,7 +154,7 @@ public class AcceptRateLimit extends AbstractLifeCycle implements SelectorManage
             }
 
             if (LOG.isDebugEnabled())
-                LOG.debug("AcceptLimit accept<{} rate<{} in {} for {}", _maxRate, _rate,_connectors);
+                LOG.debug("AcceptLimit accept<{} rate<{} in {} for {}", _limit, _rate,_connectors);
 
             _limiting = false;
 
@@ -158,29 +202,19 @@ public class AcceptRateLimit extends AbstractLifeCycle implements SelectorManage
             int rate = _rate.record();
             if (LOG.isDebugEnabled())
             {
-                LOG.debug("onAccepting rate {}/{} for {} {}",rate,_maxRate,_rate,channel);
+                LOG.debug("onAccepting rate {}/{} for {} {}",rate,_limit,_rate,channel);
             }
-            if (rate > _maxRate)
+            if (rate > _limit)
             {
                 if (!_limiting)
                 {
                     _limiting = true;
 
-                    LOG.warn("AcceptLimit rate exceeded {}>{} on {}",rate,_maxRate,_connectors);
+                    LOG.warn("AcceptLimit rate exceeded {}>{} on {}",rate,_limit,_connectors);
                     limit();
                 }
             }
         }
-    }
-
-    @Override
-    public void onAcceptFailed(@SuppressWarnings("unused") SelectableChannel channel, @SuppressWarnings("unused") Throwable cause)
-    {
-    }
-
-    @Override
-    public void onAccepted(@SuppressWarnings("unused") SelectableChannel channel, @SuppressWarnings("unused") EndPoint endPoint)
-    {
     }
 
     @Override
@@ -189,7 +223,7 @@ public class AcceptRateLimit extends AbstractLifeCycle implements SelectorManage
         synchronized (_rate)
         {
             int rate = _rate.getRate();
-            if (rate > _maxRate)
+            if (rate > _limit)
             {
                 Scheduler scheduler = _connectors.get(0).getScheduler();
                 scheduler.schedule(this,_rate.getPeriod(),_rate.getUnits());
@@ -198,7 +232,7 @@ public class AcceptRateLimit extends AbstractLifeCycle implements SelectorManage
             if (_limiting)
             {
                 _limiting = false;
-                LOG.warn("AcceptLimit OK rate {}<={} on {}",rate,_maxRate,_connectors);
+                LOG.warn("AcceptLimit OK rate {}<={} on {}",rate,_limit,_connectors);
                 unlimit();
             }
         }

@@ -23,6 +23,13 @@ import java.util.Deque;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * <p>Statistics on a time sequence rate.</p>
+ * <p>Calculates the rate at which the {@link #record()} method is called
+ * over the configured period, retaining also the total count and maximum 
+ * rate achieved.</p>
+ * <p>The implementation keeps a Deque of timestamps for all records for 
+ * the last time period, so this method is not suitable for large rates
+ * unless a small time period is used.</p>
  */
 public class RateStatistic
 {
