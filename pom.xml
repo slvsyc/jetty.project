@@ -1077,7 +1077,7 @@
 
   <profiles>
     <profile>
-      <id>no-logger-is-debug</id>
+      <id>no-logger-debug</id>
       <properties>
         <src.dir>${project.build.directory}/modified-sources</src.dir>
       </properties>
