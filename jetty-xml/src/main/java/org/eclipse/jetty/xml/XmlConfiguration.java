@@ -31,6 +31,8 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -134,14 +136,14 @@ public class XmlConfiguration
         {
             if (server!=null)
                 getIdMap().put("Server", server);
-            
-            Resource home = Resource.newResource(System.getProperty("jetty.home","."));
-            getProperties().put("jetty.home",home.toString());
-            getProperties().put("jetty.home.uri",normalizeURI(home.getURI().toString()));
 
-            Resource base = Resource.newResource(System.getProperty("jetty.base",home.toString()));
+            Path home = Paths.get(System.getProperty("jetty.home", "."));
+            getProperties().put("jetty.home",home.toString());
+            getProperties().put("jetty.home.uri",normalizeURI(home.toUri().toASCIIString()));
+
+            Path base = Paths.get(System.getProperty("jetty.base", home.toString()));
             getProperties().put("jetty.base",base.toString());
-            getProperties().put("jetty.base.uri",normalizeURI(base.getURI().toString()));
+            getProperties().put("jetty.base.uri",normalizeURI(base.toUri().toASCIIString()));
 
             if (webapp!=null)
             {
